@@ -61,6 +61,15 @@ so it shows in the Features menu.
 installer on GitHub, so `curl -fsSL https://serve.bd/install.sh | bash` always gets the latest one.
 Use a temporary redirect (302 or 307) so nobody caches an old copy.
 
+- Docker (also Serve itself, as a Git app with the Dockerfile builder): the `Dockerfile` builds the
+  site and serves it with nginx on port 80. `docker/nginx.conf` has the redirect, a 404 page and
+  long caching for `/_astro/`.
+
+  ```bash
+  docker build -t serve-site .
+  docker run -p 8080:80 serve-site
+  ```
+
 - Cloudflare Pages and Netlify: `public/_redirects` does it.
 - nginx:
 
