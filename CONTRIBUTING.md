@@ -1,6 +1,6 @@
 # Working on serve.bd
 
-How to build, change and deploy the serve.bd website.
+How to build and change the serve.bd website.
 
 ## Develop
 
@@ -34,7 +34,6 @@ affected.
 | `src/styles` | `tokens.css` (Serve design tokens), `site.css` (marketing), `docs.css` (Starlight in Serve's style) |
 | `src/data` | `templates.json` (catalog, copied from `serve/templates`) and `openapi.json` |
 | `scripts` | API sync, link check, share image |
-| `docker` | nginx config for the Docker image |
 
 ## Add a docs page
 
@@ -71,49 +70,6 @@ in `src/lib/site.ts`.
 
 `public/og.png` is the 1200 × 630 picture that link previews show. Its source is `scripts/og/og.html`.
 After changing it, run `bash scripts/og/render.sh` (needs Chromium).
-
-## Deploy
-
-One redirect is needed: `/install.sh` must go to the installer on GitHub, so
-`curl -fsSL https://serve.bd/install.sh | bash` always gets the latest one. Use a temporary redirect
-(302 or 307) so nobody caches an old copy.
-
-### With Serve or Docker
-
-The `Dockerfile` builds the site with Bun and serves it with nginx on port 80. `docker/nginx.conf` has
-the `/install.sh` redirect, the 404 page and long caching for the hashed files in `/_astro/`.
-
-On Serve:
-
-1. Add this repository as a Git app.
-2. Pick the **Dockerfile** builder and port **80**.
-3. Add the domain `serve.bd`.
-
-Anywhere else:
-
-```bash
-docker build -t serve-site .
-docker run -p 8080:80 serve-site
-```
-
-### Other hosts
-
-`dist/` is plain files, so any web server works.
-
-- Cloudflare Pages and Netlify: `public/_redirects` sets up the redirect.
-- nginx:
-
-  ```nginx
-  location = /install.sh {
-    return 302 https://raw.githubusercontent.com/serve-bd/serve/main/install.sh;
-  }
-  ```
-
-- Caddy:
-
-  ```caddy
-  redir /install.sh https://raw.githubusercontent.com/serve-bd/serve/main/install.sh 302
-  ```
 
 ## License
 
