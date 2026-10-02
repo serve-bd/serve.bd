@@ -1,0 +1,93 @@
+---
+title: "Database backups"
+description: "Scheduled backups to disk or S3, and one-click restore."
+---
+
+Serve backs up databases with each engine's own dump tools. You set a schedule per database on its **Backups** tab, and keep copies on the server, in S3, or both.
+
+:::note[Instance backups are separate]
+Database backups protect your data. They don't include Serve's own state. To back up the dashboard, certificates and settings, see [Instance backups](/docs/instance-backups). An instance backup does not include app or database data either, so you need both.
+:::
+
+## Automatic backups
+
+Open a database, go to **Backups** and turn on **Automatic backups**. When it is off, backups only run when you click **Back up now**.
+
+Under **How often**, pick one of:
+
+- **Hourly**: every 1, 2, 3, 4, 6, 8 or 12 hours, at a chosen minute.
+- **Daily**: at a time of day.
+- **Weekly**: on chosen days, at a time of day.
+- **Custom**: a **Cron expression**, like `0 3 * * *`.
+
+Times use the instance timezone. Change it in **Settings → General**.
+
+### How many to keep
+
+Older backups are deleted automatically. **Keep the latest** (or **Keep on this server** when you also use S3) sets how many copies stay on the server. **Keep in S3** sets how many stay in the bucket. Keep more in S3 for longer off-site history.
+
+### Where backups are stored
+
+**Store backups in** picks the destination:
+
+- **This server**: kept in the data directory. These copies are lost if the server is lost.
+- An S3 destination you added under **Integrations → S3 storage**.
+
+## S3 storage
+
+Add a destination under **Integrations → S3 storage**. Serve supports **Amazon S3**, **Cloudflare R2**, **Backblaze B2**, **DigitalOcean Spaces**, **Wasabi**, **MinIO** and **Other S3-compatible**.
+
+| Field | What it is |
+| --- | --- |
+| Endpoint | The S3 API URL of the provider |
+| Region | The bucket's region |
+| Bucket | The bucket name |
+| Path prefix | A folder inside the bucket for Serve's backups |
+| Access key ID | The key ID |
+| Secret access key | The secret for the key |
+
+Serve checks that it can write to the bucket before it saves the destination.
+
+:::tip
+Give Serve a key that can only access its own bucket.
+:::
+
+## Running and restoring
+
+The **Backups** list shows every backup. From it you can:
+
+- **Back up now**: take a backup right away. The database must be running.
+- Download a backup file.
+- Restore a backup into the database.
+- Delete a backup.
+
+### Choose the databases
+
+A PostgreSQL, MySQL, MariaDB or MongoDB server can hold more than one database. You choose which ones a backup takes:
+
+- **Back up now** asks which databases to take, when the server has more than one.
+- For automatic backups, set **Databases to back up**. Tick **Every database**, or single ones.
+
+Without a choice, a backup takes the main database. On MongoDB it takes every database.
+
+A backup with several databases is one file. Restoring it brings back each database as it was, and creates the ones that are missing.
+
+### Import a backup
+
+Use **Import backup** to restore a dump made elsewhere, for example when you move from another host. You can:
+
+- Drop a dump file in the dashboard, up to 20 GB.
+- Give a **File URL**: a public or pre-signed http(s) link. The server downloads it.
+- Pick a saved **Storage** and the **Object path** of the file inside the bucket.
+
+The card lists which file types the engine accepts.
+
+:::caution
+Restoring replaces the data in the database. Take a fresh backup first if you may need the current data.
+:::
+
+## Compose stacks and apps
+
+Compose stacks get backups per container. On the stack's **Backups** tab, Serve suggests the databases it finds in the stack. Click **Back up** with the database name to dump it on a schedule. You can also add storage backups, which copy volumes and folders.
+
+Apps can have storage backups too, which copy the app's volumes and folders on a schedule. Each backup has its own schedule, keep counts and destination, like a database backup. Only admins can add them.

@@ -1,0 +1,214 @@
+---
+title: "Databases"
+description: "PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey and ClickHouse."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Serve runs databases as services next to your apps. You pick an engine and a version, and Serve handles credentials, storage, backups and connection details.
+
+## Engines
+
+Choose **New service → Add a database** in a project.
+
+| Engine | Versions | Default port |
+| --- | --- | --- |
+| PostgreSQL | `18-alpine` (default), `17-alpine`, `16-alpine`, `15-alpine` | 5432 |
+| MySQL | `8.4`, `9`, `8.0` | 3306 |
+| MariaDB | `11`, `10.11` | 3306 |
+| MongoDB | `8`, `7` | 27017 |
+| Redis | `8-alpine`, `7-alpine` | 6379 |
+| Valkey | `8-alpine` | 6379 |
+| ClickHouse | `25.8-alpine`, `latest` | 8123 |
+
+### Custom images
+
+You can use your own image for an engine, for example `pgvector/pgvector:pg17` for PostgreSQL with the pgvector extension.
+
+## Settings
+
+A database has these settings pages: **Details**, **Credentials**, **Initialization**, **Configuration**, **Runtime and network**, **TLS**, **Health check** and **Persistent storage**.
+
+Depending on the engine, you can set:
+
+- **initdb arguments** and **Host authentication** for PostgreSQL.
+- **Character set** and **Collation**.
+- Init scripts. They run in name order from `/docker-entrypoint-initdb.d`, only when the data directory is empty.
+- A custom config file.
+- **Extra server arguments**.
+
+### TLS
+
+Under **TLS**, turn on **Enable TLS** to encrypt connections. Serve creates a private certificate authority for the database. The **Mode** is **Prefer** (TLS when the client supports it) or **Require** (only TLS connections). For Redis, the database then only accepts `rediss://` connections. TLS changes apply on restart.
+
+## Connecting
+
+### From other services
+
+Services in the same environment connect over the private network. Copy the **Internal connection URL** from the database settings, or reference it from an app variable:
+
+```text
+DATABASE_URL=${{postgres.DATABASE_URL}}
+```
+
+Here `postgres` is the database service's name. Other services also reach the database at its **Private hostname**. See [Environment variables](/docs/environment-variables).
+
+### Public port
+
+To reach the database from outside, set **Access** to **Public** under **Runtime and network**. Pick a **Public port** and choose where it listens:
+
+- **All interfaces**: anyone who can reach the server's port.
+- **This server only**: `127.0.0.1`, for use over an SSH tunnel.
+
+:::caution
+A public database port is open to the internet. Use a strong password, turn on TLS, and limit access in your firewall where you can.
+:::
+
+### Database domain
+
+Give a database a domain, like `db.example.com`, so clients connect to it from anywhere with a real certificate. Open the database's **Domain** card, type the domain and choose **Save**.
+
+On a server with a public IP, Serve then does the rest:
+
+- It opens a public port for the database, for example `15432` for PostgreSQL, and turns on **Public access**.
+- It turns on TLS and gets a Let's Encrypt certificate for the domain. The card header shows the certificate's state.
+- If the domain's zone is in a connected [Cloudflare](/docs/cloudflare) account, it creates the DNS record. Otherwise, point an `A` record at the server's IP yourself.
+- It restarts the database once and shows the **Connection URL**.
+
+**Remove** turns off what the domain turned on. If **Public access** or TLS was on before you added the domain, it stays on.
+
+:::caution[Keep the record DNS only]
+In Cloudflare, the record must be **DNS only** (grey cloud). Cloudflare's proxy (orange cloud) does not carry database traffic. For the same reason, the zone's SSL/TLS mode, like **Full (strict)**, doesn't matter here.
+:::
+
+**Allowed IPs** limits who can connect: one address or range per line, like `203.0.113.7` or `198.51.100.0/24`. Empty means anyone can connect with the password. It is the same list as **Public access**. **Add my IP** adds the address you use now.
+
+For PostgreSQL 16 and newer clients, add `sslmode=verify-full&sslrootcert=system` to the URL to also check the certificate. Other engines' clients check it by default.
+
+Several databases on the same server can share one domain. Each keeps its own port. A domain can't lead to databases on different servers, or through a Cloudflare Tunnel.
+
+The certificate comes from Let's Encrypt through Cloudflare DNS when the zone is connected, or over HTTP otherwise, which needs the nginx proxy. If the server already has a certificate that covers the name, like an uploaded wildcard, Serve uses that one.
+
+### Cloudflare Tunnel
+
+A server without a public IP can still give a database a domain, through a [Cloudflare Tunnel](/docs/cloudflare). Create the tunnel first. The **Domain** card then shows a **Route** choice: pick **Cloudflare Tunnel**.
+
+Cloudflare passes database connections only from `cloudflared` to `cloudflared`. So each computer or app that connects runs it too. It opens a local port that leads through the tunnel:
+
+```bash
+cloudflared access tcp --hostname db.example.com --url localhost:5432
+```
+
+Then connect your client to `localhost:5432`. The tunnel encrypts the connection, so the local URL needs no TLS.
+
+On a server with a public IP, use the normal route instead. Nothing needs to run on the computers that connect.
+
+## Users
+
+The **Users** tab adds database logins. Give each app, teammate or tool its own login, with only the access it needs. Users work with PostgreSQL, MySQL, MariaDB and MongoDB. The database must be running.
+
+Choose **Add user** and fill in:
+
+- **Name**: lowercase letters, digits and underscores, starting with a letter, up to 32 characters, like `app_reader`.
+- **Password**: leave it empty and Serve makes a strong one, or set your own of 12 to 128 characters.
+- **Access**: one of the levels below.
+- **Databases**: the databases the access applies to. The main database is ticked by default.
+
+| Access | Lets the user |
+| --- | --- |
+| **Read only** | Read the data. It can't change anything. |
+| **Read and write** | Read, add, change and delete rows or documents. It can't change tables. |
+| **Full access** | Everything in the chosen databases, including making and changing tables, collections and indexes. On PostgreSQL, tables of the main login keep their owner. |
+
+From a user's menu you can:
+
+- **Show connection URL**: the password, the URL on the private network for services in the project, and the public URL when the database has a public port or a domain.
+- **Change access**: the new access replaces the old one on every database.
+- **Change password**: Serve makes a new password. Apps that use the old one can't log in until you give them the new one.
+- **Delete**: the login is removed and the data stays. On PostgreSQL, tables the user made are given to the main login.
+
+### Users made outside Serve
+
+The list also shows logins made in other ways, for example with SQL. Their own grants stay until you change their access. Serve doesn't know their password, so it can't show a connection URL until you change the password.
+
+Serve's own login, branch logins and the users built into the database are shown with a lock. You can't change them here.
+
+### Permissions
+
+| Action | Needs |
+| --- | --- |
+| See the list of users | **View projects** |
+| Show a user's connection URL | **View projects** and **See secret values** |
+| Add a user or change its password | **Manage services** and **See secret values** |
+| Change access or delete a user | **Manage services** |
+
+Making a login or seeing its password gives access to the data, so those steps also need **See secret values**.
+
+## Data
+
+The **Data** tab shows what is inside the database. You can browse tables, run queries and edit rows. See [Browse and edit data](/docs/data).
+
+## Branches
+
+A branch is a full copy of a database's data that you can change freely. Use it to test a migration, debug with real data, or give a pull request preview its own database.
+
+Open the database's **Branches** tab and choose **New branch**. The database must be running, and it keeps running while Serve copies the data. Each branch uses about as much disk as the main database. A database can have up to 20 branches.
+
+In the **New branch** dialog:
+
+- **Name**: lowercase letters, digits and dashes, up to 30 characters, like `feature-login`.
+- **Copy from**: **Main data**, or a branch that is ready. A branch copied from another branch also resets from it.
+- **Copy every database**: also copy the other databases on the same database server. See [Copy every database](#copy-every-database).
+- **Hide personal data**: run your clean-up SQL on the copy. See [Hide personal data](#hide-personal-data).
+
+Branches live inside the same database server. Each has its own login, so a branch can't change the main data.
+
+Each branch provides these variables: `DATABASE_URL`, the engine's own URL (`POSTGRES_URL`, `MYSQL_URL`, `MONGO_URL` or `REDIS_URL`), `HOST`, `PORT`, `USERNAME`, `PASSWORD` and `DATABASE`. Reference them from any service in the environment:
+
+```text
+DATABASE_URL=${{postgres.branches.staging.DATABASE_URL}}
+```
+
+The page shows branches as a **List** by default. Switch to **Canvas** for a diagram of the main database, its branches, and the services that use each branch with the variable they read.
+
+### Reset and delete
+
+**Reset** replaces the branch's data with a fresh copy of its source. Changes made in the branch are lost. If the source branch was deleted, the reset copies the main data.
+
+**Delete** removes the branch's database and login. Services that reference it lose their connection. If other branches copy from it, you can also delete them, which is ticked by default. If you keep them, they copy the main data on their next reset.
+
+The database must be running to reset or delete a branch.
+
+### Copy every database
+
+A database server can hold more than one database. With **Copy every database**, the branch copies all of them. Each copy is named `<database>__<branch>`, for example `orders__staging`, and the branch's login can use all of them.
+
+Each database gets its own reference. The list shows them as chips: click one to copy it.
+
+```text
+DATABASE_URL=${{postgres.branches.staging.databases.orders.DATABASE_URL}}
+```
+
+This works with PostgreSQL, MySQL, MariaDB, MongoDB and ClickHouse. Personal data is not hidden in these branches.
+
+### Hide personal data
+
+To keep real personal data out of a branch, write clean-up SQL. Choose **Hide personal data** at the bottom of the **Branches** card and save the SQL, for example:
+
+```sql
+UPDATE users SET email = 'user' || id || '@example.com', name = 'User ' || id;
+DELETE FROM sessions;
+```
+
+Then tick **Hide personal data** when you create a branch. Serve runs the SQL on the copy right after copying, and again after every reset. If the SQL is missing or fails, the branch fails, so it never holds real data. These branches are marked **Personal data hidden**, and a branch copied from one hides the data too.
+
+Clean-up SQL works with PostgreSQL, MySQL, MariaDB and ClickHouse. It can't be combined with **Copy every database**.
+
+### Redis and Valkey
+
+Redis and Valkey branches are database numbers 1 to 15 of the same server, so a database can have up to 15. They use the main password, so an app given a branch could still switch to the main data. For that reason, pull request previews can't use them.
+
+<CardGrid>
+<LinkCard href="/docs/backups" title="Backups" description="Schedule backups and restore them." />
+<LinkCard href="/docs/deployments" title="Preview databases" description="Give each pull request its own copy." />
+</CardGrid>

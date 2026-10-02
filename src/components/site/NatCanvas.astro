@@ -1,0 +1,69 @@
+---
+/*
+ * A server with no public IP on a canvas: it sits behind NAT, and every connection starts from it.
+ * One tunnel goes to the Serve dashboard, one to Cloudflare, which brings visitors in.
+ */
+import CanvasCard from "./CanvasCard.astro";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 520;
+const CW = 264;
+const CH = 104;
+const HOME = { x: 64, y: 208 };
+const DASH = { x: 908, y: 64 };
+const CF = { x: 560, y: 340 };
+const WEB = { x: 908, y: 340 };
+const cy = (y: number) => y + CH / 2;
+const curve = (x1: number, y1: number, x2: number, y2: number) => {
+  const d = (x2 - x1) / 2;
+  return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2 - 4} ${y2}`;
+};
+---
+
+<div class="cv-frame cv-wide" role="img" aria-label="A home-lab server behind NAT with no open ports. It connects out to the Serve dashboard over SSH on TCP port 7822, and out to Cloudflare, which serves app.acme.dev to visitors over HTTPS.">
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <CanvasDefs id="nat" />
+    <rect width={W} height={H} fill="url(#nat-dots)"></rect>
+
+    {/* The home network, like a server frame on the dashboard canvas. */}
+    <rect x="32" y="128" width="328" height="264" rx="24" class="cv-server"></rect>
+    <text x="52" y="156" class="cv-server-label">home network · behind NAT</text>
+    <text x="52" y="368" class="cv-note">No public IP. No open ports.</text>
+
+    {/* Both connections start from the home server. */}
+    <path d={curve(HOME.x + CW, cy(HOME.y), DASH.x, cy(DASH.y))} class="cv-edge-accent" marker-end="url(#nat-arrow-accent)"></path>
+    <CanvasPill x={630} y={cy(DASH.y) + 2} text="ssh -R · TCP 7822" accent />
+    <path d={curve(HOME.x + CW, cy(HOME.y), CF.x, cy(CF.y))} class="cv-edge" marker-end="url(#nat-arrow)"></path>
+    <CanvasPill x={440} y={cy(CF.y) + 14} text="Cloudflare Tunnel" />
+    {/* Visitors come in through Cloudflare. */}
+    <path d={`M ${WEB.x} ${cy(WEB.y)} L ${CF.x + CW + 4} ${cy(CF.y)}`} class="cv-edge" marker-end="url(#nat-arrow)"></path>
+
+    <CanvasCard x={HOME.x} y={HOME.y} name="home-lab" detail="No public IP · 3 apps" icon="server" status="Connected" />
+    <CanvasCard x={DASH.x} y={DASH.y} name="fsn1-main" detail="Serve dashboard" icon="server" selected />
+    <CanvasCard x={CF.x} y={CF.y} name="Cloudflare" detail="HTTPS at the edge" icon="cloud" status="Tunnel connected" />
+    <CanvasCard x={WEB.x} y={WEB.y} name="app.acme.dev" detail="Visitors" icon="globe" status="Online" />
+
+    <text x={DASH.x} y={DASH.y + CH + 26} class="cv-note">Deploys, logs, metrics and the terminal</text>
+    <text x={DASH.x} y={DASH.y + CH + 42} class="cv-note">all travel through the one tunnel.</text>
+  </svg>
+</div>
+
+<div class="cv-frame cv-tall" role="img" aria-label="A home-lab server behind NAT connects out to the Serve dashboard and to Cloudflare, which serves its apps to visitors.">
+  <svg viewBox="0 0 330 660" aria-hidden="true">
+    <CanvasDefs id="natt" />
+    <rect width="330" height="660" fill="url(#natt-dots)"></rect>
+    <path d="M 165 230 V 140" class="cv-edge-accent" marker-end="url(#natt-arrow-accent)"></path>
+    <CanvasPill x={165} y={172} text="ssh -R · TCP 7822" accent />
+    <path d="M 165 338 V 412" class="cv-edge" marker-end="url(#natt-arrow)"></path>
+    <CanvasPill x={165} y={378} text="Cloudflare Tunnel" />
+    <path d="M 165 548 V 520" class="cv-edge" marker-end="url(#natt-arrow)"></path>
+    <CanvasCard x={22} y={32} w={286} name="fsn1-main" detail="Serve dashboard" icon="server" selected />
+    <rect x="10" y="196" width="310" height="160" rx="22" class="cv-server"></rect>
+    <text x="26" y="220" class="cv-server-label">home network · NAT</text>
+    <CanvasCard x={22} y={232} w={286} name="home-lab" detail="No public IP · no open ports" icon="server" status="Connected" />
+    <CanvasCard x={22} y={416} w={286} name="Cloudflare" detail="HTTPS at the edge" icon="cloud" status="Tunnel connected" />
+    <CanvasCard x={22} y={552} w={286} name="app.acme.dev" detail="Visitors" icon="globe" status="Online" />
+  </svg>
+</div>

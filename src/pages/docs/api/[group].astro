@@ -1,0 +1,22 @@
+---
+// One API reference page per group (tag) of the OpenAPI spec.
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import Endpoint from "@/components/api/Endpoint.astro";
+import { groups } from "@/lib/openapi";
+
+export function getStaticPaths() {
+  return groups.map((group) => ({ params: { group: group.slug }, props: { group } }));
+}
+
+const { group } = Astro.props;
+const count = `${group.endpoints.length} ${group.endpoints.length === 1 ? "endpoint" : "endpoints"}`;
+const intro = `${count}. The examples use <code>$SERVE_URL</code> and <code>$SERVE_TOKEN</code>: see <a href="/docs/api/">Getting started</a>.`;
+---
+
+<StarlightPage
+  frontmatter={{ title: group.name, description: group.description }}
+  headings={group.endpoints.map((e) => ({ depth: 2, slug: e.id, text: e.summary }))}
+>
+  <p class="api-intro" set:html={intro} />
+  {group.endpoints.map((e) => <Endpoint endpoint={e} />)}
+</StarlightPage>

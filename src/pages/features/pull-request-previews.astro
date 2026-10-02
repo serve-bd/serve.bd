@@ -1,0 +1,122 @@
+---
+import { ArrowRight, Database, EyeOff, GitMerge, GitPullRequest, Globe, MessageSquare, ShieldCheck } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import PreviewCanvas from "@/components/site/PreviewCanvas.astro";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import Site from "@/layouts/Site.astro";
+
+const lifecycle = [
+  { label: "Opened", text: "Serve builds the branch and starts a preview app.", led: "info" },
+  { label: "New commit", text: "The preview deploys again with the new code.", led: "info" },
+  { label: "Reviewed", text: "Reviewers click the link and try the change for real.", led: "ok" },
+  { label: "Merged or closed", text: "The preview and its database copy are removed.", led: "idle" },
+];
+
+const points = [
+  { icon: Globe, title: "Its own address", text: "Each preview gets a URL from your template, like pr-128.example.com. One wildcard DNS record covers every preview." },
+  { icon: Database, title: "Its own database", text: "Copy a database for each preview, as a quick branch or a separate copy. Previews never write to the real one." },
+  { icon: EyeOff, title: "No real personal data", text: "Clean-up SQL runs on the copy before the preview starts. If it fails, the preview is not deployed." },
+  { icon: ShieldCheck, title: "Safe variables", text: "Previews can use their own variables instead of the app's, so they never reach production secrets." },
+  { icon: MessageSquare, title: "The link in the pull request", text: "On GitHub, Serve comments on the pull request with the preview link and keeps that comment up to date." },
+  { icon: GitMerge, title: "Cleans up after itself", text: "Merging or closing the pull request removes the preview, its domain and its database copy." },
+];
+
+const providers = ["GitHub", "GitLab", "Gitea", "Forgejo", "Bitbucket"];
+---
+
+<Site title="Pull request previews" description="Every pull request gets its own live app, with its own URL and its own copy of the database. Removed when you merge.">
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex font-mono text-[12px] tracking-wide text-accent uppercase">Features / Pull request previews</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">Every pull request, live.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          Open a pull request and Serve deploys it as its own app, with its own URL and its own copy of the database. Review the real thing, then merge. Serve cleans up.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/docs/deployments/#pull-request-previews" class={buttonVariants({ variant: "primary", size: "lg" })}>Read the docs <ArrowRight /></a>
+          <a href="/docs/installation/" class={buttonVariants({ size: "lg" })}>Install Serve</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <PreviewCanvas />
+      </div>
+    </div>
+  </div>
+
+  {/* Lifecycle */}
+  <Section>
+    <SectionTitle eyebrow="The life of a preview" title="From open to merged, without a click." />
+    <ol class="grid grid-cols-1 gap-8 md:grid-cols-4">
+      {
+        lifecycle.map((s, i) => (
+          <li class="relative border-t border-line pt-5">
+            <span class="absolute -top-[5px] left-0 led" style={`--led: var(--${s.led})`} />
+            <span class="font-mono text-[13px] text-faint">0{i + 1}</span>
+            <h3 class="mt-2 text-[16px] font-semibold text-fg">{s.label}</h3>
+            <p class="mt-1.5 text-[15px] leading-relaxed text-muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {/* What each preview gets */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="What each preview gets" title="A real environment, not a screenshot." />
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {
+        points.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Comment + setup */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="Set up once" title="Three settings, then forget about it.">
+          In the app's Previews settings, turn on Deploy pull requests and set a URL template. Turn on Copy a database for each preview if the app uses one. Pull request events
+          arrive through the same webhook as pushes.
+        </SectionTitle>
+        <div class="flex flex-wrap gap-1.5">
+          {providers.map((p) => <span class="rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-fg-2">{p}</span>)}
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed text-faint">Pull requests from forks are never deployed: they would run someone else's code with your variables.</p>
+      </div>
+      <div class="self-center overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+        <div class="flex items-center gap-2.5 border-b border-line px-4 py-3">
+          <span class="flex size-6 items-center justify-center rounded-full bg-fg text-bg"><GitPullRequest className="size-3.5" /></span>
+          <span class="text-[13px] font-medium text-fg">serve</span>
+          <span class="text-[12px] text-faint">commented on #128</span>
+        </div>
+        <div class="px-4 py-4 text-[14px] leading-relaxed text-fg-2">
+          <p class="font-semibold text-fg">Serve preview for <code class="rounded bg-hover px-1 font-mono text-[12.5px]">web</code></p>
+          <p class="mt-3">🔗 <span class="text-accent">https://pr-128.acme.dev</span></p>
+          <p class="mt-3 text-[13px] text-muted">Commit <code class="rounded bg-hover px-1 font-mono text-[12px]">4f2c9a1</code></p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Review the real thing.</h2>
+      <p class="mt-3 text-muted">Previews come with every Serve app. Nothing to add.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Install Serve <ArrowRight /></a>
+        <a href="/features/database-branching/" class={buttonVariants({ size: "lg" })}>Database branching</a>
+      </div>
+    </div>
+  </Section>
+</Site>

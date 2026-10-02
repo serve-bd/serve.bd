@@ -1,0 +1,72 @@
+---
+/*
+ * Pull request previews on a canvas: an open pull request gets its own preview app and its own
+ * branch of the database, next to production. A merged one has been cleaned up.
+ */
+import CanvasCard from "./CanvasCard.astro";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 560;
+const CW = 264;
+const CH = 104;
+const X = [36, 472, 908];
+const TOP = 76;
+const BOTTOM = 380;
+const cy = (y: number) => y + CH / 2;
+const PG = "#336791";
+const line = (x1: number, x2: number, y: number) => `M ${x1} ${y} L ${x2 - 4} ${y}`;
+const midX = (a: number) => (X[a] + CW + X[a + 1]) / 2;
+---
+
+<div class="cv-frame cv-wide" role="img" aria-label="Pull request 128 gets a preview app at pr-128.acme.dev with its own branch of the database, next to production. Pull request 127 was merged and its preview removed.">
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <CanvasDefs id="pv" />
+    <rect width={W} height={H} fill="url(#pv-dots)"></rect>
+
+    <text x={X[1]} y={TOP - 14} class="cv-server-label">preview · pr-128</text>
+    <text x={X[1]} y={BOTTOM - 14} class="cv-server-label">production</text>
+
+    {/* Pull request → preview app → its branch. */}
+    <path d={line(X[0] + CW, X[1], cy(TOP))} class="cv-edge-accent" marker-end="url(#pv-arrow-accent)"></path>
+    <CanvasPill x={midX(0)} y={cy(TOP) - 18} text="deploys" accent />
+    <path d={line(X[1] + CW, X[2], cy(TOP))} class="cv-edge" marker-end="url(#pv-arrow)"></path>
+    <CanvasPill x={midX(1)} y={cy(TOP) - 18} text="DATABASE_URL" />
+    {/* Production app → main database. */}
+    <path d={line(X[1] + CW, X[2], cy(BOTTOM))} class="cv-edge" marker-end="url(#pv-arrow)"></path>
+    <CanvasPill x={midX(1)} y={cy(BOTTOM) - 18} text="DATABASE_URL" />
+    {/* Main database → the preview's branch. */}
+    <path d={`M ${X[2] + CW / 2} ${BOTTOM} L ${X[2] + CW / 2} ${TOP + CH + 4}`} class="cv-edge" marker-end="url(#pv-arrow)"></path>
+    <CanvasPill x={X[2] + CW / 2 + 52} y={(BOTTOM + TOP + CH) / 2} text="branch" />
+
+    <CanvasCard x={X[0]} y={TOP} name="#128 Add Apple Pay" detail="acme/shop · opened" icon="pr" status="Open" />
+    <CanvasCard x={X[1]} y={TOP} name="web" detail="pr-128.acme.dev" status="Running" />
+    <CanvasCard x={X[2]} y={TOP} name="pr-128" detail="branch · personal data hidden" icon="branch" />
+    <CanvasCard x={X[1]} y={BOTTOM} name="web" detail="shop.acme.dev" selected />
+    <CanvasCard x={X[2]} y={BOTTOM} name="postgres" detail="main · untouched" icon="db" color={PG} />
+
+    {/* A merged pull request: its preview and branch are gone. */}
+    <g opacity="0.5">
+      <CanvasCard x={X[0]} y={BOTTOM} name="#127 Fix cart total" detail="acme/shop · merged" icon="pr" status="Preview removed" tone="idle" />
+    </g>
+    <text x={X[0]} y={BOTTOM + CH + 30} class="cv-note">Merging removes the preview and its branch.</text>
+  </svg>
+</div>
+
+<div class="cv-frame cv-tall" role="img" aria-label="Pull request 128 gets a preview app with its own branch of the database. Production stays untouched.">
+  <svg viewBox="0 0 330 640" aria-hidden="true">
+    <CanvasDefs id="pvt" />
+    <rect width="330" height="640" fill="url(#pvt-dots)"></rect>
+    <path d="M 165 136 V 168" class="cv-edge-accent" marker-end="url(#pvt-arrow-accent)"></path>
+    <path d="M 165 276 V 308" class="cv-edge" marker-end="url(#pvt-arrow)"></path>
+    <path d="M 165 476 V 420" class="cv-edge" marker-end="url(#pvt-arrow)"></path>
+    <CanvasPill x={226} y={448} text="branch" />
+    <CanvasCard x={22} y={32} w={286} name="#128 Add Apple Pay" detail="acme/shop · opened" icon="pr" status="Open" />
+    <CanvasCard x={22} y={172} w={286} name="web preview" detail="pr-128.acme.dev" />
+    <CanvasCard x={22} y={312} w={286} name="pr-128" detail="branch · personal data hidden" icon="branch" />
+    <text x="22" y="470" class="cv-server-label">production</text>
+    <CanvasCard x={22} y={480} w={286} name="postgres" detail="main · untouched" icon="db" color={PG} />
+    <text x="22" y="616" class="cv-note">Merging removes the preview and its branch.</text>
+  </svg>
+</div>

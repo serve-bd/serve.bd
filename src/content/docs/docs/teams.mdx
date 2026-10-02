@@ -1,0 +1,104 @@
+---
+title: "Organizations and roles"
+description: "Members, roles and project access."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Serve groups people, projects and integrations into organizations. Roles decide what each member can do, and project access decides where they can do it.
+
+## Organizations
+
+One Serve instance can hold many organizations. Each has its own projects, members, integrations and shared variables. Use the organization switcher to move between the ones you belong to.
+
+The **Root** organization belongs to the instance owner. Some options only exist there, for example **Privileged**, **GPUs** and **Devices** on a service, or creating templates that need host access.
+
+Turn on **Let every user create organizations** under **Settings → Advanced** to let anyone create one. When it is off, only Root admins can.
+
+**Settings → Organizations** lists every organization on the instance with its usage and limits.
+
+## Organization limits
+
+You can limit what an organization uses:
+
+Projects, Services, Apps, Docker Compose stacks, Databases, Domains, CPU, Memory, Volume storage, Backup storage, Builds at once, Servers and Servers it adds.
+
+- **Default limits** apply to every organization without its own limits.
+- An organization can have its own limits instead.
+- Leave a field empty for no limit.
+- The Root organization stays unlimited unless you set limits for it.
+
+Limits apply to new projects, services, domains, deploys and backups. Nothing that exists is removed. When an organization hits a limit, Serve can notify you with the **Organization limit reached** event. Members see their usage under **Organization → Usage**.
+
+## Roles
+
+Every member has one role.
+
+| Role | What it can do | Editable |
+| --- | --- | --- |
+| Owner | Everything, including deleting the organization and managing owners. | No |
+| Admin | Everything except managing owners and deleting the organization. | No |
+| Developer | Deploys and changes services. Cannot see secret values unless you allow it. | Yes |
+| Viewer | Read-only by default: projects, services, deployments and logs. | Yes |
+
+By default a Developer has **View projects**, **Deploy**, **Manage services**, **Manage domains**, **Edit variables**, **Database backups**, **View logs** and **Console**. A Viewer has **View projects** and **View logs**.
+
+You can change the Developer and Viewer roles, or create your own roles under **Organization → Roles**.
+
+## Permissions
+
+| Permission | Allows |
+| --- | --- |
+| **View projects** | See projects, services, deployments and their status. |
+| **Manage projects** | Create, rename and delete projects and environments. |
+| **Deploy** | Deploy, redeploy, roll back, start, stop and restart services. |
+| **Manage services** | Create and delete services and change their settings. |
+| **Manage domains** | Add, edit and remove domains, ports and proxy options. |
+| **Edit variables** | Add, change and delete environment and shared variables. |
+| **See secret values** | Reveal and copy secret variables, database passwords and connection URLs. |
+| **Database backups** | Run, download, restore and import database backups. |
+| **View logs** | Read build, runtime and request logs. |
+| **Console** | Open a shell inside containers and servers. |
+| **Manage members** | Invite and remove members, change roles and project access. |
+| **Manage integrations** | Git providers, Cloudflare, S3 storage, registries, notifications, templates and certificates. |
+
+## Project access
+
+Each member has access to **All projects**, including ones created later, or only to the projects you choose. They only see and change the projects you pick. Their role still decides what they can do there. Other projects return a 404 for them.
+
+You can limit a member to some projects after they join.
+
+## Invites
+
+Invite people from **Organization → Members** with **Invite someone**.
+
+- If email is set up, they get an email with a link to create an account or sign in and join.
+- You can also choose **Create invite link** and share the link yourself.
+
+Invite links expire after 7 days. Invites that nobody has accepted yet are listed on the organization's page.
+
+An instance admin can also add people who already have an account from **Settings → Organizations**. They get access at once, without an invite.
+
+:::tip
+Sign-up rules under **Settings → Sign-in** decide whether new accounts can be created at all. See [Security](/docs/security).
+:::
+
+## Branding (white-label)
+
+**Settings → Branding** replaces Serve's name, logo and colour across the dashboard, the sign-in page, the browser tab and emails.
+
+| Setting | What it does |
+| --- | --- |
+| **Product name** | Shown next to the logo, in page titles and in emails. |
+| **Logo** | PNG, JPEG, WebP or SVG, up to 512 KB. Shown about 28 pixels high; wide logos are fine. |
+| **Dark mode logo** | Optional. Used in the dark theme and on the dark sign-in panel. |
+| **Favicon** | The browser tab icon. When not set, the logo is used. |
+| **Accent colour** | Buttons, links and highlights. Adjusted a little in each theme so it stays readable. |
+| **Show the name next to the logo** | Show or hide the product name beside the logo. |
+
+**Reset branding** deletes the uploaded images and puts the name and colour back to the defaults.
+
+<CardGrid>
+<LinkCard href="/docs/security" title="Security" description="2FA, SSO and sign-in rules." />
+<LinkCard href="/docs/api" title="API" description="Tokens for scripts and CI." />
+</CardGrid>

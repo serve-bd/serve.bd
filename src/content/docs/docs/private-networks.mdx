@@ -1,0 +1,80 @@
+---
+title: "Private networks"
+description: "An encrypted network between your servers."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+A private network connects your servers with encrypted WireGuard links. Services on different servers then reach each other by private names, without exposing ports to the internet.
+
+## How it works
+
+Servers in the same network reach each other's services by their private names, over encrypted WireGuard links. Servers in different networks stay apart. You can have several networks, for example one for production and one for staging.
+
+WireGuard uses UDP port `51820` by default. Serve opens it on the server's firewall automatically.
+
+:::caution[Allow UDP 51820]
+If your provider has a cloud firewall, allow the WireGuard UDP port there too. Without it, servers show **Cannot connect**.
+:::
+
+Only traffic between servers in a private network uses this port. A single-server install does not need it.
+
+## Create a network
+
+1. Go to **Private networks**.
+2. Choose **New network** and give it a name.
+3. Add servers to it.
+
+A server must join the private network from its own page before you can add it to a network.
+
+## Join a server
+
+1. Open the server and go to its **Private network** page.
+2. Choose **Join private network**.
+3. Pick the address other servers use to reach this one. This is usually its public IP. Do not use `localhost` or `127.0.0.1`: they only work on the server itself.
+4. Pick the networks it belongs to.
+
+Repeat this on another server and pick the same network to connect the two.
+
+### Servers without a public address
+
+A server added with **No public IP** can still join. It has no public address, so it connects out to the other servers instead of waiting for them to dial in. At least one of two connected servers needs a public address. If neither has one, Serve shows **Neither server has a public address. Give one of them a public address.**
+
+## The network canvas
+
+**Private networks** has a list view and a canvas view. The canvas draws each network and the servers in it, with lines from a network to a server.
+
+- Drag a server to a network to add it.
+- Use **Arrange automatically** to tidy the layout.
+- **Fit to screen** and **Full screen** help with large setups.
+
+Each link shows whether it is **Connected**, or **Needs attention** when something is wrong.
+
+## Reaching other apps privately
+
+Inside a private network, containers use the same names as on a single server. You do not change connection strings when a service moves to another server.
+
+Every service has a **Private hostname**. By default it is the service's slug. You can choose an extra hostname, and the slug stays reachable too. A database's **Internal connection URL** uses this hostname.
+
+Serve exposes the private hostname of each service as `SERVE_PRIVATE_DOMAIN`. Reference another service's value from your variables:
+
+```bash
+API_URL=http://${{api.SERVE_PRIVATE_DOMAIN}}:3000
+```
+
+See [Environment variables](/docs/environment-variables) for the reference syntax.
+
+:::note
+Only services of the same environment reach each other. A production app cannot reach a staging database by its private name.
+:::
+
+## Limits
+
+- Up to 254 servers in the private network.
+- Changes to a network apply to every server in it.
+- To remove a server from a network, choose **Leave network** on its **Private network** page.
+
+<CardGrid>
+<LinkCard href="/docs/servers" title="Servers" description="Add servers with or without a public IP." />
+<LinkCard href="/docs/environment-variables" title="Environment variables" description="References and built-in variables." />
+</CardGrid>

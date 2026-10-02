@@ -1,0 +1,71 @@
+---
+/*
+ * Database branching on a canvas, drawn like the dashboard's project canvas: the main database on
+ * the left, its branches in the middle, the apps that use them on the right. One branch copies its
+ * data once and then runs, while the main database keeps serving.
+ * Labels sit above their lines, so every line stays visible end to end.
+ */
+import CanvasCard from "./CanvasCard.astro";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 560;
+const CW = 264;
+const CH = 104;
+const X = [36, 472, 908];
+const ROW = [72, 228, 384];
+const cy = (y: number) => y + CH / 2;
+const PG = "#336791";
+
+// From the right edge of one card to the left edge of another, as a soft S-curve.
+const link = (x1: number, y1: number, x2: number, y2: number) => {
+  const d = (x2 - x1) / 2;
+  return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2 - 4} ${y2}`;
+};
+const copyLink = link(X[0] + CW, cy(ROW[1]), X[1], cy(ROW[2]));
+---
+
+<div class="cv-frame cv-wide" role="img" aria-label="A main PostgreSQL database with three branches: staging, used by the api app; pr-128, used by the web preview; and add-orders-index, which copies its data and then runs.">
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <CanvasDefs id="bc" />
+    <rect width={W} height={H} fill="url(#bc-dots)"></rect>
+
+    {/* Main database → each branch. The new branch's line is lit while it copies. */}
+    {ROW.map((y) => <path d={link(X[0] + CW, cy(ROW[1]), X[1], cy(y))} class="cv-edge" marker-end="url(#bc-arrow)" />)}
+    <path d={copyLink} class="cv-edge-accent cv-copy-edge" marker-end="url(#bc-arrow-accent)"></path>
+    {/* Branch → the app that uses it, with the variable above the line. */}
+    {[0, 1].map((i) => <path d={link(X[1] + CW, cy(ROW[i]), X[2], cy(ROW[i]))} class="cv-edge" marker-end="url(#bc-arrow)" />)}
+    {[0, 1].map((i) => <CanvasPill x={(X[1] + CW + X[2]) / 2} y={cy(ROW[i]) - 18} text="DATABASE_URL" />)}
+
+    <text x={X[0]} y={ROW[1] - 14} class="cv-server-label">production</text>
+    <CanvasCard x={X[0]} y={ROW[1]} name="postgres" detail="main · 2.4 GB" icon="db" color={PG} selected />
+
+    <CanvasCard x={X[1]} y={ROW[0]} name="staging" detail="branch of postgres" icon="branch" />
+    <CanvasCard x={X[1]} y={ROW[1]} name="pr-128" detail="branch · personal data hidden" icon="branch" />
+    <CanvasCard x={X[1]} y={ROW[2]} name="add-orders-index" detail="branch of postgres" icon="branch" copy />
+
+    <CanvasCard x={X[2]} y={ROW[0]} name="api" detail="staging.acme.dev" />
+    <CanvasCard x={X[2]} y={ROW[1]} name="web" detail="Preview #128 · pr-128.acme.dev" />
+
+    <text x={X[1]} y={ROW[2] + CH + 30} class="cv-note">The main database keeps serving while the copy runs.</text>
+  </svg>
+</div>
+
+<div class="cv-frame cv-tall" role="img" aria-label="A main PostgreSQL database with three branches: staging, pr-128 and add-orders-index, which copies its data and then runs.">
+  <svg viewBox="0 0 330 610" aria-hidden="true">
+    <CanvasDefs id="bct" />
+    <rect width="330" height="610" fill="url(#bct-dots)"></rect>
+    {/* A trunk down the left from the main database, a short line into each branch. */}
+    <path d="M 40 136 V 456" class="cv-edge"></path>
+    {[188, 332, 476].map((y) => <path d={`M 40 ${y - 20} Q 40 ${y} 58 ${y}`} class="cv-edge" marker-end="url(#bct-arrow)" />)}
+    <path d="M 40 456 Q 40 476 58 476" class="cv-edge-accent cv-copy-edge" marker-end="url(#bct-arrow-accent)"></path>
+    <text x="22" y="22" class="cv-server-label">production</text>
+    <CanvasCard x={22} y={32} w={286} name="postgres" detail="main · 2.4 GB" icon="db" color={PG} selected />
+    <CanvasCard x={62} y={136} w={246} name="staging" detail="used by api" icon="branch" />
+    <CanvasCard x={62} y={280} w={246} name="pr-128" detail="used by web · Preview #128" icon="branch" />
+    <CanvasCard x={62} y={424} w={246} name="add-orders-index" detail="branch of postgres" icon="branch" copy />
+    <text x="62" y="560" class="cv-note">The main database keeps serving</text>
+    <text x="62" y="576" class="cv-note">while the copy runs.</text>
+  </svg>
+</div>

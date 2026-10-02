@@ -1,0 +1,25 @@
+---
+/** The small label on a canvas line, like the variable pills on the dashboard canvas. Centered on (x, y). */
+import { cn } from "@/lib/utils";
+
+interface Props {
+  x: number;
+  y: number;
+  text: string;
+  accent?: boolean;
+}
+
+const { x, y, text, accent } = Astro.props;
+const w = Math.max(64, text.length * 6.6 + 22);
+---
+
+<foreignObject x={x - w / 2} y={y - 11} width={w} height="22">
+  <div
+    class={cn(
+      "flex h-full items-center justify-center rounded-full border font-mono text-[10px] leading-4 whitespace-nowrap shadow-sm",
+      accent ? "border-accent/40 bg-surface text-accent-strong" : "border-line bg-surface text-muted",
+    )}
+  >
+    {text}
+  </div>
+</foreignObject>

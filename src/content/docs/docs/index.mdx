@@ -1,0 +1,61 @@
+---
+title: "Introduction"
+description: "What Serve is and how it is built."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Serve lets you deploy apps, databases and services on your own servers. You push to deploy, get a domain with HTTPS and manage it all from one dashboard.
+
+## What Serve does
+
+- **Apps** from Git (GitHub, GitLab, Gitea/Forgejo, Bitbucket or any Git URL), a Docker image, a Dockerfile or a Docker Compose file. Serve builds with a Dockerfile, Nixpacks or its own detection. See [Apps](/docs/apps) and [Builds](/docs/builds).
+- **Databases:** PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey and ClickHouse, with scheduled backups to disk or S3 and one-click restore. See [Databases](/docs/databases).
+- **One-click services** from a catalog of templates (n8n, Uptime Kuma, Plausible, Ghost, Nextcloud, Vaultwarden, Grafana, MinIO and more), plus your own templates. See [Templates](/docs/templates).
+- **Deployments** with zero downtime, health checks, rollbacks, pull request previews, deploy hooks and an API. See [Deployments](/docs/deployments).
+- **Domains and HTTPS** through nginx, Caddy or Traefik, with Let's Encrypt certificates renewed automatically. See [Domains](/docs/domains).
+- **Cloudflare:** DNS records and Tunnels, for servers without a public IP. See [Cloudflare](/docs/cloudflare).
+- **Many servers** over SSH, including machines behind NAT, joined by an encrypted private network. See [Servers](/docs/servers) and [Private networks](/docs/private-networks).
+- **Teams:** organizations, roles, project access, two-factor authentication and an activity log. See [Teams](/docs/teams).
+
+## How it is built
+
+Serve runs as three Docker containers on your main server:
+
+| Container | What it does |
+| --- | --- |
+| `serve` | The dashboard. It listens on port 3000 inside the container and on the dashboard port (default `8000`) on the host. |
+| `serve-worker` | The worker. It runs background jobs: deployments, backups, certificates, metrics and uptime checks. |
+| `serve-db` | Serve's own PostgreSQL database (`postgres:18.6-alpine`). |
+
+Serve also starts a reverse proxy container, `serve-proxy`, that sends HTTP and HTTPS traffic to your apps.
+
+Everything Serve keeps lives in `/data/serve`: its `.env` file with secrets, the `docker-compose.yml` that runs it, the restore script and its instance backups. Do not move that directory.
+
+You can add more servers. On each extra server, a small Go program called `serve-agent` samples CPU, memory, disk, load and containers and reports them to the dashboard. If the dashboard cannot be reached, the agent buffers up to a day of data.
+
+The image is `ghcr.io/serve-bd/serve`, built for amd64 and arm64. See [Reference](/docs/reference) for ports, files and containers.
+
+## Requirements
+
+- A Linux server (Ubuntu, Debian, Fedora, Rocky…) with 2 GB of RAM or more. Builds need it.
+- Root access. The installer installs Docker if it is missing.
+
+Use a server dedicated to Serve. Serve controls Docker, and control of Docker is equal to root on the host.
+
+## Install in one line
+
+```bash
+curl -fsSL https://serve.bd/install.sh | bash
+```
+
+Then open `http://<server-ip>:8000` and create the owner account. The [installation guide](/docs/installation) covers the details.
+
+## Next steps
+
+<CardGrid>
+  <LinkCard href="/docs/installation" title="Installation" description="Install Serve on a fresh Linux server." />
+  <LinkCard href="/docs/first-deploy" title="Your first deploy" description="Deploy an app from GitHub with a domain and HTTPS." />
+  <LinkCard href="/docs/concepts" title="Concepts" description="Projects, environments, services, servers and more." />
+  <LinkCard href="/docs/templates" title="Templates" description="Start one-click services from the catalog." />
+</CardGrid>

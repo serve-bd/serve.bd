@@ -1,0 +1,83 @@
+---
+/*
+ * An organization on a canvas: three members with their roles on the left. Sam, a Developer with
+ * access to two projects, owns an API token in the middle. The token reaches only Sam's projects
+ * and never does more than Sam's role allows; the third project answers 404.
+ * Labels sit above their lines, so every line stays visible end to end.
+ */
+import { FolderKanban, KeyRound, UserRound } from "lucide-react";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasIconCard from "./CanvasIconCard.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 560;
+const CW = 264;
+const CH = 104;
+const X = [36, 472, 908];
+const ROW = [80, 236, 392];
+const cy = (y: number) => y + CH / 2;
+const midX = (a: number) => (X[a] + CW + X[a + 1]) / 2;
+const link = (x1: number, y1: number, x2: number, y2: number) => {
+  const d = (x2 - x1) / 2;
+  return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2 - 4} ${y2}`;
+};
+---
+
+<div
+  class="cv-frame cv-wide"
+  role="img"
+  aria-label="The acme organization has three members: Maya, the Owner, with all projects; Sam, a Developer with the shop and api projects; and Lee, with a custom Support role. Sam owns an API token that can deploy. It reaches shop and api, never does more than Sam's role allows, and the billing project answers 404."
+>
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <CanvasDefs id="tm" />
+    <rect width={W} height={H} fill="url(#tm-dots)"></rect>
+
+    <rect x="16" y="28" width="1176" height="504" rx="24" class="cv-server"></rect>
+    <text x={X[0]} y={56} class="cv-server-label">acme · organization</text>
+    <text x={X[2]} y={56} class="cv-server-label">projects</text>
+
+    {/* Sam → the token → Sam's projects. */}
+    <path d={link(X[0] + CW, cy(ROW[1]), X[1], cy(ROW[1]))} class="cv-edge" marker-end="url(#tm-arrow)"></path>
+    <CanvasPill x={midX(0)} y={cy(ROW[1]) - 18} text="owns" />
+    <path d={`M ${X[1] + CW / 2} ${ROW[1]} V ${cy(ROW[0]) + 20} Q ${X[1] + CW / 2} ${cy(ROW[0])} ${X[1] + CW / 2 + 20} ${cy(ROW[0])} H ${X[2] - 4}`} class="cv-edge-accent" marker-end="url(#tm-arrow-accent)"></path>
+    <CanvasPill x={midX(1)} y={cy(ROW[0]) - 18} text="services.deploy" accent />
+    <path d={link(X[1] + CW, cy(ROW[1]), X[2], cy(ROW[1]))} class="cv-edge-accent" marker-end="url(#tm-arrow-accent)"></path>
+    <CanvasPill x={midX(1)} y={cy(ROW[1]) - 18} text="services.deploy" accent />
+
+    <CanvasIconCard x={X[0]} y={ROW[0]} name="Maya Chen" detail="maya@acme.dev" icon={UserRound} badge="Owner" status="All projects" />
+    <CanvasIconCard x={X[0]} y={ROW[1]} name="Sam Ortiz" detail="sam@acme.dev" icon={UserRound} badge="Developer" status="shop, api" selected />
+    <CanvasIconCard x={X[0]} y={ROW[2]} name="Lee Park" detail="lee@acme.dev" icon={UserRound} badge="Support" status="shop · custom role" />
+
+    <CanvasIconCard x={X[1]} y={ROW[1]} name="ci-deploy" detail="srv_•••• · expires in 90 days" icon={KeyRound} badge="Deploy" accentBadge status="Capped by Sam's role" tone="info" />
+
+    <CanvasIconCard x={X[2]} y={ROW[0]} name="shop" detail="3 services" icon={FolderKanban} status="Token can deploy" />
+    <CanvasIconCard x={X[2]} y={ROW[1]} name="api" detail="2 services" icon={FolderKanban} status="Token can deploy" />
+    <g opacity="0.5">
+      <CanvasIconCard x={X[2]} y={ROW[2]} name="billing" detail="Not in Sam's projects" icon={FolderKanban} status="404 for this token" tone="idle" />
+    </g>
+
+    <text x={X[1]} y={ROW[2] + 40} class="cv-note">A token never does more than its owner</text>
+    <text x={X[1]} y={ROW[2] + 58} class="cv-note">may do right now. Change the role,</text>
+    <text x={X[1]} y={ROW[2] + 76} class="cv-note">and the token changes with it.</text>
+  </svg>
+</div>
+
+<div class="cv-frame cv-tall" role="img" aria-label="Sam, a Developer with the shop and api projects, owns an API token that can deploy. It reaches shop and api, and the billing project answers 404.">
+  <svg viewBox="0 0 330 750" aria-hidden="true">
+    <CanvasDefs id="tmt" />
+    <rect width="330" height="750" fill="url(#tmt-dots)"></rect>
+    <path d="M 165 136 V 168" class="cv-edge" marker-end="url(#tmt-arrow)"></path>
+    <CanvasPill x={210} y={152} text="owns" />
+    {/* A trunk down the left from the token, a short line into each of Sam's projects. */}
+    <path d="M 40 276 V 488" class="cv-edge-accent"></path>
+    {[364, 508].map((y) => <path d={`M 40 ${y - 20} Q 40 ${y} 58 ${y}`} class="cv-edge-accent" marker-end="url(#tmt-arrow-accent)" />)}
+    <CanvasIconCard x={22} y={32} w={286} name="Sam Ortiz" detail="sam@acme.dev" icon={UserRound} badge="Developer" status="shop, api" selected />
+    <CanvasIconCard x={22} y={172} w={286} name="ci-deploy" detail="srv_•••• · 90 days" icon={KeyRound} badge="Deploy" accentBadge status="Capped by Sam's role" tone="info" />
+    <CanvasIconCard x={62} y={312} w={246} name="shop" detail="3 services" icon={FolderKanban} status="Token can deploy" />
+    <CanvasIconCard x={62} y={456} w={246} name="api" detail="2 services" icon={FolderKanban} status="Token can deploy" />
+    <g opacity="0.5">
+      <CanvasIconCard x={62} y={600} w={246} name="billing" detail="Not in Sam's projects" icon={FolderKanban} status="404 for this token" tone="idle" />
+    </g>
+  </svg>
+</div>

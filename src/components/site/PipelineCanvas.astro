@@ -1,0 +1,88 @@
+---
+/*
+ * From code to a live app on a canvas: a Git push, a Dockerfile or a Docker image on the left, the
+ * build (or pull) in the middle, and the rolling deploy on the right, which switches traffic on the
+ * domain once the health check passes. The previous deployment stays ready for a rollback.
+ * Labels sit above their lines, so every line stays visible end to end.
+ */
+import CanvasCard from "./CanvasCard.astro";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 560;
+const CW = 264;
+const CH = 104;
+const X = [36, 472, 908];
+const ROW = [72, 228, 384];
+const cy = (y: number) => y + CH / 2;
+const midX = (a: number) => (X[a] + CW + X[a + 1]) / 2;
+
+// From the right edge of one card to the left edge of another, as a soft S-curve.
+const link = (x1: number, y1: number, x2: number, y2: number) => {
+  const d = (x2 - x1) / 2;
+  return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2 - 4} ${y2}`;
+};
+---
+
+<div
+  class="cv-frame cv-wide"
+  role="img"
+  aria-label="A push to acme/web on GitHub is built automatically as a Next.js app, a Dockerfile is built the same way, and a Docker image is pulled without a build. The rolling deploy waits for the health check, then switches acme.dev to the new version. The previous deployment is kept for a rollback."
+>
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <CanvasDefs id="pl" />
+    <rect width={W} height={H} fill="url(#pl-dots)"></rect>
+
+    <text x={X[0]} y={ROW[0] - 14} class="cv-server-label">source</text>
+    <text x={X[1]} y={ROW[0] - 14} class="cv-server-label">build</text>
+    <text x={X[2]} y={ROW[0] - 14} class="cv-server-label">deploy</text>
+
+    {/* The push in flight: repository → build → deploy → domain. */}
+    <path d={link(X[0] + CW, cy(ROW[0]), X[1], cy(ROW[0]))} class="cv-edge-accent" marker-end="url(#pl-arrow-accent)"></path>
+    <CanvasPill x={midX(0)} y={cy(ROW[0]) - 18} text="git push" accent />
+    <path d={link(X[1] + CW, cy(ROW[0]), X[2], cy(ROW[0]))} class="cv-edge-accent" marker-end="url(#pl-arrow-accent)"></path>
+    <CanvasPill x={midX(1)} y={cy(ROW[0]) - 18} text="image" accent />
+    <path d={`M ${X[2] + CW / 2} ${ROW[0] + CH} V ${ROW[1] - 4}`} class="cv-edge-accent" marker-end="url(#pl-arrow-accent)"></path>
+    <CanvasPill x={X[2] + CW / 2 + 70} y={(ROW[0] + CH + ROW[1]) / 2} text="switch traffic" accent />
+
+    {/* A Dockerfile builds too; an image only needs a pull. */}
+    <path d={link(X[0] + CW, cy(ROW[1]), X[1], cy(ROW[0]))} class="cv-edge" marker-end="url(#pl-arrow)"></path>
+    <path d={link(X[0] + CW, cy(ROW[2]), X[1], cy(ROW[2]))} class="cv-edge" marker-end="url(#pl-arrow)"></path>
+    <CanvasPill x={midX(0)} y={cy(ROW[2]) - 18} text="no build" />
+    <path d={link(X[1] + CW, cy(ROW[2]), X[2], cy(ROW[0]) + 20)} class="cv-edge" marker-end="url(#pl-arrow)"></path>
+
+    <CanvasCard x={X[0]} y={ROW[0]} name="acme/web" detail="GitHub · main" icon="branch" status="Pushed 4f2c9a1" tone="info" pulse />
+    <CanvasCard x={X[0]} y={ROW[1]} name="Dockerfile" detail="In the repository or pasted in" status="Builds on deploy" tone="idle" />
+    <CanvasCard x={X[0]} y={ROW[2]} name="ghcr.io/acme/api:1.4" detail="Docker image · saved registry" status="Ready to pull" tone="idle" />
+
+    <CanvasCard x={X[1]} y={ROW[0]} name="Build" detail="Automatic · Next.js · pnpm" status="Image built" />
+    <CanvasCard x={X[1]} y={ROW[2]} name="Pull" detail="ghcr.io/acme/api:1.4" status="Image pulled" />
+
+    <CanvasCard x={X[2]} y={ROW[0]} name="web" detail="Rolling · 2 replicas" status="Health check passed" />
+    <CanvasCard x={X[2]} y={ROW[1]} name="acme.dev" detail="HTTPS · Let's Encrypt" icon="globe" status="Online" selected />
+    <g opacity="0.5">
+      <CanvasCard x={X[2]} y={ROW[2]} name="Deployment #41" detail="web · previous image kept" status="Rollback ready" tone="idle" />
+    </g>
+
+    <text x={X[1]} y={ROW[2] + CH + 30} class="cv-note">The old version serves until the new one passes its health check.</text>
+  </svg>
+</div>
+
+<div class="cv-frame cv-tall" role="img" aria-label="A push to acme/web is built automatically, deployed with a rolling deploy and goes live on acme.dev once the health check passes.">
+  <svg viewBox="0 0 330 620" aria-hidden="true">
+    <CanvasDefs id="plt" />
+    <rect width="330" height="620" fill="url(#plt-dots)"></rect>
+    <path d="M 165 136 V 168" class="cv-edge-accent" marker-end="url(#plt-arrow-accent)"></path>
+    <CanvasPill x={232} y={152} text="git push" accent />
+    <path d="M 165 276 V 308" class="cv-edge-accent" marker-end="url(#plt-arrow-accent)"></path>
+    <CanvasPill x={232} y={292} text="image" accent />
+    <path d="M 165 416 V 448" class="cv-edge-accent" marker-end="url(#plt-arrow-accent)"></path>
+    <CanvasPill x={240} y={432} text="switch traffic" accent />
+    <CanvasCard x={22} y={32} w={286} name="acme/web" detail="GitHub · main" icon="branch" status="Pushed 4f2c9a1" tone="info" pulse />
+    <CanvasCard x={22} y={172} w={286} name="Build" detail="Automatic · Next.js · pnpm" status="Image built" />
+    <CanvasCard x={22} y={312} w={286} name="web" detail="Rolling · 2 replicas" status="Health check passed" />
+    <CanvasCard x={22} y={452} w={286} name="acme.dev" detail="HTTPS · Let's Encrypt" icon="globe" status="Online" selected />
+    <text x="22" y="592" class="cv-note">Or start from a Docker image or a Dockerfile.</text>
+  </svg>
+</div>

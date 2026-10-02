@@ -1,0 +1,16 @@
+---
+// The dashboard overview, in the theme of the page. Astro makes AVIF and WebP copies in a few widths at build time.
+import { Picture } from "astro:assets";
+import dark from "@/assets/overview-dark.png";
+import light from "@/assets/overview-light.png";
+
+const alt = "The Serve overview: projects, servers, recent deploys and deploy activity";
+const common = { formats: ["avif", "webp"] as const, widths: [720, 1200, 1680, 2400], sizes: "(min-width: 1200px) 1100px, 100vw" };
+---
+
+<div class="overflow-hidden rounded-2xl border border-line-strong bg-surface p-1.5 shadow-lg">
+  <div class="overflow-hidden rounded-xl border border-line">
+    <Picture src={light} alt={alt} {...common} formats={[...common.formats]} loading="eager" fetchpriority="high" class="block h-auto w-full dark:hidden" />
+    <Picture src={dark} alt={alt} {...common} formats={[...common.formats]} loading="lazy" class="hidden h-auto w-full dark:block" />
+  </div>
+</div>

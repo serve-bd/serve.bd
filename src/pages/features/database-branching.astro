@@ -1,0 +1,158 @@
+---
+import { ArrowRight, Copy, EyeOff, GitBranch, GitPullRequest, RotateCcw, Wrench } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import BranchCanvas from "@/components/site/BranchCanvas.astro";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import Site from "@/layouts/Site.astro";
+
+const steps = [
+  { n: "01", title: "New branch", text: "Open the database's Branches tab, name the branch and create it. Names use lowercase letters, digits and dashes." },
+  { n: "02", title: "Serve copies the data", text: "The copy runs inside the same database server. The main database keeps serving the whole time." },
+  { n: "03", title: "Point an app at it", text: "Every branch has its own connection variables. Reference them from any app, and switch back with one line." },
+];
+
+const uses = [
+  { icon: Wrench, title: "Test with real data", text: "Run a migration or chase a bug on a copy of real data. A branch can't change the main data. If it breaks, delete it." },
+  {
+    icon: GitPullRequest,
+    title: "A database per pull request",
+    text: "Each preview gets its own branch, named after the pull request. Previews never write to the real database.",
+  },
+  { icon: EyeOff, title: "Hide personal data", text: "Turn on Hide personal data and your clean-up SQL runs on the copy, after creating and after every reset. If it fails, the branch fails." },
+  { icon: RotateCcw, title: "Reset any time", text: "Made a mess? Reset copies the source into the branch again. Delete it when you are done, with its child branches if you like." },
+  { icon: GitBranch, title: "Branch from a branch", text: "Copy a branch that already has your test data. Resets then copy from that branch, not from the main data." },
+  { icon: Copy, title: "Every database at once", text: "One branch can copy every database on the server, each as name__branch, with its own reference." },
+];
+
+const engines = ["PostgreSQL", "MySQL", "MariaDB", "MongoDB", "ClickHouse", "Redis", "Valkey"];
+
+const scrub = `UPDATE users SET email = 'user' || id || '@example.com', name = 'User ' || id;
+DELETE FROM sessions;`;
+---
+
+<Site title="Database branching" description="Branch your database like your code. A full copy of the data in seconds, for migrations, debugging and pull request previews.">
+  {/* Hero */}
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex items-center gap-1.5 font-mono text-[12px] tracking-wide text-accent uppercase">Features / Database branching</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">Branch your database like your code.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          A branch is a full copy of a database's data, ready in the same server. Test a migration, chase a bug with real data or give every pull request its own
+          database, without touching production.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/docs/databases/#branches" class={buttonVariants({ variant: "primary", size: "lg" })}>Read the docs <ArrowRight /></a>
+          <a href="/docs/installation/" class={buttonVariants({ size: "lg" })}>Install Serve</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <BranchCanvas />
+      </div>
+    </div>
+  </div>
+
+  {/* How it works */}
+  <Section>
+    <SectionTitle eyebrow="How it works" title="Three steps, no scripts." />
+    <ol class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li class="border-t border-line pt-5">
+            <span class="font-mono text-[13px] text-faint">{s.n}</span>
+            <h3 class="mt-2 text-[16px] font-semibold text-fg">{s.title}</h3>
+            <p class="mt-1.5 text-[15px] leading-relaxed text-muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {/* Uses */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="What it is for" title="Real data, zero risk." />
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {
+        uses.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+      <div class="flex flex-col justify-center bg-surface p-6">
+        <p class="text-sm text-muted">Works with</p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          {engines.map((e) => <span class="rounded-full border border-line bg-bg px-2.5 py-0.5 font-mono text-[12px] text-fg-2">{e}</span>)}
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Connecting */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="Connect" title="One line to switch an app to a branch.">
+          Each branch provides DATABASE_URL, HOST, PORT, USERNAME, PASSWORD and DATABASE. Reference them in an app's variables, and Serve fills in the values on deploy.
+        </SectionTitle>
+      </div>
+      <div class="flex flex-col gap-4 self-center">
+        <div class="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+          <p class="border-b border-line px-4 py-2.5 text-[12px] text-muted">App variables</p>
+          <pre class="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed text-fg-2"><code><span class="text-faint"># main database</span>
+DATABASE_URL=<span class="text-accent">{"${{postgres.DATABASE_URL}}"}</span>
+
+<span class="text-faint"># the staging branch</span>
+DATABASE_URL=<span class="text-accent">{"${{postgres.branches.staging.DATABASE_URL}}"}</span></code></pre>
+        </div>
+        <div class="overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+          <p class="border-b border-line px-4 py-2.5 text-[12px] text-muted">Or from a script</p>
+          <pre class="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed text-fg-2"><code>curl -X POST "$SERVE_URL/services/$DB_ID/branches" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -d '{"{"}"name": "staging"{"}"}'</code></pre>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Previews */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div class="order-2 self-center overflow-hidden rounded-2xl border border-line bg-surface shadow-sm lg:order-1">
+        <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+          <p class="text-[12px] text-muted">Clean-up SQL</p>
+          <p class="flex items-center gap-1.5 text-[12px] text-muted"><span class="led" style="--led: var(--ok)"></span> runs on every branch that hides data</p>
+        </div>
+        <pre class="px-4 py-4 font-mono text-[13px] leading-relaxed whitespace-pre-wrap text-fg-2"><code>{scrub}</code></pre>
+      </div>
+      <div class="order-1 lg:order-2">
+        <SectionTitle eyebrow="Pull request previews" title="Every preview gets its own database.">
+          Turn on Preview databases and pick the database to copy. Each pull request preview gets a branch named after it, like pr-128, and its connection URL in the
+          variable you choose. Clean-up SQL hides personal data before anyone looks.
+        </SectionTitle>
+      </div>
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      Clean-up SQL works with PostgreSQL, MySQL, MariaDB and ClickHouse. Redis and Valkey branches are database numbers 1 to 15 of the same server and share its password,
+      so previews use a separate copy for them.
+    </p>
+  </Section>
+
+  {/* Call to action */}
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Stop testing on production.</h2>
+      <p class="mt-3 text-muted">Branching comes with every Serve database. Nothing to add.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Install Serve <ArrowRight /></a>
+        <a href="/docs/databases/#branches" class={buttonVariants({ size: "lg" })}>Branching docs</a>
+      </div>
+    </div>
+  </Section>
+</Site>

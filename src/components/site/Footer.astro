@@ -1,0 +1,67 @@
+---
+import { site } from "@/lib/site";
+import Mark from "../Mark.astro";
+
+const columns = [
+  {
+    title: "Product",
+    links: [
+      { href: "/features/", label: "Features" },
+      { href: "/templates/", label: "Templates" },
+      { href: site.releases, label: "Changelog" },
+    ],
+  },
+  {
+    title: "Docs",
+    links: [
+      { href: "/docs/installation/", label: "Installation" },
+      { href: "/docs/first-deploy/", label: "First deploy" },
+      { href: "/docs/api/", label: "API" },
+    ],
+  },
+  {
+    title: "Project",
+    links: [
+      { href: site.github, label: "GitHub" },
+      { href: `${site.github}/issues`, label: "Issues" },
+      { href: `${site.github}/blob/main/LICENSE`, label: `${site.license} license` },
+    ],
+  },
+];
+---
+
+<footer class="border-t border-line">
+  <div class="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_repeat(3,1fr)]">
+    <div class="flex flex-col gap-3">
+      <a href="/" class="flex items-center gap-2">
+        <Mark class="size-6" />
+        <span class="font-display text-[17px] font-semibold tracking-tight text-fg">Serve</span>
+      </a>
+      <p class="max-w-xs text-sm text-muted">{site.tagline}</p>
+      <p class="mt-auto flex items-center gap-2 pt-4 text-[13px] text-faint">
+        <span class="led" style="--led: var(--ok)"></span>
+        Open source, {site.license} licensed
+      </p>
+    </div>
+    {
+      columns.map((c) => (
+        <div>
+          <h3 class="mb-3 text-[13px] font-medium text-fg">{c.title}</h3>
+          <ul class="flex flex-col gap-2">
+            {c.links.map((l) => (
+              <li>
+                <a href={l.href} {...(l.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})} class="text-sm text-muted transition-colors hover:text-fg">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-6 text-[13px] text-faint sm:px-6">
+    <p>© {new Date().getFullYear()} Serve. Released under the {site.license} license.</p>
+    <a href={site.github} target="_blank" rel="noreferrer" class="transition-colors hover:text-fg">serve-bd/serve on GitHub</a>
+  </div>
+</footer>

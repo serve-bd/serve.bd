@@ -1,0 +1,180 @@
+---
+import { ArrowRight, FileCode, Globe, HardDrive, KeyRound, RefreshCw, Settings2 } from "lucide-react";
+import { TemplateLogo } from "@/components/react/template-logo";
+import { buttonVariants } from "@/components/react/ui/button";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import TemplateCanvas from "@/components/site/TemplateCanvas.astro";
+import Site from "@/layouts/Site.astro";
+import { categories, templates } from "@/lib/templates";
+
+const steps = [
+  { n: "01", title: "Pick a template", text: "Open a project, choose New service and pick from the catalog: automation, analytics, CMS, storage, AI and more." },
+  { n: "02", title: "Check the values", text: "Passwords and keys are generated, and URLs follow the service's domain. Fill in anything the template asks for, or type your own." },
+  { n: "03", title: "Create and deploy", text: "You get a normal Compose stack. Deploy it, and the main service answers on its generated domain." },
+];
+
+const setup = [
+  { icon: Globe, title: "A domain", text: "The main service gets a generated domain on your wildcard domain, or on sslip.io. Add your own domain any time." },
+  { icon: KeyRound, title: "Secrets", text: "Passwords, tokens, hex keys and app keys are generated for each stack. Nothing is a shared default." },
+  { icon: HardDrive, title: "Volumes", text: "Data lives in the volumes the template declares, so it survives redeploys and updates." },
+  { icon: Settings2, title: "Yours to change", text: "The result is a normal Compose stack. Change its settings, add a domain or set up backups like any other service." },
+];
+
+const counts = categories.map((c) => ({ name: c, count: templates.filter((t) => t.category === c).length })).sort((a, b) => b.count - a.count);
+
+const featuredIds = ["n8n", "plausible", "ghost", "nextcloud", "vaultwarden", "grafana", "minio", "uptime-kuma", "umami", "metabase", "gitea", "open-webui"];
+const featured = featuredIds.map((id) => templates.find((t) => t.id === id)).filter((t) => t !== undefined);
+
+const kinds = ["Password", "Secret", "Hex key", "32-character key", "App key (base64:)", "Public URL", "Public hostname", "Value"];
+
+const compose = `services:
+  app:
+    image: acme/wiki:2
+    environment:
+      DB_PASSWORD: \${DB_PASSWORD}   # Password
+      APP_URL: \${APP_URL}           # Public URL
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_PASSWORD: \${DB_PASSWORD}`;
+---
+
+<Site title="One-click services" description={`${templates.length} templates that turn into running stacks, with their domain, secrets and volumes set up. Or save your own Compose file as a template.`}>
+  {/* Hero */}
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex font-mono text-[12px] tracking-wide text-accent uppercase">Features / One-click services</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">A whole stack in one click.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          Pick a template and Serve sets up the app, its database, the secrets that connect them, a domain and the volumes that keep the data. {templates.length} templates,
+          and room for your own.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/templates/" class={buttonVariants({ variant: "primary", size: "lg" })}>Browse templates <ArrowRight /></a>
+          <a href="/docs/templates/" class={buttonVariants({ size: "lg" })}>Read the docs</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <TemplateCanvas />
+      </div>
+    </div>
+  </div>
+
+  {/* How it works */}
+  <Section>
+    <SectionTitle eyebrow="How it works" title="No compose file to write." />
+    <ol class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li class="border-t border-line pt-5">
+            <span class="font-mono text-[13px] text-faint">{s.n}</span>
+            <h3 class="mt-2 text-[16px] font-semibold text-fg">{s.title}</h3>
+            <p class="mt-1.5 text-[15px] leading-relaxed text-muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {/* What each template sets up */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="What each template sets up" title="Ready to use, not ready to configure." />
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {
+        setup.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Catalog */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="The catalog" title={`${templates.length} templates in ${categories.length} categories.`}>
+          Serve reads the catalog from GitHub every few minutes, so new templates show up without a new release.
+        </SectionTitle>
+        <ul class="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3 lg:grid-cols-2">
+          {
+            counts.map((c) => (
+              <li class="flex items-baseline justify-between gap-3 border-b border-line pb-2 text-[14px]">
+                <span class="text-fg-2">{c.name}</span>
+                <span class="font-mono text-[12px] text-faint">{c.count}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="self-center">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {
+            featured.map((t) => (
+              <a
+                href={`/templates/?q=${encodeURIComponent(t.name)}`}
+                class="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:border-line-strong hover:bg-surface-2"
+              >
+                <TemplateLogo name={t.name} logo={t.logo} color={t.color} className="size-9 border-transparent" />
+                <span class="min-w-0">
+                  <span class="block truncate text-sm font-medium text-fg">{t.name}</span>
+                  <span class="block truncate text-[12px] text-muted">{t.category}</span>
+                </span>
+              </a>
+            ))
+          }
+        </div>
+        <a href="/templates/" class:list={[buttonVariants(), "mt-5"]}>Browse all templates <ArrowRight /></a>
+      </div>
+    </div>
+  </Section>
+
+  {/* Custom templates */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div class="order-2 self-center overflow-hidden rounded-2xl border border-line bg-surface shadow-sm lg:order-1">
+        <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+          <p class="flex items-center gap-1.5 text-[12px] text-muted"><FileCode className="size-3.5" /> docker-compose.yml</p>
+          <p class="text-[12px] text-muted">Organization → Templates</p>
+        </div>
+        <pre class="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed text-fg-2"><code>{compose}</code></pre>
+      </div>
+      <div class="order-1 lg:order-2">
+        <SectionTitle eyebrow="Custom templates" title="Your own stack, one click for the whole team.">
+          Paste a docker-compose.yml or import it from a URL, pick the service and port that get the domain, and choose how each variable is filled. Everyone in your
+          organization can then deploy it from New service.
+        </SectionTitle>
+        <div class="flex flex-wrap gap-1.5">
+          {kinds.map((k) => <span class="rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-fg-2">{k}</span>)}
+        </div>
+        <p class="mt-4 flex items-start gap-2 text-[13px] leading-relaxed text-faint">
+          <RefreshCw className="mt-0.5 size-3.5 shrink-0" />
+          Want it in the public catalog? Templates live in the Serve repository. Send a pull request.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Call to action */}
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Skip the setup guide.</h2>
+      <p class="mt-3 text-muted">Every template comes with every Serve install. Nothing to add.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/templates/" class={buttonVariants({ variant: "primary", size: "lg" })}>Browse templates <ArrowRight /></a>
+        <a href="/docs/templates/" class={buttonVariants({ size: "lg" })}>Templates docs</a>
+      </div>
+    </div>
+  </Section>
+</Site>

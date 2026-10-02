@@ -1,0 +1,76 @@
+---
+title: "Builds"
+description: "Dockerfile, Nixpacks and built-in detection."
+---
+
+When an app comes from a Git repository, Serve builds a Docker image from it on each deploy. You control how in **Settings → Build**.
+
+## Builder
+
+The **Builder** field picks how Serve builds the image.
+
+| Builder | What it does |
+| --- | --- |
+| Automatic | Uses a Dockerfile if present, otherwise detects the language |
+| Dockerfile | Always builds from a Dockerfile |
+| Nixpacks | Builds with Nixpacks. Nixpacks must be installed on the server |
+| Static site | Builds the files and serves them with nginx |
+
+## Built-in detection
+
+With **Automatic** and no Dockerfile, Serve looks at your repository and picks a build.
+
+| Language | Detected by | Notes |
+| --- | --- | --- |
+| Node.js, Bun, Next.js | `package.json` | npm, pnpm, yarn or bun from the lockfile or `packageManager`. Node version from `engines.node` |
+| Static front-ends | Vite, Create React App, Astro, Angular, Parcel | Only when there is no start script |
+| Python | `requirements.txt`, `pyproject.toml`, `Pipfile` | Start command from the `web:` line in a `Procfile`. Django gets `migrate` and gunicorn |
+| Go | `go.mod` | |
+| Rust | `Cargo.toml` | |
+| PHP | `composer.json` or `index.php` | Runs on `php:8.4-apache` |
+| Plain HTML | `index.html` | Served as a static site. Without an `index.html` the build fails |
+
+If detection picks the wrong thing, set the commands yourself or add a Dockerfile.
+
+## Build fields
+
+| Field | What it does |
+| --- | --- |
+| Builder | How the image is built, see above |
+| Root directory | The folder in the repository to build from, for monorepos |
+| Dockerfile path | Where the Dockerfile is, if not at the root |
+| Install command | Overrides the detected install step |
+| Build command | Overrides the detected build step |
+| Start command | The command the container runs |
+| Output directory | Where the built static files are |
+| Target stage | The stage to build in a multi-stage Dockerfile |
+| Build arguments | Passed as `--build-arg`. Use variables marked build time for secrets |
+| Build timeout | Stops a build that runs too long |
+| Always build without cache | Skips the Docker build cache on every build |
+| Git submodules | Checks out submodules before building |
+| Watch paths | Only deploy on push when these paths change |
+
+## Build server and registry
+
+By default an app builds on the server that runs it. Builds need memory, so you may want to build somewhere else. Open **Settings → Servers & registry** and pick a **Build server**.
+
+You can also push each built image to a registry. Pick a saved registry and set a **Tag** pattern. These placeholders are available:
+
+| Placeholder | Value |
+| --- | --- |
+| `{commit}` | Full commit hash |
+| `{short}` | Short commit hash |
+| `{deployment}` | Deployment ID |
+| `{branch}` | Branch name |
+| `{service}` | Service name |
+| `{date}` | Build date |
+
+Turn on **Also tag as latest** to push a `latest` tag too. When you add extra servers, they all run the same image.
+
+## Watch paths
+
+With **Deploy on push** on, every push to the branch starts a deploy. **Watch paths** limits that to pushes that change certain files. This helps in a monorepo where several apps share one repository. Set up deploy on push in [Deployments](/docs/deployments).
+
+:::tip
+Builds need at least 2 GB of RAM. If builds fail on a small server, move them to a separate build server.
+:::

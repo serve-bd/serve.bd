@@ -1,0 +1,107 @@
+---
+title: "Servers"
+description: "Add more machines over SSH, or without a public IP."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Serve can deploy to more machines than the one it runs on. Add a server over SSH, or join a machine behind NAT with a one-line command, and Serve installs everything it needs.
+
+## Add a server
+
+Go to **Servers → Add server**. Serve asks **Where is the server?** and offers two choices:
+
+- **Public IP or hostname**: a VPS or any machine reachable over SSH.
+- **No public IP**: home or office internet, a shared IP, or a machine behind NAT.
+
+### Public IP or hostname
+
+Serve connects over SSH. Fill in these fields:
+
+| Field | What to enter |
+| --- | --- |
+| **IP address or hostname** | How to reach the server. |
+| **SSH port** | Its SSH port, usually `22`. |
+| **User** | `root`, or a user with passwordless sudo. Serve uses it to install and run Docker. |
+| **SSH key** | A key to sign in with. Generate a new one, pick a saved key or paste your own private key (OpenSSH or PEM format, without a passphrase). |
+
+Authorize the public key on the server, for example by adding it to `~/.ssh/authorized_keys`, then choose **Connect**. Serve checks SSH access and Docker, prepares the data directory and starts the proxy. If Docker is missing, Serve can install it with the official script from get.docker.com. This takes a few minutes.
+
+### No public IP
+
+For a machine that nobody can reach from outside, choose **No public IP**, then **Create join command**. Serve shows a one-line command like this:
+
+```bash
+curl … | sudo bash
+```
+
+Run it on the new machine. The dashboard page moves on by itself when the server connects.
+
+- The command works once.
+- It expires after 24 hours. Create a new one if it runs out.
+
+The server then keeps an encrypted SSH tunnel (`ssh -R`) open to the dashboard. The dashboard reaches the server through that tunnel, so the server needs no open ports.
+
+:::caution[Open TCP port 7822]
+The tunnel connects out to the main server on TCP port 7822. Open that port in the main server's firewall, and in your provider's cloud firewall if it has one. The port is set by `SERVE_TUNNEL_PORT` in `/data/serve/.env`.
+:::
+
+To give apps on such a server a public domain, use a [Cloudflare Tunnel](/docs/cloudflare).
+
+## serve-agent
+
+Remote servers can run `serve-agent`, a small program written in Go. It samples CPU, memory, disk, load and containers and sends them to the dashboard. When the dashboard is unreachable, the agent buffers up to a day of samples and sends them later.
+
+Metrics are off on a newly added server. Turn them on from the server's **Metrics** page. Only an admin of the server can turn them on.
+
+## Server pages
+
+Each server has these pages:
+
+| Page | What it shows |
+| --- | --- |
+| General | Name, connection details and status. |
+| Metrics | CPU, memory, disk and load over time. |
+| Services | The containers running on the server. |
+| Resources | Disk usage of the data directory and Docker. |
+| Alerts | **Resource alerts** for CPU, memory and disk. |
+| Docker cleanup | Clean up Docker now, and see past cleanups. |
+| Domains | **Addressing** and domains on this server. See [Domains](/docs/domains). |
+| Proxy | The reverse proxy: nginx, Caddy, Traefik or None. |
+| Private network | The [private network](/docs/private-networks) this server is in. |
+| Terminal | A shell on the server in your browser. |
+| Danger zone | Remove the server. Not shown for the machine Serve runs on. |
+
+### Alerts
+
+Samples are compared with the limits you set. **CPU duration** is the number of minutes above the limit before Serve alerts. **Disk warning** and **Disk critical** are percentages used. Crossing a limit alerts your [notification channels](/docs/monitoring). An alert clears 5 points below its limit.
+
+## Cleanup
+
+Docker images and build cache fill disks over time. A server's **Docker cleanup** page lets you clean up Docker now and lists past cleanups and what they freed.
+
+The schedule for every server is set under **Settings → Advanced → Automatic cleanup** by an instance admin:
+
+| Setting | What it does |
+| --- | --- |
+| **Scheduled cleanup** | Removes dangling images, stale deployment containers and old build cache on a schedule (**Run every**). |
+| **Clean up when disk reaches** | Runs an aggressive cleanup when the disk fills to this level, and notifies you. |
+| **Keep build cache for** | How long to keep build cache. `0` keeps it forever: faster builds, more disk. |
+| **Remove unused images** | Also deletes images no container uses that are older than a day. |
+
+Volumes and running containers are never touched. Images kept for rollbacks stay.
+
+## Terminal
+
+The **Terminal** page opens a root shell on the server. On remote servers, commands run over SSH. On the main server, they run directly on the machine the dashboard runs on.
+
+:::caution
+Terminal commands can break the server and the services on it. On the main server they can break the dashboard too.
+:::
+
+You need the **Console** permission to open it. See [Teams](/docs/teams).
+
+<CardGrid>
+<LinkCard href="/docs/private-networks" title="Private networks" description="Connect servers with WireGuard." />
+<LinkCard href="/docs/monitoring" title="Monitoring" description="Uptime checks, alerts and notifications." />
+</CardGrid>

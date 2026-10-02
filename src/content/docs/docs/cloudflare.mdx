@@ -1,0 +1,82 @@
+---
+title: "Cloudflare"
+description: "DNS records and Tunnels."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Connect a Cloudflare account to manage DNS records, SSL modes and certificates from the dashboard. Cloudflare Tunnels let you serve apps from servers without a public IP or open ports.
+
+## Connect an account
+
+Go to **Integrations → Cloudflare** and choose **Connect Cloudflare**. Paste an **API token** from your Cloudflare dashboard. Serve encrypts the token and only uses it for your zones.
+
+Give the token these permissions:
+
+| Type | Permission | Access |
+| --- | --- | --- |
+| Zone | Zone | Read |
+| Zone | DNS | Edit |
+| Zone | Zone Settings | Edit |
+| Zone | SSL and Certificates | Edit |
+| Account | Cloudflare Tunnel | Edit (only to use tunnels) |
+
+The **Origin CA key** field is optional. You only need it if your token cannot create origin certificates.
+
+If you disconnect an account, existing DNS records stay in Cloudflare. Certificates that use the account stop renewing.
+
+## DNS records
+
+Each zone shows its DNS records. You can add, edit and delete records, filter by type and search. A record has a type (such as `A`, `AAAA` or `CNAME`), a name, content, a TTL and a **Proxied** switch. Proxied means traffic goes through Cloudflare (orange cloud). **DNS only** means it does not.
+
+When you add a domain to a service, tick **Create the DNS record** and Serve creates the record for you. See [Domains](/docs/domains).
+
+## SSL mode
+
+You can change the zone's **SSL/TLS mode** from Serve. The change takes effect in Cloudflare immediately.
+
+| Mode | Meaning |
+| --- | --- |
+| Flexible | HTTPS to Cloudflare, HTTP to your server. |
+| Full | HTTPS end to end, any certificate. |
+| Full (strict) | HTTPS end to end with a valid certificate. Recommended. |
+
+You can also turn on **Always use HTTPS** to redirect HTTP requests at the edge, and **Purge cache** to clear everything cached at Cloudflare.
+
+## Tunnels
+
+A Cloudflare Tunnel serves domains from a server without a public IP or open ports. The server connects out to Cloudflare, and Cloudflare handles HTTPS.
+
+1. On the Cloudflare account page, choose **Create tunnel** next to the server. It connects within a minute.
+2. On a service's domain, set **Route traffic through** to the tunnel.
+
+The tunnel page lists the **Domains through this tunnel** and the connector's status. If the connector stops, you can restart it from there. **Remove tunnel** stops the connector and deletes the tunnel in Cloudflare.
+
+:::note
+Tunnel domains are HTTPS at Cloudflare even though the proxy on your server serves them over HTTP. `SERVE_PUBLIC_URL` uses `https://` for them.
+:::
+
+### The dashboard through a tunnel
+
+The dashboard can use a tunnel too. This is useful when the main server has no public IP. First create a tunnel for the server Serve runs on. Then, in **Settings → General**, enter the dashboard domain and choose **Cloudflare Tunnel** instead of **Server IP**. The tunnel needs a domain: without one, the tunnel choice is cleared when you save.
+
+### Databases through a tunnel
+
+Every database engine can be reached through a Cloudflare Tunnel. Clients connect with `cloudflared`, which forwards a local port to the database:
+
+```bash
+cloudflared access tcp --hostname db.example.com --url localhost:5432
+```
+
+Then point your client at `localhost:5432`. The database page shows the exact command. See [Databases](/docs/databases).
+
+## Wildcard certificates
+
+Let's Encrypt can only issue wildcard certificates like `*.example.com` with DNS validation. Choose **Let's Encrypt via Cloudflare DNS** as the source on the **Certificates** page. Validation goes through your connected Cloudflare zone, so port 80 does not need to be reachable. The certificate renews automatically. In v0.1.15 and v0.1.16 these certificates fail to issue, see the [known issue](/docs/domains#lets-encrypt).
+
+A wildcard certificate pairs well with a server's **Wildcard domain** and with pull request previews, where one wildcard DNS record covers all previews.
+
+<CardGrid>
+<LinkCard href="/docs/domains" title="Domains" description="Proxies, certificates and domain options." />
+<LinkCard href="/docs/servers" title="Servers" description="Add servers with or without a public IP." />
+</CardGrid>

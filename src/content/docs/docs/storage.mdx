@@ -1,0 +1,52 @@
+---
+title: "Storage"
+description: "Volumes and files that survive a deploy."
+---
+
+Containers are replaced on every deploy. To keep data, mount storage into the container under **Settings → Persistent storage**.
+
+:::caution[Data without a mount is lost]
+Anything your app writes to the container filesystem, outside a mount, is gone after the next deploy or restart. Put uploads, SQLite files and other state on a volume.
+:::
+
+## Mount types
+
+Each mount has a source and a **Mounted at** path, which is the path inside the container. Two mounts can't use the same path.
+
+### Volumes
+
+A volume is a named Docker volume. Docker manages it, and it is kept across deploys. This is the right choice for most app data.
+
+To add one, choose **Volume**, give it a **Volume name** and set **Mounted at**, for example `/app/data`.
+
+### Bind mounts
+
+A bind mount maps a path on the server into the container. You can mount a **Directory** (a folder on the server) or a **Server file** (a file that already exists on the server).
+
+For a directory, turn on **Create if missing** to have Serve create the folder when it doesn't exist.
+
+:::note
+Only admins of the Root organization can mount paths from the server.
+:::
+
+### File mounts
+
+A file mount is a config file you write in Serve. Choose **File**, give it a **File name**, set **Mounted at** and write its **Content**. Serve writes the file on the server before each start. Use this for files like `nginx.conf` or a `config.yaml` that your image expects.
+
+## Read-only mounts
+
+Turn on **Read-only** for a mount when the app should only read it. This is a good default for config files and shared host directories.
+
+## Downloading data
+
+Each volume has a **Download as .tar** button. It downloads the volume's contents as a tar archive, so you can inspect it or keep a copy. For a database, the database must be running to download its data volume.
+
+:::tip
+A `.tar` download is a quick copy, not a backup plan. For databases, set up [automatic backups](/docs/backups).
+:::
+
+## Databases and Compose stacks
+
+Databases have a data volume that holds the database files. You can see it under **Persistent storage** on the database.
+
+Compose stacks define their own volumes in `docker-compose.yml`. Their volumes also show under **Persistent storage**, with the same download option.

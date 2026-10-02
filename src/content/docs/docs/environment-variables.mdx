@@ -1,0 +1,108 @@
+---
+title: "Environment variables"
+description: "Variables, secrets and shared variables."
+---
+
+Environment variables pass configuration and secrets to your app. Serve stores them per service, lets you share them across services, and can read them from an external secret manager.
+
+## Build time and runtime
+
+Each variable can be available at build time, at runtime, or both.
+
+- **Build time** variables are available while the image builds. Use them for things like API keys a build step needs.
+- **Runtime** variables are set in the running container.
+
+## Bulk edit
+
+Use **Variables as .env** to edit all variables at once in `.env` format. Paste in an existing `.env` file to import it.
+
+```text
+DATABASE_URL=postgres://user:pass@db:5432/app
+NODE_ENV=production
+```
+
+## Shared variables
+
+You can define variables once and use them in many services. There are three levels:
+
+- **Environment variables**: shared by services in one project environment, like production or staging.
+- **Project variables**: shared by every environment in a project.
+- **Organization variables**: shared by every project in the organization.
+
+Set environment variables in the project's settings under **Shared variables**. Project and organization variables live on the **Shared variables** page under **Organization**. A service uses a shared variable by reference, added on the service's **Variables** page:
+
+```text
+KEY=${{environment.KEY}}
+```
+
+## References
+
+A variable's value can reference other values. Serve resolves them when the service deploys.
+
+| Syntax | Resolves to |
+| --- | --- |
+| `${{KEY}}` | Another variable on the same service |
+| `${{service-name.KEY}}` | A variable on another service in the project |
+| `${{environment.KEY}}` | An environment variable. `${{shared.KEY}}` also works |
+| `${{project.KEY}}` | A project variable |
+| `${{org.KEY}}` | An organization variable. `${{team.KEY}}` also works |
+| `${{replica.index}}` | The replica's index |
+| `${{replica.number}}` | The replica's number |
+| `${{replica.count}}` | How many replicas run |
+| `${{postgres.branches.<name>.DATABASE_URL}}` | The URL of a PostgreSQL branch |
+| `${{secrets.<provider>.<path>:<FIELD>}}` | A secret from a secret manager |
+
+For example, to give an app the connection URL of a database service named `postgres`:
+
+```text
+DATABASE_URL=${{postgres.DATABASE_URL}}
+```
+
+## Built-in variables
+
+Serve sets these in every app container.
+
+| Variable | Value |
+| --- | --- |
+| `SERVE_PUBLIC_URL` | The app's public URL |
+| `SERVE_PUBLIC_DOMAIN` | The app's public domain |
+| `SERVE_PUBLIC_URL_<SERVICE>` | The public URL of another service |
+| `SERVE_PUBLIC_DOMAIN_<SERVICE>` | The public domain of another service |
+| `SERVE_PRIVATE_DOMAIN` | The app's private hostname |
+| `SERVE_SERVICE_NAME` | The service name |
+| `SERVE_REPLICA_INDEX` | This replica's index |
+| `SERVE_REPLICA_COUNT` | How many replicas run |
+
+## Secret managers
+
+Instead of storing a secret in Serve, you can read it from a secret manager. Add one under **Integrations → Secret managers**. Serve supports:
+
+- **HashiCorp Vault / OpenBao**
+- Infisical
+- Doppler
+- **AWS Secrets Manager**
+- AWS Parameter Store
+
+Then reference a secret in any variable, using the name you gave the secret manager:
+
+```text
+DB_PASSWORD=${{secrets.prod-vault.app/db:password}}
+```
+
+Serve reads the secret from the provider each time the service deploys and never stores it.
+
+## Per-replica variables
+
+When an app runs several replicas, you can give a replica variables of its own. A replica without its own variables uses the service variables.
+
+To make a value differ in each replica, pick **This replica** in the reference list. It offers `index`, `number` and `count`. This is useful to shard a bot or split work:
+
+```text
+SHARD_ID=${{replica.index}}
+```
+
+Your code can also read `SERVE_REPLICA_INDEX` and `SERVE_REPLICA_COUNT`.
+
+:::note
+Who can see variable values depends on the role. Developers can edit variables but can't see secret values unless their role allows it. See [Teams](/docs/teams).
+:::

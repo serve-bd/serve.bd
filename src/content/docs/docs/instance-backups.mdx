@@ -1,0 +1,88 @@
+---
+title: "Backup and restore"
+description: "Back up Serve itself and restore it on a new server."
+---
+
+An instance backup saves Serve itself, so you can rebuild it after a failed disk or move it to a new server. You manage these backups in **Settings → Backups**.
+
+## What is in a backup
+
+Each backup is one encrypted file with:
+
+- A dump of Serve's database: projects, services, settings, users and secrets (encrypted).
+- Certificates.
+- Proxy configuration.
+- SSH keys.
+- Service files.
+
+## What is not in a backup
+
+- **The data of your apps and databases.** Back up each database from its own **Backups** tab. See [Backups](/docs/backups).
+- **The encryption key.** `SERVE_ENCRYPTION_KEY` is never in a backup. You must keep it yourself.
+
+## Make a backup
+
+Open **Settings → Backups** and click **Back up now**. The list shows each backup with its file name, status, size, the Serve version and how it started:
+
+- **Scheduled:** made by the schedule.
+- **Before update:** made by **Update now** or an automatic update. See [Updating](/docs/updating).
+
+Click **Download** to save a backup to your computer.
+
+### Scheduled backups
+
+Turn on **Scheduled backups**. This is recommended. Then set:
+
+| Field | What it does |
+| --- | --- |
+| **When** | A preset time, or a custom **Cron expression** like `0 3 * * *`. |
+| **Keep** | How many backups to keep. Older backups are deleted, locally and in S3. |
+| **Also upload to** | **This server only**, or an S3 destination. |
+
+## Where backups are stored
+
+Backups are stored on the server in:
+
+```text
+/data/serve/backups/instance
+```
+
+To keep copies off the server, add S3 storage in the Root organization (**S3 storage** in the sidebar), then pick it in **Also upload to**. Amazon S3, Cloudflare R2, Backblaze B2, DigitalOcean Spaces, Wasabi, MinIO and other S3-compatible storage work. A backup that reached S3 shows an **S3** badge.
+
+## The encryption key
+
+Passwords, tokens and keys in Serve's database are encrypted with `SERVE_ENCRYPTION_KEY` from `/data/serve/.env`. Backups are encrypted with a key made from it too.
+
+:::caution[Save the encryption key somewhere safe]
+Backups never include the encryption key, so a backup cannot be restored without it. Store it in a password manager, not next to the backups. Anyone with the key and a backup can read every secret stored in your instance.
+:::
+
+To see the key, click **Show encryption key** in **Settings → Backups** and confirm with **Show key**. The reveal is recorded in the activity log.
+
+## Restore a backup
+
+A running instance cannot replace its own database, so you restore from the server's shell.
+
+1. On a new server, install Serve first. See [Installation](/docs/installation).
+2. Open `/data/serve/.env` and set `SERVE_ENCRYPTION_KEY` to the original key, the one the backup was made with.
+3. Copy the backup file to the server.
+4. Run the restore script:
+
+```bash
+sudo bash /data/serve/restore-instance.sh serve-<date>-v<version>.tar.gz.enc
+```
+
+Encrypted backups end in `.tar.gz.enc`. The script also takes an unencrypted `.tar.gz` file.
+
+The script:
+
+1. Decrypts the backup with the Serve image, so you do not need to install anything else.
+2. Checks that the file is a Serve instance backup and shows its version and date.
+3. Asks you to confirm, because it replaces Serve's database and instance files in `/data/serve`.
+4. Stops the dashboard and the worker.
+5. Restores the database dump and the instance files.
+6. Starts Serve again.
+
+If decryption fails, the key in `.env` differs from the one the backup was made with, or the file is damaged.
+
+After the restore, open the dashboard. Your services redeploy from their saved settings when you deploy them. Then restore the data of each database from its own backups.

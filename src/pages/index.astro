@@ -1,0 +1,355 @@
+---
+import { ArrowRight, Boxes, Cloud, Database, GitBranch, Globe, Network, Rocket, Users } from "lucide-react";
+import { Faq } from "@/components/react/faq";
+import { GitHubMark } from "@/components/react/github-mark";
+import { TemplateLogo } from "@/components/react/template-logo";
+import { buttonVariants } from "@/components/react/ui/button";
+import InstallCommand from "@/components/site/InstallCommand.astro";
+import Screenshot from "@/components/site/Screenshot.astro";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import Site from "@/layouts/Site.astro";
+import { site } from "@/lib/site";
+import { templates } from "@/lib/templates";
+
+const sources = ["GitHub", "GitLab", "Gitea", "Forgejo", "Bitbucket", "Any Git URL", "Docker image", "Dockerfile", "Compose", "Nixpacks"];
+
+const featured = [
+  "n8n",
+  "uptime-kuma",
+  "plausible",
+  "ghost",
+  "nextcloud",
+  "vaultwarden",
+  "grafana",
+  "minio",
+  "immich",
+  "gitea",
+  "metabase",
+  "umami",
+  "open-webui",
+  "wordpress",
+  "mattermost",
+  "directus",
+  "ollama",
+  "meilisearch",
+].map((id) => templates.find((t) => t.id === id)!);
+
+// Each card links on: to a feature page when there is one, otherwise to the page that explains it.
+const features = [
+  {
+    icon: GitBranch,
+    title: "Apps from anywhere",
+    text: "Git, a Docker image, a Dockerfile or a Compose file. Builds with a Dockerfile, Nixpacks or built-in detection.",
+    href: "/features/git-to-production/",
+    link: "See Git to production",
+    page: true,
+  },
+  {
+    icon: Database,
+    title: "Managed databases",
+    text: "PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey and ClickHouse. Scheduled backups, one-click restore and branches.",
+    href: "/features/database-branching/",
+    link: "See database branching",
+    page: true,
+  },
+  {
+    icon: Boxes,
+    title: "One-click services",
+    text: `${templates.length} ready templates: n8n, Plausible, Ghost, Nextcloud, Grafana and more. Or bring your own.`,
+    href: "/features/one-click-services/",
+    link: "See one-click services",
+    page: true,
+  },
+  {
+    icon: Rocket,
+    title: "Safe deployments",
+    text: "Zero downtime, health checks, rollbacks, pull request previews, deploy hooks and an API.",
+    href: "/features/pull-request-previews/",
+    link: "See pull request previews",
+    page: true,
+  },
+  {
+    icon: Globe,
+    title: "Domains and HTTPS",
+    text: "nginx, Caddy or Traefik in front, with Let's Encrypt certificates renewed for you.",
+    href: "/features/domains-and-https/",
+    link: "See domains and HTTPS",
+    page: true,
+  },
+  {
+    icon: Cloud,
+    title: "Cloudflare built in",
+    text: "Manage DNS records and run Tunnels, for servers without a public IP.",
+    href: "/docs/cloudflare/",
+    link: "How Cloudflare works",
+  },
+  {
+    icon: Network,
+    title: "Many servers",
+    text: "Add machines over SSH, even behind NAT, joined by an encrypted private network.",
+    href: "/features/servers-without-public-ip/",
+    link: "See servers without a public IP",
+    page: true,
+  },
+  {
+    icon: Users,
+    title: "Made for teams",
+    text: "Organizations, roles, project access, two-factor authentication and an activity log.",
+    href: "/features/teams/",
+    link: "See teams",
+    page: true,
+  },
+];
+
+const steps = [
+  { n: "01", title: "Install", text: "Run one command on a Linux server. It installs Docker if needed and starts the dashboard." },
+  { n: "02", title: "Connect", text: "Connect GitHub in one click, or GitLab, Gitea, Forgejo, Bitbucket or any Git URL." },
+  { n: "03", title: "Push", text: "Every push builds and ships. Bad deploys fail their health check and the old version keeps serving." },
+];
+
+const deploys = [
+  { time: "19:00", service: "web", message: "Add Apple Pay to checkout", state: "ok", duration: "1m 12s" },
+  { time: "18:39", service: "api", message: "Bump next to 16.3", state: "ok", duration: "58s" },
+  { time: "18:31", service: "api", message: "Show stock levels on product cards", state: "bad", duration: "rolled back" },
+];
+
+const nodes = [
+  { name: "fsn1-main", role: "Dashboard", load: [22, 45, 44] },
+  { name: "sgp1-edge", role: "SSH", load: [10, 40, 39] },
+  { name: "home-lab", role: "No public IP", load: [7, 47, 61] },
+];
+
+const faq = [
+  { q: "What do I need to run Serve?", a: "A Linux server (Ubuntu, Debian, Fedora, Rocky and others) with 2 GB of RAM or more, and root access. The installer installs Docker if it is missing." },
+  { q: "Is it free?", a: `Yes. Serve is open source under the ${site.license} license. You pay only for your servers.` },
+  { q: "Do my apps go down when I update Serve?", a: "No. Settings → Updates backs up Serve first, then installs the new version, and rolls back if it does not start. Your apps keep running." },
+  {
+    q: "Can I use a server without a public IP?",
+    a: "Yes. Add it with No public IP. The machine connects out to your Serve server on TCP port 7822, so it works behind NAT. Cloudflare Tunnels can put its apps on the internet.",
+  },
+  {
+    q: "How do backups work?",
+    a: "Each database has a Backups tab with schedules to disk or S3 and one-click restore. Settings → Backups backs up Serve itself. Keep your SERVE_ENCRYPTION_KEY safe: without it, a restore cannot read your secrets.",
+  },
+  {
+    q: "What is a database branch?",
+    a: "A full copy of a database's data inside the same server. Test a migration or debug with real data without touching production, or give each pull request preview its own database. It works for every engine Serve runs.",
+  },
+  { q: "Can I automate it?", a: "Yes. Create a token in Keys & tokens and use the REST API, or trigger a deploy from CI with a deploy hook." },
+];
+---
+
+<Site>
+  {/* Hero */}
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="pointer-events-none absolute top-[-200px] left-1/2 -z-10 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
+      <div class="mx-auto flex max-w-3xl animate-rise flex-col items-center text-center">
+        <a
+          href={site.releases}
+          target="_blank"
+          rel="noreferrer"
+          class="mb-7 inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pr-3 pl-2.5 text-[13px] text-fg-2 shadow-sm transition-colors hover:border-line-strong"
+        >
+          <span class="led" data-pulse style="--led: var(--ok)"></span>
+          <span class="font-mono text-[12px] text-muted">{site.version}</span>
+          <span class="h-3 w-px bg-line-strong"></span>
+          Open source and self-hosted
+          <ArrowRight className="size-3.5 text-muted" />
+        </a>
+        <h1 class="text-[36px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[60px] sm:leading-[1.05] sm:tracking-[-0.035em]">{site.tagline}</h1>
+        <p class="mt-6 max-w-xl text-[17px] leading-relaxed text-pretty text-muted sm:text-lg">
+          Push to deploy, get a domain with HTTPS and manage it all from one dashboard, on servers you control.
+        </p>
+        <InstallCommand class="mt-9" />
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Get started <ArrowRight /></a>
+          <a href={site.github} target="_blank" rel="noreferrer" class={buttonVariants({ size: "lg" })}><GitHubMark className="size-4" /> Star on GitHub</a>
+        </div>
+      </div>
+      <div class="relative mt-16 animate-rise sm:mt-20" style="animation-delay: 120ms">
+        <Screenshot />
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-bg to-transparent"></div>
+      </div>
+    </div>
+  </div>
+
+  {/* Sources */}
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <p class="text-center text-[13px] text-muted">Deploy from wherever your code lives</p>
+    <div class="mt-5 flex flex-wrap justify-center gap-2">
+      {sources.map((s) => <span class="rounded-full border border-line bg-surface px-3 py-1 font-mono text-[12px] text-fg-2">{s}</span>)}
+    </div>
+  </div>
+
+  {/* Features */}
+  <Section id="features">
+    <SectionTitle eyebrow="Everything in one place" title="A whole platform, on a server you already pay for.">
+      Serve gives you the parts of a hosted PaaS that you actually use. It runs on your hardware and you keep the keys.
+    </SectionTitle>
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {
+        features.map(({ icon: Icon, title, text, href, link, page }) => (
+          <div class="group relative flex flex-col bg-surface p-6 transition-colors hover:bg-surface-2">
+            <span class="mb-5 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2 transition-colors group-hover:text-accent">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+            <a
+              href={href}
+              class:list={[
+                "mt-auto inline-flex items-center gap-1 pt-4 text-[13px] after:absolute after:inset-0",
+                page ? "text-accent" : "text-muted group-hover:text-fg",
+              ]}
+            >
+              {link} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            </a>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Push to deploy */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 items-center gap-14 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="Push to deploy" title="From git push to HTTPS in a minute." />
+        <ol class="flex flex-col gap-7">
+          {
+            steps.map((s) => (
+              <li class="flex gap-5">
+                <span class="pt-0.5 font-mono text-[13px] text-faint">{s.n}</span>
+                <div>
+                  <h3 class="text-[15px] font-semibold text-fg">{s.title}</h3>
+                  <p class="mt-1 text-[15px] leading-relaxed text-muted">{s.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <div class="rounded-2xl border border-line bg-surface shadow-md">
+        <div class="flex items-center justify-between border-b border-line px-5 py-4">
+          <span class="text-[15px] font-semibold text-fg">Recent deploys</span>
+          <span class="flex items-center gap-2 text-[13px] text-muted">
+            <span class="led" data-pulse style="--led: var(--info)"></span>
+            Building <span class="font-mono">web</span>
+          </span>
+        </div>
+        <ul class="px-5 py-4">
+          {
+            deploys.map((d) => (
+              <li class="relative flex gap-4 pb-5 last:pb-0">
+                <span class="w-11 shrink-0 font-mono text-[13px] text-faint">{d.time}</span>
+                <span class="mt-1.5">
+                  <span class="led" style={`--led: var(--${d.state})`} />
+                </span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm text-fg">
+                    {d.service} <span class="text-muted">Storefront · production</span>
+                  </p>
+                  <p class="truncate text-sm text-fg-2">{d.message}</p>
+                </div>
+                <span class:list={["shrink-0 font-mono text-[12px]", d.state === "bad" ? "text-bad" : "text-faint"]}>{d.duration}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="rounded-b-2xl border-t border-line bg-log-bg px-5 py-4 font-mono text-[12px] leading-relaxed text-log-fg">
+          <p><span class="text-[#636366]">#12</span> Building with Nixpacks</p>
+          <p><span class="text-[#636366]">#13</span> Health check passed <span class="text-[#30d158]">200 OK</span></p>
+          <p><span class="text-[#636366]">#14</span> Switched traffic to the new container</p>
+          <p class="text-[#30d158]">✓ Live at https://shop.acme.dev</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Servers */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Servers" title="One server to start. As many as you need later.">
+      Add machines over SSH. A server behind NAT connects out to yours, so a box at home works too. Servers talk over an encrypted WireGuard network.
+    </SectionTitle>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      {
+        nodes.map((n) => (
+          <div class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+            <div class="flex items-center gap-2.5">
+              <span class="led" style="--led: var(--ok)" />
+              <span class="text-[15px] font-medium text-fg">{n.name}</span>
+              <span class="ml-auto rounded-md border border-line px-1.5 py-0.5 font-mono text-[11px] text-muted">{n.role}</span>
+            </div>
+            <div class="mt-5 grid grid-cols-3 gap-4">
+              {["CPU", "Memory", "Disk"].map((label, i) => (
+                <div>
+                  <div class="flex justify-between text-[12px]">
+                    <span class="text-muted">{label}</span>
+                    <span class="font-mono text-fg-2">{n.load[i]}%</span>
+                  </div>
+                  <div class="mt-1.5 h-1 overflow-hidden rounded-full bg-hover">
+                    <div class="h-full rounded-full bg-muted" style={`width: ${n.load[i]}%`} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 flex items-center gap-2 font-mono text-[12px] text-faint">
+      <span class="h-px w-8 bg-line-strong"></span>
+      private network · 10.210.0.0/24 · wireguard
+    </p>
+  </Section>
+
+  {/* Templates */}
+  <Section class="border-t border-line">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <SectionTitle eyebrow="Templates" title={`${templates.length} services, one click each.`}>
+        Analytics, automation, CMS, storage, AI and more. Each one comes with its domain, secrets and volumes set up.
+      </SectionTitle>
+      <a href="/templates/" class:list={[buttonVariants(), "mb-12"]}>Browse all templates <ArrowRight /></a>
+    </div>
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      {
+        featured.map((t) => (
+          <a
+            href={`/templates/?q=${encodeURIComponent(t.name)}`}
+            class="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:border-line-strong hover:bg-surface-2"
+          >
+            <TemplateLogo name={t.name} logo={t.logo} color={t.color} className="size-9" />
+            <span class="min-w-0">
+              <span class="block truncate text-sm font-medium text-fg">{t.name}</span>
+              <span class="block truncate text-[12px] text-muted">{t.category}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* FAQ */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_2fr]">
+      <SectionTitle eyebrow="FAQ" title="Questions" />
+      <Faq client:visible items={faq} />
+    </div>
+  </Section>
+
+  {/* Final call to action */}
+  <Section class="border-t border-line">
+    <div class="relative overflow-hidden rounded-3xl border border-line bg-surface px-6 py-16 text-center shadow-md sm:px-12">
+      <div class="hero-grid pointer-events-none absolute inset-0"></div>
+      <div class="relative mx-auto flex max-w-2xl flex-col items-center">
+        <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Run your first deploy today.</h2>
+        <p class="mt-4 text-[16px] text-muted">One command. About two minutes. Then open the dashboard.</p>
+        <InstallCommand class="mt-8" />
+        <a href="/docs/installation/" class:list={[buttonVariants({ variant: "primary", size: "lg" }), "mt-4"]}>Read the install guide <ArrowRight /></a>
+      </div>
+    </div>
+  </Section>
+</Site>

@@ -1,0 +1,97 @@
+---
+title: "Your first deploy"
+description: "From a fresh install to an app on a domain with HTTPS."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+This guide takes you from a fresh install to an app from GitHub that runs on its own domain with HTTPS and redeploys on every push. You need a Serve install and the owner account. See [Installation](/docs/installation) first.
+
+## Before you start
+
+You need:
+
+- A domain name where you can add DNS records.
+- A GitHub repository with your app.
+- Ports 80 and 443 open on the server, so Let's Encrypt can reach it.
+
+## Steps
+
+### 1. Give the dashboard a domain
+
+GitHub has to reach your dashboard to send push events. It cannot reach `http://<server-ip>:8000` in a useful way, so give the dashboard its own domain with HTTPS first.
+
+1. Add a DNS `A` record for a name like `serve.example.com` that points to your server's IP.
+2. Open **Settings → General**.
+3. Under **Dashboard domain**, enter the name in **Domain**.
+4. Turn on **HTTPS** to request a Let's Encrypt certificate for it.
+5. Under **Let's Encrypt**, fill in **Account email**. Let's Encrypt sends expiry warnings there, and automatic certificates need it.
+
+Save, then open the dashboard on its new domain. From now on you can close port 8000 in your firewall.
+
+### 2. Connect GitHub
+
+1. Open **Git providers** in the sidebar.
+2. Under **Connect GitHub**, choose **Install on**: **Personal account** or **GitHub organization**. For an organization, enter its name. You must be an owner of it.
+3. Click **Continue on GitHub**. You review the app on GitHub before it is created.
+4. Choose which repositories the app can read.
+
+Serve creates a private GitHub App for your server. Pushes and pull requests then deploy automatically, with no webhook setup.
+
+GitLab, Gitea, Forgejo and Bitbucket work too. See [Apps](/docs/apps).
+
+### 3. Create a project
+
+Open **Projects** and click **New project**. Give it a **Name**, and optionally a **Description** and **Color**. A new project starts with one environment, `production`.
+
+### 4. Add a service from your repository
+
+1. In the project, click **New service**.
+2. Pick **Git provider**.
+3. Choose your GitHub account under **Account**, then pick the **Repository** and **Branch**.
+4. Set a **Service name**.
+5. Leave **Builder** on **Automatic**. Serve uses your Dockerfile if the repository has one. Otherwise it detects the language and builds the app for you. See [Builds](/docs/builds).
+6. Leave **Port** empty to detect it, or enter the port your app listens on.
+7. Fill in **Root directory**, **Build command** or **Start command** only if your app needs them.
+8. Click **Create service**.
+
+The service is saved, but nothing runs yet. If your app needs environment variables, add them now in the **Variables** tab. See [Environment variables](/docs/environment-variables).
+
+### 5. Set a domain
+
+1. Open the **Domains & ports** tab of the service.
+2. Click **Add domain** and enter a name like `app.example.com`.
+3. Point that name to your server with a DNS `A` record. If you connected Cloudflare, you can let Serve **Create the DNS record** for you.
+
+If the server has a wildcard domain or falls back to sslip.io, you can click **Generate** instead to get a free domain. See [Domains](/docs/domains).
+
+Serve requests a Let's Encrypt certificate for the domain and renews it automatically.
+
+### 6. Deploy
+
+Click **Deploy** in the service header. Serve clones the repository, builds the image and starts the container. With the rolling strategy, the new container starts next to the old one and gets traffic only after it is healthy. See [Deployments](/docs/deployments).
+
+### 7. Watch the logs
+
+Open the **Deployments** tab and select the deployment to read its build log as it runs. When it is done:
+
+- **Logs** shows the runtime output of your app.
+- **Metrics** shows how the service uses resources.
+- **Console** opens a shell in the container.
+
+If the build fails, the log shows why. Fix the problem, push and deploy again.
+
+### 8. Push to redeploy
+
+Push a commit to the branch you picked. GitHub tells Serve, and Serve starts a new deployment. You can turn this off with **Deploy on push** in the service's **Source** settings, and limit it to some folders with **Watch paths**.
+
+Every deployment is kept. If a new version breaks, roll back to an earlier one from the **Deployments** tab.
+
+## Next steps
+
+<CardGrid>
+  <LinkCard href="/docs/databases" title="Databases" description="Add PostgreSQL, MySQL, Redis and more, with backups." />
+  <LinkCard href="/docs/deployments" title="Deployments" description="Rollbacks, previews and deploy hooks." />
+  <LinkCard href="/docs/templates" title="Templates" description="Start one-click services from the catalog." />
+  <LinkCard href="/docs/servers" title="Servers" description="Add more machines." />
+</CardGrid>

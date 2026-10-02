@@ -1,0 +1,235 @@
+---
+import { ArrowRight, Check, Cloud, FileKey2, Lock, ShieldCheck, Upload } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import DomainCanvas from "@/components/site/DomainCanvas.astro";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import Site from "@/layouts/Site.astro";
+
+const steps = [
+  { n: "01", title: "Enter the hostname", text: "Open the service's domains and type the hostname, like app.acme.dev." },
+  {
+    n: "02",
+    title: "Point DNS at the server",
+    text: "Add an A record to the server's IPv4, or a CNAME. With the zone in a connected Cloudflare account, Serve creates the record for you.",
+  },
+  { n: "03", title: "Serve checks DNS", text: "A DNS check shows whether the record points to the right place, so you know before anything fails." },
+  { n: "04", title: "HTTPS, on its own", text: "The domain gets a certificate from Let's Encrypt. It renews automatically." },
+];
+
+const proxies = [
+  { name: "nginx", note: "Default", text: "Fast and predictable. Add raw nginx directives per service when you need them." },
+  { name: "Caddy", text: "Automatic HTTPS, Caddyfile snippets and HTTP/3." },
+  { name: "Traefik", text: "Built-in ACME, including Cloudflare DNS, and middlewares." },
+];
+
+const certs = [
+  { icon: Lock, title: "Let's Encrypt", text: "HTTP validation. Port 80 must reach the server." },
+  {
+    icon: Cloud,
+    title: "Let's Encrypt via Cloudflare DNS",
+    text: "DNS validation through your Cloudflare zone, for wildcards like *.acme.dev. Port 80 does not need to be open.",
+  },
+  { icon: ShieldCheck, title: "Cloudflare Origin CA", text: "A certificate from Cloudflare for the traffic between Cloudflare and your server." },
+  { icon: Upload, title: "Uploaded", text: "Bring a certificate and key from anywhere else, and Serve uses them." },
+];
+
+const options = [
+  { name: "www redirect", text: "Between www. and the bare domain" },
+  { name: "Redirect to", text: "Send every request to another URL" },
+  { name: "Password protection", text: "Ask for a user name and password" },
+  { name: "Access control", text: "Allow or block IP addresses" },
+  { name: "Security headers", text: "Common security headers, in one switch" },
+  { name: "Headers", text: "Your own response headers" },
+  { name: "CORS allowed origins", text: "Who may call the app from a browser" },
+  { name: "Compression", text: "Compress responses" },
+  { name: "Cache static files", text: "Let browsers cache static files" },
+  { name: "Sticky sessions", text: "Keep a visitor on the same replica" },
+  { name: "WebSockets", text: "Allow WebSocket connections" },
+  { name: "Max request body", text: "The largest upload the proxy accepts" },
+];
+---
+
+<Site title="Domains and HTTPS" description="Add a domain, and Serve routes it through the server's proxy with a free certificate from Let's Encrypt that renews automatically.">
+  {/* Hero */}
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex font-mono text-[12px] tracking-wide text-accent uppercase">Features / Domains and HTTPS</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">Your domain, with HTTPS. Done.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          Type a hostname and Serve does the rest: it checks DNS, can create the record in Cloudflare, routes the domain through the server's proxy and gets a
+          certificate from Let's Encrypt that renews on its own.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/docs/domains/" class={buttonVariants({ variant: "primary", size: "lg" })}>Read the docs <ArrowRight /></a>
+          <a href="/docs/installation/" class={buttonVariants({ size: "lg" })}>Install Serve</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <DomainCanvas />
+      </div>
+    </div>
+  </div>
+
+  {/* Adding a domain */}
+  <Section>
+    <SectionTitle eyebrow="Add a domain" title="Four steps. Serve does most of them." />
+    <ol class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        steps.map((s) => (
+          <li class="border-t border-line pt-5">
+            <span class="font-mono text-[13px] text-faint">{s.n}</span>
+            <h3 class="mt-2 text-[16px] font-semibold text-fg">{s.title}</h3>
+            <p class="mt-1.5 text-[15px] leading-relaxed text-muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div class="self-center overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+        <p class="border-b border-line px-4 py-2.5 text-[12px] text-muted">Add a domain</p>
+        <div class="flex flex-col gap-4 px-4 py-4">
+          <div>
+            <p class="mb-1.5 text-[12px] font-medium text-fg-2">Hostname</p>
+            <p class="rounded-lg border border-line bg-bg px-3 py-2 font-mono text-[13px] text-fg">app.acme.dev</p>
+          </div>
+          {
+            ["Create the DNS record", "Proxy through Cloudflare"].map((label, i) => (
+              <p class="flex items-center gap-2.5 text-[13px] text-fg-2">
+                <span
+                  class:list={[
+                    "flex size-4 items-center justify-center rounded-[5px] border [&_svg]:size-3",
+                    i === 0 ? "border-accent bg-accent text-white" : "border-line-strong bg-bg",
+                  ]}
+                >
+                  {i === 0 && <Check />}
+                </span>
+                {label}
+              </p>
+            ))
+          }
+          <p class="flex items-center gap-2 border-t border-line pt-4 text-[12px] text-fg-2">
+            <span class="led" style="--led: var(--ok)"></span>
+            DNS check: app.acme.dev points to this server
+          </p>
+        </div>
+      </div>
+      <div class="self-center">
+        <SectionTitle eyebrow="New services" title="Every service can get a domain by itself.">
+          Give a server a wildcard domain like apps.acme.dev and point one wildcard DNS record at it. Each new service then gets its own hostname, such as
+          api.apps.acme.dev. No domain yet? Serve can fall back to a hostname under sslip.io that resolves to the server's IP.
+        </SectionTitle>
+      </div>
+    </div>
+  </Section>
+
+  {/* Proxies */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Reverse proxies" title="Pick the proxy you like. Switch any time.">
+      Each server runs a reverse proxy that sends requests for your domains to the right app. Choose it on the server's Proxy page. Serve keeps the settings of each
+      one, so you can switch back without losing them.
+    </SectionTitle>
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3">
+      {
+        proxies.map((p) => (
+          <div class="bg-surface p-6">
+            <div class="flex items-center gap-2">
+              <h3 class="font-mono text-[17px] font-semibold text-fg">{p.name}</h3>
+              {p.note && <span class="rounded-full border border-accent/40 px-2 py-px text-[11px] font-medium text-accent-strong">{p.note}</span>}
+            </div>
+            <p class="mt-2 text-sm leading-relaxed text-muted">{p.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">Or choose None, and Serve runs no proxy on that server.</p>
+  </Section>
+
+  {/* Certificates */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Certificates" title="Free certificates, renewed for you.">
+      Most domains never need a thought: Let's Encrypt issues the certificate and Serve renews it. For the rest, the Certificates page lists every certificate and
+      where it comes from.
+    </SectionTitle>
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
+      {
+        certs.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      Let's Encrypt needs an account email, set once under Settings → General. Turn on Use staging to test against the Let's Encrypt staging servers first.
+    </p>
+  </Section>
+
+  {/* Domain options */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Domain options" title="Every domain, tuned on its own.">
+      Redirects, passwords, access rules and headers live on the domain, not in a config file. And when you need more, Proxy config takes raw configuration for the
+      server's proxy.
+    </SectionTitle>
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {
+        options.map((o) => (
+          <div class="bg-surface px-5 py-4">
+            <h3 class="text-[14px] font-semibold text-fg">{o.name}</h3>
+            <p class="mt-1 text-[13px] leading-relaxed text-muted">{o.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">Also on every domain: response buffering and timeouts.</p>
+  </Section>
+
+  {/* Cloudflare */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="Cloudflare" title="No public IP? Use a Cloudflare Tunnel.">
+          A tunnel serves domains from a server with no public IP and no open ports. The server connects out to Cloudflare, and Cloudflare handles HTTPS. Create one
+          next to the server, then set Route traffic through on a domain.
+        </SectionTitle>
+      </div>
+      <div class="flex flex-col gap-px self-center overflow-hidden rounded-2xl border border-line bg-line shadow-sm">
+        {
+          [
+            { icon: Cloud, title: "DNS records", text: "Add, edit and delete records, with the Proxied switch, from the dashboard." },
+            { icon: Lock, title: "SSL mode", text: "Set Flexible, Full or Full (strict) for a zone. Full (strict) is recommended." },
+            { icon: FileKey2, title: "Your token, encrypted", text: "Connect with a Cloudflare API token. Serve encrypts it and only uses it for your zones." },
+          ].map(({ icon: Icon, title, text }) => (
+            <div class="flex gap-4 bg-surface p-5">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+                <Icon className="size-[18px]" />
+              </span>
+              <div>
+                <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+                <p class="mt-1 text-sm leading-relaxed text-muted">{text}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  {/* Call to action */}
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Put your app on its own domain.</h2>
+      <p class="mt-3 text-muted">Domains and HTTPS come with every Serve install. Nothing to add.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Install Serve <ArrowRight /></a>
+        <a href="/docs/cloudflare/" class={buttonVariants({ size: "lg" })}>Cloudflare docs</a>
+      </div>
+    </div>
+  </Section>
+</Site>

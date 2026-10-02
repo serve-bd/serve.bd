@@ -1,0 +1,103 @@
+---
+title: "Ports and files"
+description: "Ports, directories, containers and environment."
+---
+
+This page lists the ports, files, containers and system changes of a Serve install. Use it when you set up a firewall, plan backups or debug a server.
+
+## Ports
+
+You pick the dashboard and app ports during install. The defaults:
+
+| Port | Protocol | Used for |
+| --- | --- | --- |
+| 80 | TCP | HTTP traffic to your apps, through the proxy |
+| 443 | TCP | HTTPS traffic to your apps, through the proxy |
+| 8000 | TCP | The dashboard, until it has a domain |
+| 7822 | TCP | Only when a server without a public IP is added |
+| 51820 | UDP | Only between servers in a private network |
+
+Change the app ports with `SERVE_PROXY_HTTP_PORT` and `SERVE_PROXY_HTTPS_PORT`, the dashboard port with `SERVE_DASHBOARD_PORT` and the tunnel port with `SERVE_TUNNEL_PORT`. See [Installation](/docs/installation).
+
+## Directories and files
+
+Everything Serve keeps lives in `/data/serve`. Do not move that directory. The installer sets its permissions to `700`.
+
+| Path | What it holds |
+| --- | --- |
+| `/data/serve` | The data directory of Serve. |
+| `/data/serve/.env` | Configuration and secrets, including `SERVE_ENCRYPTION_KEY`. Permissions `600`. |
+| `/data/serve/docker-compose.yml` | The Docker Compose file that runs Serve. It comes from the Serve image, so it matches the version that runs. |
+| `/data/serve/restore-instance.sh` | The script that restores an [instance backup](/docs/instance-backups). |
+| `/data/serve/backups/instance` | Instance backups made in **Settings → Backups**. |
+| `/data/serve/services` | Files of each service. |
+| `/data/serve/builds` | Build work files. |
+| `/data/serve/proxy` | Proxy configuration and logs. |
+| `/data/serve/certs`, `/data/serve/letsencrypt`, `/data/serve/acme` | Certificates and Let's Encrypt files. |
+| `/data/serve/ssh` | SSH keys. |
+
+Serve's own database is not stored in `/data/serve`. It lives in the Docker volume `serve-db-data`. Instance backups include a dump of it.
+
+## Containers
+
+| Container | Image | What it does |
+| --- | --- | --- |
+| `serve` | `ghcr.io/serve-bd/serve` | The dashboard. Listens on port 3000 in the container, published on the dashboard port. |
+| `serve-worker` | `ghcr.io/serve-bd/serve` | Background jobs: deployments, backups, certificates, metrics and checks. |
+| `serve-db` | `postgres:18.6-alpine` | Serve's own PostgreSQL database. |
+| `serve-proxy` | Depends on the proxy | The reverse proxy (nginx, Caddy or Traefik) that sends traffic to your apps. |
+
+The `serve` and `serve-worker` containers mount the Docker socket and `/data/serve`. The three Serve containers join the Docker network `serve`, with the subnet `10.209.0.0/16` by default (`SERVE_NETWORK_SUBNET`).
+
+To see the logs of Serve itself:
+
+```bash
+cd /data/serve && docker compose logs
+```
+
+## Image and platforms
+
+The Serve image is:
+
+```text
+ghcr.io/serve-bd/serve:<version>
+```
+
+It is built for `amd64` and `arm64`. The installer always pins an exact version, like `0.2.0`, never a moving tag, so updates and rollbacks know what runs. The version is stored in `SERVE_IMAGE` in `/data/serve/.env`.
+
+An update also moves `serve-db` to newer PostgreSQL 18 patch releases. A new major version of PostgreSQL needs a dump and restore. See [Updating](/docs/updating).
+
+## Docker daemon changes
+
+The installer changes `/etc/docker/daemon.json` once, then restarts Docker:
+
+```json
+{
+  "default-address-pools": [{ "base": "10.200.0.0/12", "size": 24 }],
+  "log-driver": "json-file",
+  "log-opts": { "max-size": "20m", "max-file": "5" }
+}
+```
+
+- **Address pools:** larger pools so many stacks can have their own network.
+- **Log rotation:** each container keeps at most 5 log files of 20 MB.
+
+If the file already has `default-address-pools`, the installer changes nothing. If the file exists without it and `python3` is installed, the installer adds the missing keys and keeps your other settings. Otherwise it writes the file as shown above.
+
+If other containers run, the installer asks before it restarts Docker. If you say no, Docker is left as it is. Serve still works, but it has fewer address ranges for its networks.
+
+## Health endpoint
+
+The dashboard answers on `/api/health`. It checks that Serve can reach its database.
+
+```bash
+curl http://127.0.0.1:8000/api/health
+```
+
+When Serve is healthy, it returns status `200`:
+
+```json
+{ "ok": true }
+```
+
+When the database cannot be reached, it returns status `503` with `{ "ok": false }`. The installer uses this endpoint to wait for Serve to start. You can use it for your own uptime checks.

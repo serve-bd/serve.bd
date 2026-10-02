@@ -1,0 +1,16 @@
+---
+/** Shared <defs> for a feature canvas: the dot grid and arrowheads. `id` keeps ids unique per drawing. */
+const { id } = Astro.props;
+---
+
+<defs>
+  <pattern id={`${id}-dots`} width="20" height="20" patternUnits="userSpaceOnUse">
+    <circle cx="1.5" cy="1.5" r="1.2" class="cv-dot"></circle>
+  </pattern>
+  <marker id={`${id}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" class="cv-arrow"></path>
+  </marker>
+  <marker id={`${id}-arrow-accent`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0 0 L10 5 L0 10 z" class="cv-arrow-accent"></path>
+  </marker>
+</defs>

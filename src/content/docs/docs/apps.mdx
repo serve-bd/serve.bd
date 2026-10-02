@@ -1,0 +1,125 @@
+---
+title: "Apps"
+description: "Deploy from Git, a Docker image, a Dockerfile or a Compose file."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+An app is a service that Serve builds or pulls and then runs as one or more containers. This page covers where an app's code comes from and how you set up the container that runs it.
+
+## Service types
+
+A project holds three kinds of service: apps, databases and Compose stacks. Open a project and choose **New service**. You can pick a Git repository, **Add a Docker image**, a Dockerfile, **Add a Compose stack**, **Add a database**, or a template.
+
+## Sources
+
+### Git repositories
+
+Connect a Git provider once under **Integrations → Git providers**. You can then pick its repositories when you create an app.
+
+- **GitHub**: one click installs a **GitHub App**. You need one GitHub App per GitHub account or organization.
+- **GitLab**, **Gitea / Forgejo** and **Bitbucket**: you connect them with your own OAuth app.
+- **Any Git host**: use an access token or an SSH deploy key.
+- **Public repository**: no credentials needed.
+
+The **Repository** field takes an HTTPS or SSH URL, or `owner/repo` for GitHub.
+
+:::note
+Git webhooks need the dashboard on a domain with HTTPS. Set this up in **Settings → General** before you turn on deploy on push.
+:::
+
+### Docker image
+
+Choose **Add a Docker image** and enter the **Image reference**, for example `ghcr.io/acme/api:1.4`. For a private image, log in to the registry or pick a saved one. Save registries on the **Registries** page. It supports **Docker Hub**, **GitHub Container Registry**, **GitLab Container Registry** and **Other registry**.
+
+### Inline Dockerfile
+
+You can paste a Dockerfile directly into Serve. This works for small images built from public base images.
+
+- The Dockerfile can be up to 64 KB.
+- There is no build context. `COPY` and `ADD` of local files fail.
+
+If your image needs local files, put the Dockerfile in a Git repository instead.
+
+### Compose stack
+
+Choose **Add a Compose stack**. Paste a `docker-compose.yml` inline, or point **Compose file path** to a file in a repository. Compose stacks also get **Compose file** and **Network** settings pages.
+
+## Ports
+
+Most web apps don't need published ports. The reverse proxy routes domains to the container. Publish a port only when you need direct access, for example for a non-HTTP protocol.
+
+Each port maps a host port to a container port, as `host:container`. You choose `tcp` or `udp`. **Listen on** binds the port to all interfaces or only to `127.0.0.1`.
+
+## Resources
+
+Set limits under **Settings → Resources**:
+
+- **CPU limit** in cores.
+- **Memory limit** in MB, and **Memory reservation**.
+- **Shared memory**.
+- **Resource limits (ulimits)**.
+
+## Runtime
+
+Under **Settings → Runtime** you set:
+
+- **Replicas**: how many containers run the app.
+- **Restart policy**: `always`, `unless-stopped`, `on-failure` or `no`.
+- **Stop after crashes**: Serve stops restarting a container after this many crashes. The default is 10.
+- **Scheduled restart**: restart the app on a cron schedule.
+
+## Advanced settings
+
+**Settings → Advanced** holds container options that most apps never need:
+
+- **Working directory**, **User**, **Entrypoint**.
+- **Stop signal**, **Graceful stop timeout**, **Init process**.
+- **Extra hosts** and **Container labels**.
+- **Log file size** and **Log files kept**.
+- **DNS servers**, **DNS search domains**, **DNS options**.
+- **Kernel parameters (sysctls)** and **Linux capabilities**.
+- **Platform**: `linux/amd64`, `arm64` or `arm/v7`.
+- **Pull policy**.
+
+**Privileged**, **GPUs** and **Devices** are only available to the Root organization.
+
+## Scheduled tasks
+
+Use the **Tasks** tab to run commands on a schedule, like a cleanup job or a report.
+
+- **Command**: what to run in the app's container.
+- **Schedule**: pick a preset, or choose custom and enter a **Cron expression** like `30 2 * * *`.
+- **Run in**: for Compose stacks, the Compose service that runs the command.
+
+Click **Run now** to run a task right away. **Recent runs** shows the result of each run. Serve can notify you when a scheduled task fails. See [Monitoring](/docs/monitoring).
+
+## Maintenance mode
+
+Under **Settings → Maintenance** you can put an app behind a 503 page. You set the **Title** and **Message** of the page. **Allow only** lets listed IPs or CIDRs through, so you can still test the app. **Retry after** tells clients when to try again.
+
+## Settings pages
+
+| Page | What it controls |
+| --- | --- |
+| General | Name and basic details |
+| Server | Which server runs the app |
+| Servers & registry | Build server, registry push, extra servers |
+| Source | Repository, branch, image or Dockerfile |
+| Previews | Pull request previews |
+| Build | Builder and build fields |
+| Deploy | Strategy, pre-deploy command, deploy on push |
+| Health check | When a new container counts as healthy |
+| Runtime | Replicas, restart policy, scheduled restart |
+| Persistent storage | Volumes, bind mounts, file mounts |
+| Resources | CPU and memory limits |
+| Advanced | Container-level options |
+| Webhooks | Git webhook URL and deploy hook |
+| Maintenance | Maintenance mode |
+| Monitoring | Uptime checks |
+| Danger zone | Delete the service |
+
+<CardGrid>
+<LinkCard href="/docs/builds" title="Builds" description="How Serve turns your code into an image." />
+<LinkCard href="/docs/deployments" title="Deployments" description="Strategies, health checks and previews." />
+</CardGrid>

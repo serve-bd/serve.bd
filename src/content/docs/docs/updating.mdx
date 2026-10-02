@@ -1,0 +1,87 @@
+---
+title: "Updating"
+description: "Update Serve from the dashboard or by hand."
+---
+
+You update Serve from the dashboard in one click, on a schedule, or by running the installer again. Your deployed apps keep running during an update.
+
+## The Updates page
+
+Open **Settings → Updates**. It shows:
+
+| Field | Meaning |
+| --- | --- |
+| **Running** | The version this instance runs now. |
+| **Commit** | The commit that version was built from. |
+| **Latest release** | The newest release on GitHub. |
+| **Last checked** | When Serve last looked for a new release. |
+
+Below that, **What an update changes** lists every part an update moves: the dashboard, the worker, Serve's database, the proxy on each server and the private network agent. One update moves all of them to the versions tested with that release.
+
+## Update now
+
+When a new release is out, click **Update now**, then confirm with **Back up and update**. Serve then:
+
+1. **Backing up this instance:** takes an [instance backup](/docs/instance-backups) before anything changes.
+2. **Installing the new version and restarting:** pulls the new version and restarts the dashboard, the worker and the database.
+3. **Back online:** the page reloads when the dashboard is back.
+
+The dashboard is unavailable for a minute or two. Deployed services keep running. The update log shows each step as it happens.
+
+If the new version does not start correctly, Serve goes back to the old version by itself. The update then shows as **Rolled back**.
+
+## Automatic updates
+
+The same page has two schedule settings.
+
+### Check for updates
+
+Turn on **Check for updates** to look for new releases. Serve asks GitHub for the newest release. Nothing about your instance is sent. Pick a **Check schedule**: every hour, every 6 hours, every day, every week or your own cron expression.
+
+### Install updates automatically
+
+Turn on **Install updates automatically** to install new releases without clicking. Pick an **Update schedule**, for example:
+
+| Preset | Cron |
+| --- | --- |
+| Every day at 03:00 | `0 3 * * *` |
+| Every Sunday at 03:00 | `0 3 * * 0` |
+| Weekdays at 03:00 | `0 3 * * 1-5` |
+
+An automatic update works the same way as **Update now**: a backup first, and a roll back if the new version does not start.
+
+Schedules run in the timezone set under **Settings → General**. Pick a time when few people use your apps.
+
+Automatic updates work only on servers installed with `install.sh`. A copy that runs from source code cannot replace itself.
+
+### Get notified
+
+Add a notification channel to hear about instance events: backup, update available, updated and update failed. See [Monitoring](/docs/monitoring).
+
+## Update by hand
+
+Run the install command again on the server:
+
+```bash
+curl -fsSL https://serve.bd/install.sh | bash
+```
+
+The installer sees that Serve is installed in `/data/serve`. It asks nothing, keeps your `.env` file and ports, and moves Serve to the newest release. It only changes `SERVE_IMAGE` in `.env`.
+
+If GitHub does not answer, the installer keeps the version that runs now instead of switching.
+
+## Pin a version
+
+Set `SERVE_VERSION` to install an exact release instead of the newest:
+
+```bash
+curl -fsSL https://serve.bd/install.sh | SERVE_VERSION=0.2.0 bash
+```
+
+Use `SERVE_IMAGE` instead to run an exact image, like one from your own registry. It overrides `SERVE_VERSION`.
+
+Serve always runs an exact version, like `ghcr.io/serve-bd/serve:0.2.0`, and never a moving tag. This way updates and rollbacks know what runs.
+
+:::tip
+Before a big update, check that you have a recent instance backup and a copy of `SERVE_ENCRYPTION_KEY`. See [Instance backups](/docs/instance-backups).
+:::

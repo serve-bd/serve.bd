@@ -1,0 +1,96 @@
+---
+import { Activity, ArrowRight, Cloud, Home, Lock, Network, TerminalSquare } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import NatCanvas from "@/components/site/NatCanvas.astro";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import Site from "@/layouts/Site.astro";
+
+const steps = [
+  { n: "01", title: "Create a join command", text: "In Servers, choose Add server, then No public IP. Serve shows a one-line command." },
+  { n: "02", title: "Run it on the machine", text: "Paste it on the box at home or in the office. It works once and expires after 24 hours." },
+  { n: "03", title: "It shows up connected", text: "The machine opens an encrypted tunnel out to your Serve server. Deploy to it like any other." },
+];
+
+const points = [
+  { icon: Lock, title: "Nothing to open", text: "Every connection starts from the machine. No port forwarding on the router and no public IP." },
+  { icon: TerminalSquare, title: "Everything still works", text: "Deploys, logs, metrics and the web terminal all travel through the one tunnel." },
+  { icon: Cloud, title: "Public apps, if you want", text: "Route a domain through a Cloudflare Tunnel and the app is on the internet over HTTPS." },
+  { icon: Network, title: "Joins your other servers", text: "It can join a private network too. It dials out to servers that have a public address." },
+  { icon: Activity, title: "Rides out bad internet", text: "With metrics on, the agent keeps up to a day of samples when the line drops and sends them when it is back." },
+  { icon: Home, title: "Use the hardware you have", text: "A mini PC, an old laptop or an office server becomes part of your platform." },
+];
+---
+
+<Site title="Servers without a public IP" description="Run apps on a machine at home or in the office. No public IP, no open ports: it connects out to Serve.">
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex font-mono text-[12px] tracking-wide text-accent uppercase">Features / Servers without a public IP</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">Any machine. Even behind your router.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          A box at home or in the office can run your apps. It needs no public IP and no open ports: it connects out to Serve, and Serve manages it like any other server.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/docs/servers/#no-public-ip" class={buttonVariants({ variant: "primary", size: "lg" })}>Read the docs <ArrowRight /></a>
+          <a href="/docs/installation/" class={buttonVariants({ size: "lg" })}>Install Serve</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <NatCanvas />
+      </div>
+    </div>
+  </div>
+
+  <Section>
+    <SectionTitle eyebrow="How it works" title="One command on the machine." />
+    <ol class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li class="border-t border-line pt-5">
+            <span class="font-mono text-[13px] text-faint">{s.n}</span>
+            <h3 class="mt-2 text-[16px] font-semibold text-fg">{s.title}</h3>
+            <p class="mt-1.5 text-[15px] leading-relaxed text-muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="mt-10 max-w-xl overflow-hidden rounded-2xl border border-line bg-log-bg font-mono text-[13px] text-log-fg shadow-sm">
+      <p class="border-b border-white/10 px-4 py-2.5 text-[12px] text-[#98989d]">On the new machine</p>
+      <p class="px-4 py-4"><span class="text-[#636366]">$</span> curl … | sudo bash</p>
+    </div>
+  </Section>
+
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Why it matters" title="Your hardware, first-class." />
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {
+        points.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      The tunnel connects to your main Serve server on TCP port 7822, so open that port there. In a private network, at least one of two connected servers needs a public
+      address.
+    </p>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Put that spare machine to work.</h2>
+      <p class="mt-3 text-muted">Works with every Serve install. Nothing to add.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Install Serve <ArrowRight /></a>
+        <a href="/docs/cloudflare/" class={buttonVariants({ size: "lg" })}>Cloudflare Tunnels</a>
+      </div>
+    </div>
+  </Section>
+</Site>

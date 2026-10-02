@@ -1,0 +1,501 @@
+@layer base, starlight, theme, components, utilities;
+@import "@astrojs/starlight-tailwind";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "./tokens.css";
+
+/* Starlight has no Tailwind Preflight. Reset buttons so Tailwind classes look the same as on the marketing pages. */
+@layer base {
+  button {
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+  }
+}
+
+/*
+ * Starlight in Serve's colors. Unlayered, so it wins over Starlight and starlight-tailwind.
+ * The Serve tokens switch with data-theme, so one mapping covers both themes.
+ */
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  --sl-font: var(--font-sans);
+  --sl-font-mono: var(--font-mono);
+
+  --sl-color-white: var(--fg);
+  --sl-color-gray-1: var(--fg);
+  --sl-color-gray-2: var(--fg-2);
+  --sl-color-gray-3: var(--muted);
+  --sl-color-gray-4: var(--faint);
+  --sl-color-gray-5: var(--line-strong);
+  --sl-color-gray-6: var(--surface-hover);
+  --sl-color-gray-7: var(--surface-2);
+  --sl-color-black: var(--bg);
+
+  --sl-color-accent-low: var(--accent-soft);
+  --sl-color-accent: var(--accent);
+  --sl-color-accent-high: var(--accent);
+
+  --sl-color-text: var(--fg-2);
+  --sl-color-text-accent: var(--accent);
+  --sl-color-text-invert: var(--accent-fg);
+  --sl-color-bg: var(--bg);
+  --sl-color-bg-nav: var(--glass);
+  --sl-color-bg-sidebar: var(--bg);
+  --sl-color-bg-inline-code: var(--surface-hover);
+  --sl-color-bg-accent: var(--accent);
+  --sl-color-hairline-light: var(--line-strong);
+  --sl-color-hairline: var(--line);
+  --sl-color-hairline-shade: var(--line);
+  --sl-color-backdrop-overlay: var(--backdrop);
+
+  --sl-color-blue: var(--info);
+  --sl-color-blue-low: var(--info-soft);
+  --sl-color-blue-high: var(--info);
+  --sl-color-green: var(--ok);
+  --sl-color-green-low: var(--ok-soft);
+  --sl-color-green-high: var(--ok);
+  --sl-color-orange: var(--warn);
+  --sl-color-orange-low: var(--warn-soft);
+  --sl-color-orange-high: var(--warn);
+  --sl-color-red: var(--bad);
+  --sl-color-red-low: var(--bad-soft);
+  --sl-color-red-high: var(--bad);
+
+  --sl-text-body: 0.9375rem;
+  --sl-content-width: 46rem;
+}
+
+/* A calmer type scale than Starlight's, close to the dashboard. */
+:root {
+  --sl-text-h1: 2rem;
+  --sl-text-h2: 1.375rem;
+  --sl-text-h3: 1.0625rem;
+  --sl-text-h4: 1rem;
+  --sl-text-h5: 0.9375rem;
+}
+
+.sl-markdown-content :is(h2, h3, h4) {
+  font-weight: 600;
+}
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Anchor links: quiet until the heading is hovered. */
+.sl-markdown-content .sl-anchor-link {
+  color: var(--faint);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.sl-markdown-content .sl-heading-wrapper:hover .sl-anchor-link,
+.sl-markdown-content .sl-anchor-link:focus-visible {
+  opacity: 1;
+}
+
+.sl-markdown-content a:not(.sl-anchor-link, .sl-link-card a, .card a) {
+  color: var(--accent);
+  text-decoration-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  text-underline-offset: 3px;
+}
+.sl-markdown-content a:not(.sl-anchor-link):hover {
+  text-decoration-color: var(--accent);
+}
+
+/* Sidebar links: the current page as a raised row, like the dashboard nav. */
+.docs-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.docs-nav h4 {
+  margin: 0 0 0.5rem;
+}
+.docs-nav-link {
+  display: block;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  text-decoration: none;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+.docs-nav-link:hover {
+  background: var(--surface-hover);
+  color: var(--fg);
+}
+.docs-nav-link.current {
+  background: var(--surface);
+  color: var(--fg);
+  font-weight: 500;
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px var(--line);
+}
+
+/* Code blocks and tables. */
+.sl-markdown-content table {
+  font-size: 0.875rem;
+}
+/* Full width, like the old docs. On phones, tables keep Starlight's sideways scroll. */
+@media (min-width: 50rem) {
+  .sl-markdown-content table {
+    display: table;
+    width: 100%;
+  }
+}
+.sl-markdown-content td code {
+  white-space: nowrap;
+}
+.sl-markdown-content :not(pre) > code {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.led {
+  --led: var(--idle);
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--led);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--led) 16%, transparent);
+}
+
+/* ------------------------------------------------------------------
+ * Layout: match the old docs. One header line, no column borders.
+ * ------------------------------------------------------------------ */
+:root {
+  --sl-nav-height: 3.5rem;
+  --sl-sidebar-width: 17rem;
+  --sl-nav-pad-x: 1.5rem;
+}
+
+header.header {
+  border-bottom: 1px solid var(--line);
+  background: var(--glass);
+}
+
+.sidebar-pane,
+.right-sidebar {
+  border: 0 !important;
+}
+.content-panel + .content-panel {
+  border-top: 0;
+}
+.content-panel {
+  padding-block: 0.75rem;
+}
+.main-pane .content-panel:first-child {
+  padding-top: 2.5rem;
+}
+
+/* Small search box in the header, like the marketing site. */
+.docs-search button[data-open-modal] {
+  height: 2rem;
+  min-width: 13rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+  box-shadow: var(--shadow-sm);
+}
+.docs-search button[data-open-modal]:hover {
+  border-color: var(--line-strong);
+  color: var(--fg-2);
+}
+.docs-search button[data-open-modal] > kbd {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.docs-search button[data-open-modal] > kbd kbd {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+}
+@media (max-width: 49.99rem) {
+  .docs-search button[data-open-modal] {
+    min-width: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+/* "On this page": a quiet list with a line and an accent mark on the current heading. */
+.right-sidebar-panel {
+  padding-top: 2.5rem;
+}
+starlight-toc h2 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  margin-bottom: 0.75rem;
+}
+starlight-toc nav > ul {
+  border-inline-start: 1px solid var(--line);
+}
+starlight-toc a {
+  margin-inline-start: -1px;
+  border-inline-start: 1px solid transparent;
+  border-radius: 0;
+  font-size: 13px;
+  color: var(--muted);
+  padding-block: 0.3rem;
+}
+starlight-toc a:hover {
+  color: var(--fg);
+}
+starlight-toc a[aria-current="true"] {
+  border-inline-start-color: var(--accent);
+  color: var(--fg);
+}
+
+/* Prev / next as the old cards. */
+.pagination-links a {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: none;
+}
+.pagination-links a:hover {
+  border-color: var(--line-strong);
+}
+.pagination-links .link-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+/* Lists and code. */
+.sl-markdown-content li::marker {
+  color: var(--faint);
+}
+.expressive-code pre {
+  border-radius: var(--radius-lg) !important;
+}
+
+/* Mobile menu button: a plain icon, like the marketing header. */
+button.sl-menu-button {
+  background: transparent;
+  color: var(--fg-2);
+  box-shadow: none;
+  border: 0;
+}
+button.sl-menu-button:hover,
+button.sl-menu-button:has(~ :popover-open) {
+  background: var(--surface-hover);
+  color: var(--fg);
+}
+
+/* "On this page" starts at the first heading, as before (no "Overview" entry). */
+starlight-toc nav > ul > li:first-child:has(> a[href="#_top"]),
+mobile-starlight-toc ul > li:first-child:has(> a[href="#_top"]) {
+  display: none;
+}
+starlight-toc a {
+  padding-block: 0.35rem;
+}
+
+/* Copy button: small, and shown when you point at the code block. */
+.expressive-code .copy button {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.expressive-code figure:hover .copy button,
+.expressive-code .copy button:focus-visible {
+  opacity: 1;
+}
+
+/* Body text as on the old docs: 15px, relaxed. */
+.sl-markdown-content {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.expressive-code pre {
+  box-shadow: none !important;
+}
+
+.sidebar-content {
+  padding-top: 2rem;
+}
+
+/* ------------------------------------------------------------------
+ * API reference.
+ * ------------------------------------------------------------------ */
+.api-intro {
+  color: var(--muted);
+}
+.api-endpoint {
+  margin-top: 2.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--line);
+}
+.api-endpoint h2 {
+  margin: 0;
+  font-size: var(--sl-text-h2);
+}
+.api-route {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 0.75rem;
+  min-width: 0;
+}
+.api-method {
+  flex: none;
+  min-width: 3.5rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+.api-method-get {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.api-method-post {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.api-method-put,
+.api-method-patch {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.api-method-delete {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+.sl-markdown-content .api-path {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 14px;
+  color: var(--fg);
+}
+.api-needs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+}
+.sl-markdown-content .api-needs {
+  margin-top: 0.75rem;
+}
+.api-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 12px;
+  color: var(--fg-2);
+}
+.sl-markdown-content .api-badge code {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 11px;
+  color: var(--faint);
+}
+.api-badge-open {
+  color: var(--muted);
+}
+.api-description {
+  margin-top: 1rem;
+}
+.sl-markdown-content .api-sub {
+  margin-top: 1.5rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.sl-markdown-content .api-sub .api-variant {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-2);
+  padding: 0.0625rem 0.375rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.sl-markdown-content .api-fields {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.sl-markdown-content .api-fields li {
+  margin: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.api-field-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.625rem;
+}
+.sl-markdown-content .api-field-name {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+}
+.api-field-type {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--faint);
+  overflow-wrap: anywhere;
+}
+.api-field-required {
+  font-size: 11.5px;
+  color: var(--warn);
+}
+.api-field-default {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.sl-markdown-content .api-field-description {
+  margin-top: 0.25rem;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.sl-markdown-content .api-field-description p {
+  margin: 0;
+}
+.api-endpoint .expressive-code {
+  margin-top: 1.25rem;
+}
+.expressive-code .frame {
+  box-shadow: none !important;
+}

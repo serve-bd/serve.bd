@@ -1,0 +1,163 @@
+---
+title: "Domains and HTTPS"
+description: "Domains, proxies and Let's Encrypt certificates."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Every server runs a reverse proxy that sends requests for your domains to the right app. Serve gets HTTPS certificates from Let's Encrypt and renews them automatically.
+
+## Reverse proxies
+
+You pick the **Reverse proxy** for each server on its **Proxy** page.
+
+| Proxy | What it is good at |
+| --- | --- |
+| nginx (default) | Fast and predictable. You can add raw nginx directives per service. |
+| Caddy | Automatic HTTPS, Caddyfile snippets and HTTP/3. |
+| Traefik | Built-in ACME, including Cloudflare DNS, and middlewares. |
+| None | Serve runs no proxy on this server. |
+
+You can switch any time. Serve keeps the settings of each proxy, so you can switch back without losing them.
+
+### Custom proxy files
+
+You can add your own configuration files to a server's proxy. Open the server's **Proxy** page. The **Dynamic configurations** card lists the files the proxy loads. Files marked **Managed** are made by Serve. Under **Custom files**, choose **Add**.
+
+| Proxy | File name ends in | Where it is loaded |
+| --- | --- | --- |
+| nginx | `.conf` | Inside the `http` block, before the sites. Add `server` blocks, maps or rate limit zones. |
+| Caddy | `.caddy` | At the end of the Caddyfile. |
+| Traefik | `.yaml` or `.yml` | Through Traefik's file provider. |
+
+**Test and apply** writes the file, checks it with the proxy and reloads. If the proxy rejects the file, nothing changes. On other servers a change takes about 8 seconds.
+
+File names use lowercase letters, digits, dots, dashes and underscores, like `my-rules.conf`. A server can have up to 50 custom files.
+
+Each proxy keeps its own files. When you switch to another proxy, the old proxy's files are kept but not used. They work again when you switch back.
+
+#### Reach the machine's own ports
+
+A custom file can send requests to `127.0.0.1:PORT` or `localhost:PORT` on the server. Use it for a program that runs outside Docker, even one that only listens on `127.0.0.1`.
+
+```nginx
+location / {
+  proxy_pass http://127.0.0.1:8080;
+}
+```
+
+To make this work, Serve runs two small helper containers, `serve-proxy-host-ports` and `serve-proxy-host-relay`. They run only while a custom file names such a port. Ports the proxy uses itself, like 80 and 443, still reach the proxy.
+
+An nginx `upstream` can spread requests over several local ports. If one stops, the others answer:
+
+```nginx
+upstream legacy {
+  server 127.0.0.1:8080 max_fails=1 fail_timeout=10s;
+  server 127.0.0.1:8081 max_fails=1 fail_timeout=10s;
+}
+```
+
+#### Reach Serve apps
+
+A custom file can also send requests to an app in Serve, by its **Private hostname** and its container port. In nginx, put the address in a variable:
+
+```nginx
+set $app http://web:3000;
+proxy_pass $app;
+```
+
+With a variable, nginx looks up the name on each request. Without it, nginx looks it up only once, and fails to load when the app is not running. Give the service in each environment its own private hostname, so the file reaches the right one.
+
+## Let's Encrypt
+
+Let's Encrypt needs an **Account email**. Set it under **Settings → General**. Turn on **Use staging** to test against the Let's Encrypt staging servers first. Staging certificates are not trusted by browsers, but staging has much higher rate limits.
+
+Certificates renew automatically.
+
+## Certificate sources
+
+The **Certificates** page lists every certificate and where it comes from.
+
+| Source | How it works |
+| --- | --- |
+| Let's Encrypt | HTTP validation. Port 80 must reach the server. |
+| Let's Encrypt via Cloudflare DNS | DNS validation through your Cloudflare account. Use it for wildcards like `*.example.com`. |
+| Cloudflare Origin CA | A certificate from Cloudflare for traffic between Cloudflare and your server. |
+| Uploaded | A certificate and key you upload yourself. |
+
+See [Cloudflare](/docs/cloudflare) to connect an account.
+
+When you remove a domain, or delete the app or database that had it, Serve deletes the Let's Encrypt certificate it got for that name. It waits until nothing else on the server uses the certificate. Uploaded, Cloudflare Origin CA, wildcard and multi-name certificates are kept.
+
+### Use a certificate in a custom config
+
+To use a certificate in a [custom proxy file](#custom-proxy-files), open its menu on the **Certificates** page and choose **Use in a custom config**. Serve shows the certificate and key paths inside the proxy, and a snippet for the server's proxy:
+
+```nginx
+ssl_certificate     /etc/letsencrypt/live/<id>/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/<id>/privkey.pem;
+```
+
+For Caddy, the snippet is a `tls <cert> <key>` line for the site block. For Traefik, it is a `tls.certificates` entry.
+
+A certificate is stored on its own server, so it works only there. To use it on another server, upload it to that server too.
+
+## Server addressing
+
+Each server has **Addressing** settings that decide which domain a new service gets.
+
+- **Public IPv4**: the address your DNS records point to.
+- **Wildcard domain**: for example `apps.example.com`. New services get `<slug>.<wildcard>`, such as `api.apps.example.com`. Point a wildcard DNS record (`*.apps.example.com`) at the server once and every new service works.
+- **Fall back to sslip.io**: without a wildcard domain, services get a hostname under sslip.io that resolves to the server's IP. This is handy for testing before you own a domain.
+
+## Add a domain
+
+1. Open the service and go to its domains.
+2. Enter the hostname, for example `app.example.com`.
+3. Point a DNS record at the server: an `A` record to its public IPv4, or a `CNAME` to a hostname that resolves to it.
+4. Serve runs a DNS check and shows whether the record points to the right place.
+
+If the zone is in a connected Cloudflare account, you can tick **Create the DNS record** and Serve creates it for you. **Proxy through Cloudflare** turns on the orange cloud for that record.
+
+:::tip
+Let's Encrypt with HTTP validation only works once DNS points to the server and port 80 is reachable. If the certificate fails, check the DNS record and your firewall first.
+:::
+
+:::caution[Known issue in v0.1.15 and v0.1.16]
+In these versions, certificates from **Let's Encrypt via Cloudflare DNS** fail with `certbot: error: unrecognized arguments`. This includes renewals. HTTP validation still works. The fix is in the next release.
+:::
+
+## Domain options
+
+Each domain has its own options.
+
+| Option | What it does |
+| --- | --- |
+| **www redirect** | Redirect between `www.` and the bare domain. |
+| **Redirect to** | Send all requests to another URL. |
+| **Password protection** | Ask for a user name and password. |
+| **Access control** | Allow or Block IP addresses. |
+| **Security headers** | Add common security headers. |
+| **Headers** | Add your own response headers. |
+| **CORS allowed origins** | Origins allowed to call the app from a browser. |
+| **Compression** | Compress responses. |
+| **Cache static files** | Let browsers cache static files. |
+| **Sticky sessions** | Send a visitor to the same replica each time. |
+| **WebSockets** | Allow WebSocket connections. |
+| **Response buffering** | Buffer responses in the proxy. |
+| **Max request body** | Largest upload the proxy accepts. |
+| Timeouts | How long the proxy waits for the app. |
+| **Proxy config** | Raw configuration for the server's proxy. |
+
+## Verified domains
+
+Organizations other than the Root organization must prove they own a domain before they use it. They do this on the **Domains** page under **Verified domains**, by adding a DNS TXT record.
+
+An organization does not need to verify a domain whose zone is in its own connected Cloudflare account.
+
+Turn this rule on or off under **Settings → Advanced** with **Other organizations prove they own their domains**. It keeps one organization from taking another's domain.
+
+<CardGrid>
+<LinkCard href="/docs/cloudflare" title="Cloudflare" description="DNS records, SSL mode and Tunnels." />
+<LinkCard href="/docs/servers" title="Servers" description="Add servers and set their proxy." />
+</CardGrid>

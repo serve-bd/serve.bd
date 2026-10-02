@@ -1,0 +1,222 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "./tokens.css";
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+  html {
+    background: var(--bg);
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    position: relative;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: -0.006em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv11", "ss03";
+  }
+  .root {
+    isolation: isolate;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.022em;
+  }
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono);
+  }
+  input[type="number"]::-webkit-inner-spin-button {
+    opacity: 0.4;
+  }
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 80px;
+  }
+  body {
+    font-size: 15px;
+  }
+}
+
+@layer components {
+  /* Status lamp: the signature element, as in the dashboard. */
+  .led {
+    --led: var(--idle);
+    position: relative;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 999px;
+    background: var(--led);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--led) 16%, transparent);
+  }
+  .led[data-pulse] {
+    animation: var(--animate-led);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  /* A faint grid that fades out, behind the hero. */
+  .hero-grid {
+    background-image: linear-gradient(to right, var(--line) 1px, transparent 1px), linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 30%, transparent 75%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Feature canvases: SVG lines and frames, with HTML cards like the dashboard's project canvas. */
+@layer components {
+  .cv-frame {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--bg);
+    box-shadow: var(--shadow-md);
+  }
+  .cv-frame svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .cv-wide {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .cv-wide {
+      display: block;
+    }
+    .cv-tall {
+      display: none;
+    }
+  }
+  .cv-dot {
+    fill: var(--line-strong);
+  }
+  .cv-edge {
+    fill: none;
+    stroke: color-mix(in oklab, var(--muted) 65%, transparent);
+    stroke-width: 1.5;
+  }
+  .cv-edge-accent {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 5;
+    animation: cv-dash 1s linear infinite;
+  }
+  .cv-arrow {
+    fill: color-mix(in oklab, var(--muted) 65%, transparent);
+  }
+  .cv-arrow-accent {
+    fill: var(--accent);
+  }
+  /* A server, like the dashed frames on the dashboard canvas. */
+  .cv-server {
+    fill: color-mix(in oklab, var(--surface-2) 30%, transparent);
+    stroke: color-mix(in oklab, var(--line-strong) 70%, transparent);
+    stroke-dasharray: 6 4;
+  }
+  .cv-server-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    fill: var(--muted);
+  }
+  .cv-note {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    fill: var(--faint);
+  }
+  /*
+   * A copy plays once and stays done: the bar fills, fades, and the status turns from
+   * "Copying data…" to "Running". The copying line on the canvas fades to a plain one.
+   */
+  .cv-progress {
+    transform-origin: left;
+    animation:
+      cv-progress 4s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both,
+      cv-out 0.4s ease 4.6s forwards;
+  }
+  .cv-copying {
+    animation: cv-out 0.3s ease 4.6s forwards;
+  }
+  .cv-copied {
+    opacity: 0;
+    animation: cv-in 0.3s ease 4.7s forwards;
+  }
+  .cv-copy-edge {
+    animation:
+      cv-dash 1s linear infinite,
+      cv-out 0.4s ease 4.6s forwards;
+  }
+  @keyframes cv-dash {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+  @keyframes cv-progress {
+    from {
+      transform: scaleX(0.02);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes cv-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes cv-in {
+    to {
+      opacity: 1;
+    }
+  }
+}

@@ -1,0 +1,199 @@
+---
+import { ArrowRight, Boxes, Cloud, Database, GitBranch, Globe, Network, Rocket, ShieldCheck, Users } from "lucide-react";
+import InstallCommand from "@/components/site/InstallCommand.astro";
+import Section from "@/components/site/Section.astro";
+import Site from "@/layouts/Site.astro";
+import { featurePages } from "@/lib/site";
+
+const groups = [
+  {
+    icon: GitBranch,
+    title: "Apps",
+    page: "/features/git-to-production/",
+    text: "Bring code from any Git host, a Docker image, a Dockerfile or a Compose file.",
+    doc: "/docs/apps/",
+    points: [
+      "GitHub App in one click, plus GitLab, Gitea, Forgejo and Bitbucket",
+      "Any Git URL with an access token or an SSH deploy key",
+      "Builds with a Dockerfile, Nixpacks or built-in detection",
+      "Detects Node.js, Bun, Next.js, Python, Go, Rust, PHP and static sites",
+      "Replicas, CPU and memory limits, restart policies",
+      "Scheduled tasks and a maintenance page",
+    ],
+  },
+  {
+    icon: Rocket,
+    title: "Deployments",
+    page: "/features/pull-request-previews/",
+    text: "Every push builds and ships. A bad build never replaces a good one.",
+    doc: "/docs/deployments/",
+    points: [
+      "Rolling deploys with zero downtime, gated by health checks",
+      "Pre-deploy commands for migrations",
+      "Rollback to any earlier deployment",
+      "Pull request previews, each with its own copy of the database",
+      "Deploy hooks for CI, and a REST API",
+      "Build logs, runtime logs, request logs and a container console",
+    ],
+  },
+  {
+    icon: Database,
+    title: "Databases",
+    page: "/features/database-branching/",
+    text: "Production databases with backups you never have to think about.",
+    doc: "/docs/databases/",
+    points: [
+      "PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey and ClickHouse",
+      "Scheduled backups to disk or S3, with one-click restore",
+      "Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, MinIO and more",
+      "Database branches: a full copy of the data to test a migration or back a preview",
+      "Database users with read-only, read-write or full access",
+      "TLS, a public port or a database domain",
+      "Custom images such as pgvector",
+    ],
+  },
+  {
+    icon: Boxes,
+    title: "One-click services",
+    page: "/features/one-click-services/",
+    text: "A catalog of ready apps, plus your own templates.",
+    doc: "/docs/templates/",
+    points: [
+      "n8n, Uptime Kuma, Plausible, Ghost, Nextcloud, Vaultwarden, Grafana, MinIO and more",
+      "Secrets are generated and domains are set for you",
+      "New templates arrive without a Serve update",
+      "Save your own Compose files as templates",
+    ],
+  },
+  {
+    icon: Globe,
+    title: "Domains and HTTPS",
+    page: "/features/domains-and-https/",
+    text: "Pick the proxy you like. Certificates renew on their own.",
+    doc: "/docs/domains/",
+    points: [
+      "nginx, Caddy or Traefik, and switch at any time",
+      "Let's Encrypt certificates, including wildcards over Cloudflare DNS",
+      "A wildcard domain per server, or sslip.io to start",
+      "Redirects, password protection, IP rules, headers and CORS",
+    ],
+  },
+  {
+    icon: Cloud,
+    title: "Cloudflare",
+    text: "DNS and Tunnels, managed from the same place as your apps.",
+    doc: "/docs/cloudflare/",
+    points: ["Create DNS records when you add a domain", "Tunnels for servers without a public IP", "Reach databases through a tunnel", "Set the SSL mode of a zone"],
+  },
+  {
+    icon: Network,
+    title: "Many servers",
+    page: "/features/servers-without-public-ip/",
+    text: "Start on one machine. Add more over SSH, even from behind NAT.",
+    doc: "/docs/servers/",
+    points: [
+      "Add servers over SSH with a key",
+      "No public IP mode for machines at home or in the office",
+      "An encrypted WireGuard network between servers",
+      "Metrics, resource alerts, automatic cleanup and a web terminal",
+    ],
+  },
+  {
+    icon: Users,
+    title: "Teams",
+    page: "/features/teams/",
+    text: "Share a Serve with your team, or host many teams on one.",
+    doc: "/docs/teams/",
+    points: [
+      "Organizations with their own limits",
+      "Owner, Admin, Developer and Viewer roles, plus custom roles",
+      "Access to all projects or chosen ones",
+      "Your own name, logo and accent colour",
+    ],
+  },
+  {
+    icon: ShieldCheck,
+    title: "Security and operations",
+    text: "The boring parts, done properly.",
+    doc: "/docs/security/",
+    points: [
+      "Two-factor authentication and single sign-on with GitHub, Google or OpenID Connect",
+      "An activity log of every change",
+      "Uptime checks and notifications to Slack, Discord, email and 14 more",
+      "One-click updates with a backup first and a rollback if needed",
+    ],
+  },
+];
+---
+
+<Site title="Features" description="Everything Serve does: apps, databases, one-click services, deployments, domains, Cloudflare, many servers and teams.">
+  <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20">
+    <div class="max-w-2xl">
+      <p class="mb-3 font-mono text-[12px] tracking-wide text-accent uppercase">Features</p>
+      <h1 class="text-4xl font-semibold tracking-tight text-balance text-fg sm:text-5xl">Everything you need to run your apps. Nothing you rent.</h1>
+      <p class="mt-4 text-[16px] leading-relaxed text-muted">Serve runs on your own servers. Here is what it does.</p>
+    </div>
+    <div class="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        featurePages.map((f) => (
+          <a href={f.href} class="group flex flex-col rounded-2xl border border-line bg-surface p-5 shadow-sm transition-colors hover:border-line-strong">
+            <span class="flex items-center gap-2 text-[12px] text-accent">
+              <span class="led" style="--led: var(--accent)" /> Highlight
+            </span>
+            <span class="mt-3 text-[16px] font-semibold text-fg">{f.label}</span>
+            <span class="mt-1 text-sm text-muted">{f.text}</span>
+            <span class="mt-4 inline-flex items-center gap-1 text-[13px] text-fg-2 group-hover:text-fg">
+              See how it works <ArrowRight className="size-3.5" />
+            </span>
+          </a>
+        ))
+      }
+      <a href="/docs/" class="group flex flex-col rounded-2xl border border-dashed border-line p-5 transition-colors hover:border-line-strong">
+        <span class="text-[12px] text-muted">And more</span>
+        <span class="mt-3 text-[16px] font-semibold text-fg">The full docs</span>
+        <span class="mt-1 text-sm text-muted">Backups, Cloudflare, security, the API and every setting.</span>
+        <span class="mt-4 inline-flex items-center gap-1 text-[13px] text-fg-2 group-hover:text-fg">
+          Read the docs <ArrowRight className="size-3.5" />
+        </span>
+      </a>
+    </div>
+  </div>
+  <Section class="pt-14 sm:pt-16">
+    <div class="divide-y divide-line border-y border-line">
+      {
+        groups.map(({ icon: Icon, title, text, doc, page, points }) => (
+          <div class="grid grid-cols-1 gap-6 py-10 md:grid-cols-[1fr_1.6fr] md:gap-12">
+            <div>
+              <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-surface text-fg-2 shadow-sm">
+                <Icon className="size-[18px]" />
+              </span>
+              <h2 class="text-xl font-semibold text-fg">{title}</h2>
+              <p class="mt-2 text-[15px] leading-relaxed text-muted">{text}</p>
+              <a href={doc} class="mt-4 inline-flex items-center gap-1 text-sm text-accent hover:underline">
+                Read the docs <ArrowRight className="size-3.5" />
+              </a>
+              {page && (
+                <a href={page} class="mt-2 flex items-center gap-1 text-sm text-fg-2 hover:text-fg">
+                  <span class="led" style="--led: var(--info)" /> {featurePages.find((f) => f.href === page)?.label} <ArrowRight className="size-3.5" />
+                </a>
+              )}
+            </div>
+            <ul class="grid grid-cols-1 content-start gap-x-8 gap-y-3 sm:grid-cols-2">
+              {points.map((p) => (
+                <li class="flex gap-3 text-[14.5px] leading-snug text-fg-2">
+                  <span class="led mt-1.5 size-1.5 shadow-none" style="--led: var(--accent)" />
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    <div class="mt-20 flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-fg">Try it on a spare server.</h2>
+      <p class="mt-3 text-muted">It takes one command.</p>
+      <InstallCommand class="mt-7" />
+    </div>
+  </Section>
+</Site>

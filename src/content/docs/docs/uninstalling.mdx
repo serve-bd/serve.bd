@@ -1,0 +1,104 @@
+---
+title: "Uninstalling"
+description: "Remove Serve, your apps and their data from your servers."
+---
+
+import { LinkCard } from '@astrojs/starlight/components';
+
+Serve keeps everything in Docker and in `/data/serve`, so you can remove it fully with a few commands. Docker itself stays installed.
+
+:::danger
+Uninstalling deletes your apps, your databases and their data. You can't undo it. Download the backups you want to keep first.
+:::
+
+## Before you start
+
+- **Keep your data.** Take an [instance backup](/docs/instance-backups), and download the [database backups](/docs/backups) you need.
+- **Remove other servers first.** While the dashboard still runs, remove each extra server under **Servers → the server → Danger zone**. Serve then stops its agent, takes down the private network and deletes its Cloudflare Tunnels. A server with services on it can't be removed, so move or delete those services first.
+- **Leave the private network.** If the main server is in a [private network](/docs/private-networks), choose **Leave network** on its **Private network** page. This removes the network interface and firewall rules Serve added to the machine.
+- **Clean up outside accounts** if you won't use them again. See [Outside Serve](#outside-serve).
+
+## The main server
+
+Run these commands as root on the machine where you installed Serve.
+
+1. Stop Serve and delete its own database:
+
+   ```bash
+   cd /data/serve && docker compose down --volumes
+   ```
+
+2. Remove the containers Serve made for your apps, databases, proxy and tunnels:
+
+   ```bash
+   docker ps -aq --filter label=serve.managed=true | xargs -r docker rm -f
+   ```
+
+3. Look at the volumes that hold app and database data. Their names start with `serve-`:
+
+   ```bash
+   docker volume ls -q | grep '^serve-'
+   ```
+
+   Check the list, then remove them:
+
+   ```bash
+   docker volume ls -q | grep '^serve-' | xargs -r docker volume rm
+   ```
+
+   Compose stacks can have volumes with other names. Find them with `docker volume ls` and remove the ones you don't need.
+
+4. Remove Serve's networks:
+
+   ```bash
+   docker network ls -q --filter label=serve.managed=true | xargs -r docker network rm
+   ```
+
+5. Delete the data directory. It holds the configuration, secrets, certificates and local backups:
+
+   ```bash
+   rm -rf /data/serve
+   ```
+
+6. Optional: free the disk space that images and build cache use. This removes **every** image no container uses, not only Serve's:
+
+   ```bash
+   docker image prune -a
+   docker builder prune -a
+   ```
+
+The installer also added address pools and log rotation to `/etc/docker/daemon.json`. They are safe to keep. To remove them, edit the file and restart Docker.
+
+## Other servers
+
+If you removed a server in the dashboard, Serve already stopped its agent and private network. Your apps' containers and data stay on the machine. On each server:
+
+1. Run steps 2 to 4 from [the main server](#the-main-server).
+2. Delete the server's data directory. It is `/data/serve` unless you changed it when you added the server.
+3. Remove Serve's public key from `~/.ssh/authorized_keys` of the user Serve signed in as.
+
+### Servers without a public IP
+
+These machines also run a tunnel service. Remove it:
+
+```bash
+systemctl disable --now serve-tunnel
+rm /etc/systemd/system/serve-tunnel.service
+systemctl daemon-reload
+rm -rf /etc/serve-tunnel
+```
+
+Without systemd, the tunnel runs as a background loop. Stop it with `pkill -f /etc/serve-tunnel/run.sh`, then delete `/etc/serve-tunnel`.
+
+The join script added Serve's key to `~/.ssh/authorized_keys` of the user you picked. Remove that line too.
+
+## Outside Serve
+
+Serve also set things up in other accounts. Uninstalling doesn't touch them:
+
+- **GitHub:** delete the GitHub App Serve created, under your GitHub account or organization settings → **Developer settings → GitHub Apps**.
+- **Cloudflare:** DNS records Serve created stay in your zones, and so do tunnels of servers you didn't remove. Delete them in Cloudflare, then delete the API token you gave Serve.
+- **S3 storage:** backups in your buckets stay there.
+- **Other Git providers and registries:** revoke the access tokens and deploy keys you gave Serve.
+
+<LinkCard href="/docs/installation" title="Installation" description="Install Serve again." />

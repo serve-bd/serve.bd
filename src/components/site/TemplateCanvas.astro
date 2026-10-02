@@ -1,0 +1,140 @@
+---
+/*
+ * A one-click service on a canvas: the n8n template on the left with the values Serve sets for it,
+ * the Compose stack it becomes in the middle (n8n and its PostgreSQL database), and the generated
+ * domain and named volumes on the right. Values and names come from templates/n8n in the Serve repo.
+ * Labels sit above their lines, so every line stays visible end to end.
+ */
+import CanvasCard from "./CanvasCard.astro";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 520;
+const CW = 264;
+const CH = 104;
+const X = [36, 472, 908];
+const TOP = 96;
+const MID = 220;
+const LOW = 344;
+const cy = (y: number) => y + CH / 2;
+const midX = (a: number) => (X[a] + CW + X[a + 1]) / 2;
+const N8N = "#EA4B71";
+const PG = "#336791";
+const DOMAIN = "n8n.apps.acme.dev";
+
+const link = (x1: number, y1: number, x2: number, y2: number) => {
+  const d = (x2 - x1) / 2;
+  return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2 - 4} ${y2}`;
+};
+
+// The template's vars, as the configure step shows them.
+const vars = [
+  { key: "N8N_ENCRYPTION_KEY", hint: "Random secret", value: "••••••••" },
+  { key: "POSTGRES_PASSWORD", hint: "Strong password", value: "••••••••" },
+  { key: "WEBHOOK_URL", hint: "Follows the domain", value: `https://${DOMAIN}` },
+];
+const VY = 236;
+const VH = 172;
+---
+
+<div
+  class="cv-frame cv-wide"
+  role="img"
+  aria-label={`The n8n template becomes a Compose stack: the n8n app and its PostgreSQL database. Serve generates N8N_ENCRYPTION_KEY and POSTGRES_PASSWORD, sets WEBHOOK_URL to the generated domain ${DOMAIN}, and keeps data in the n8n-data and postgres-data volumes.`}
+>
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <CanvasDefs id="tp" />
+    <rect width={W} height={H} fill="url(#tp-dots)"></rect>
+
+    {/* The stack, like a frame on the dashboard canvas. */}
+    <rect x={X[1] - 24} y={TOP - 48} width={CW + 48} height={LOW + CH + 24 - (TOP - 48)} rx="24" class="cv-server"></rect>
+    <text x={X[1] - 4} y={TOP - 22} class="cv-server-label">compose stack · n8n</text>
+
+    {/* Template → the stack; its values → the stack. */}
+    <path d={link(X[0] + CW, cy(TOP), X[1], cy(TOP))} class="cv-edge-accent" marker-end="url(#tp-arrow-accent)"></path>
+    <CanvasPill x={midX(0)} y={cy(TOP) - 18} text="one click" accent />
+    <path d={`M ${X[0] + CW} ${VY + VH / 2} L ${X[1] - 28} ${VY + VH / 2}`} class="cv-edge" marker-end="url(#tp-arrow)"></path>
+    <CanvasPill x={(X[0] + CW + X[1] - 24) / 2} y={VY + VH / 2 - 18} text="filled in" />
+
+    {/* n8n reaches its database by name. */}
+    <path d={`M ${X[1] + CW / 2} ${TOP + CH} V ${LOW - 4}`} class="cv-edge" marker-end="url(#tp-arrow)"></path>
+    <CanvasPill x={X[1] + CW / 2 + 62} y={(TOP + CH + LOW) / 2} text="postgres:5432" />
+
+    {/* The generated domain and the named volumes. */}
+    <path d={link(X[1] + CW, cy(TOP), X[2], cy(TOP))} class="cv-edge-accent" marker-end="url(#tp-arrow-accent)"></path>
+    <CanvasPill x={midX(1)} y={cy(TOP) - 18} text="port 5678" accent />
+    <path d={link(X[1] + CW, cy(TOP) + 20, X[2], cy(MID))} class="cv-edge" marker-end="url(#tp-arrow)"></path>
+    <path d={link(X[1] + CW, cy(LOW), X[2], cy(LOW))} class="cv-edge" marker-end="url(#tp-arrow)"></path>
+    <CanvasPill x={midX(1)} y={cy(LOW) - 18} text="volume" />
+
+    <text x={X[0]} y={TOP - 14} class="cv-server-label">template</text>
+    <CanvasCard x={X[0]} y={TOP} name="n8n" detail="Automation · from the catalog" color={N8N} status="Created" />
+
+    <foreignObject x={X[0]} y={VY} width={CW} height={VH}>
+      <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-line-strong bg-surface font-sans shadow-sm">
+        <p class="border-b border-line px-3.5 py-2 text-[11px] font-medium text-fg-2">3 values set automatically</p>
+        {
+          vars.map((v) => (
+            <div class="flex flex-1 items-center justify-between gap-3 border-b border-line px-3.5 last:border-b-0">
+              <span class="flex min-w-0 flex-col">
+                <span class="truncate font-mono text-[10.5px] leading-4 text-fg">{v.key}</span>
+                <span class="text-[10px] leading-4 text-muted">{v.hint}</span>
+              </span>
+              <span class="max-w-[46%] truncate font-mono text-[10.5px] text-faint">{v.value}</span>
+            </div>
+          ))
+        }
+      </div>
+    </foreignObject>
+
+    <CanvasCard x={X[1]} y={TOP} name="n8n" detail="n8nio/n8n · port 5678" color={N8N} selected />
+    <CanvasCard x={X[1]} y={LOW} name="postgres" detail="postgres:17-alpine" icon="db" color={PG} status="Healthy" />
+
+    <CanvasCard x={X[2]} y={TOP} name={DOMAIN} detail="Generated domain" icon="globe" status="Online" />
+    <CanvasCard x={X[2]} y={MID + 12} name="n8n-data" detail="Volume · /home/node/.n8n" icon="db" status="Mounted" />
+    <CanvasCard x={X[2]} y={LOW + 24} name="postgres-data" detail="Volume · /var/lib/postgresql/data" icon="db" status="Mounted" />
+
+    <text x={X[0]} y={VY + VH + 30} class="cv-note">Type your own value to replace any generated one.</text>
+  </svg>
+</div>
+
+<div class="cv-frame cv-tall" role="img" aria-label={`The n8n template becomes a Compose stack of n8n and PostgreSQL, with generated secrets and the domain ${DOMAIN}.`}>
+  <svg viewBox="0 0 330 852" aria-hidden="true">
+    <CanvasDefs id="tpt" />
+    <rect width="330" height="852" fill="url(#tpt-dots)"></rect>
+    <path d="M 165 136 V 168" class="cv-edge-accent" marker-end="url(#tpt-arrow-accent)"></path>
+    <CanvasPill x={234} y={152} text="one click" accent />
+    <path d="M 165 344 V 376" class="cv-edge" marker-end="url(#tpt-arrow)"></path>
+    <path d="M 165 516 V 548" class="cv-edge" marker-end="url(#tpt-arrow)"></path>
+    <CanvasPill x={242} y={532} text="postgres:5432" />
+    <path d="M 165 684 V 712" class="cv-edge-accent" marker-end="url(#tpt-arrow-accent)"></path>
+    <CanvasPill x={234} y={698} text="port 5678" accent />
+
+    <text x="22" y="22" class="cv-server-label">template</text>
+    <CanvasCard x={22} y={32} w={286} name="n8n" detail="Automation · from the catalog" color={N8N} status="Created" />
+
+    <foreignObject x="22" y="172" width="286" height={VH}>
+      <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-line-strong bg-surface font-sans shadow-sm">
+        <p class="border-b border-line px-3.5 py-2 text-[11px] font-medium text-fg-2">3 values set automatically</p>
+        {
+          vars.map((v) => (
+            <div class="flex flex-1 items-center justify-between gap-3 border-b border-line px-3.5 last:border-b-0">
+              <span class="flex min-w-0 flex-col">
+                <span class="truncate font-mono text-[10.5px] leading-4 text-fg">{v.key}</span>
+                <span class="text-[10px] leading-4 text-muted">{v.hint}</span>
+              </span>
+              <span class="max-w-[42%] truncate font-mono text-[10.5px] text-faint">{v.value}</span>
+            </div>
+          ))
+        }
+      </div>
+    </foreignObject>
+
+    <rect x="10" y="380" width="310" height="300" rx="22" class="cv-server"></rect>
+    <text x="26" y="404" class="cv-server-label">compose stack</text>
+    <CanvasCard x={22} y={412} w={286} name="n8n" detail="n8nio/n8n · volume n8n-data" color={N8N} selected />
+    <CanvasCard x={22} y={552} w={286} name="postgres" detail="postgres:17-alpine · postgres-data" icon="db" color={PG} status="Healthy" />
+    <CanvasCard x={22} y={716} w={286} name={DOMAIN} detail="Generated domain" icon="globe" status="Online" />
+  </svg>
+</div>

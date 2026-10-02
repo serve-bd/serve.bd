@@ -1,0 +1,44 @@
+---
+// The docs header, built like the marketing header: logo and links on the left,
+// a small search box, GitHub, theme and Install on the right.
+import Search from "@astrojs/starlight/components/Search.astro";
+import { FeaturesMenu } from "@/components/react/features-menu";
+import { GitHubMark } from "@/components/react/github-mark";
+import { ThemeToggle } from "@/components/react/theme-toggle";
+import { buttonVariants } from "@/components/react/ui/button";
+import { nav, site } from "@/lib/site";
+import { cn } from "@/lib/utils";
+import Mark from "../Mark.astro";
+---
+
+<div class="flex h-full items-center gap-6">
+  <a href="/" class="flex shrink-0 items-center gap-2 no-underline" aria-label="Serve home">
+    <Mark class="size-6" />
+    <span class="font-display text-[17px] font-semibold tracking-tight text-fg">Serve</span>
+  </a>
+  <nav class="hidden items-center gap-1 lg:flex">
+    {
+      nav.map((item) =>
+        item.label === "Features" ? (
+          <FeaturesMenu client:idle />
+        ) : (
+        <a
+          href={item.href}
+          {...(item.external ? { target: "_blank", rel: "noreferrer" } : {})}
+          class={cn("rounded-md px-2.5 py-1.5 text-[13.5px] no-underline transition-colors hover:text-fg", item.href === "/docs/" ? "text-fg" : "text-muted")}
+        >
+          {item.label}
+        </a>
+        ),
+      )
+    }
+  </nav>
+  <div class="ml-auto flex items-center gap-1.5">
+    <div class="docs-search"><Search /></div>
+    <a href={site.github} target="_blank" rel="noreferrer" aria-label="GitHub" class={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden md:inline-flex")}>
+      <GitHubMark className="size-4" />
+    </a>
+    <div class="hidden md:block"><ThemeToggle client:idle /></div>
+    <a href="/docs/installation/" class={cn(buttonVariants({ variant: "primary", size: "sm" }), "ml-1 hidden no-underline md:inline-flex")}>Install</a>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+---
+/** The Serve mark: a rack unit with a lit status lamp. */
+const { class: className = "size-6" } = Astro.props;
+---
+
+<svg viewBox="0 0 28 28" class={className} aria-hidden="true">
+  <rect x="1" y="1" width="26" height="26" rx="7" fill="var(--fg)"></rect>
+  <rect x="6" y="8" width="16" height="4" rx="1.5" fill="var(--bg)" opacity="0.9"></rect>
+  <rect x="6" y="16" width="16" height="4" rx="1.5" fill="var(--bg)" opacity="0.55"></rect>
+  <circle cx="19" cy="10" r="1.4" fill="var(--accent)"></circle>
+</svg>

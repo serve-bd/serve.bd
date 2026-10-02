@@ -1,0 +1,69 @@
+---
+// One API operation: method and path, what it needs, its fields and a curl example.
+import { Code } from "@astrojs/starlight/components";
+import { curlExample, type Endpoint, fieldsOf, permissionDescription, permissionLabel, textToHtml, variantsOf } from "@/lib/openapi";
+import Fields from "./Fields.astro";
+
+interface Props {
+  endpoint: Endpoint;
+}
+
+const { endpoint: e } = Astro.props;
+const params = [...e.pathParams, ...e.queryParams].map((p) => ({
+  name: p.name,
+  type: `${p.schema?.type ?? "string"} · ${p.in}`,
+  required: Boolean(p.required),
+  description: p.description ?? p.schema?.description ?? "",
+  defaultValue: p.schema?.default !== undefined ? JSON.stringify(p.schema.default) : undefined,
+}));
+const variants = e.body ? variantsOf(e.body) : [];
+---
+
+<section class="api-endpoint">
+  <h2 id={e.id}>{e.summary}</h2>
+  <div class="api-route">
+    <span class={`api-method api-method-${e.method.toLowerCase()}`}>{e.method}</span>
+    <code class="api-path">{e.path}</code>
+  </div>
+  <div class="api-needs">
+    {
+      e.permissions.length ? (
+        e.permissions.map((p) => (
+          <span class="api-badge" title={permissionDescription(p)}>
+            {permissionLabel(p)} <code>{p}</code>
+          </span>
+        ))
+      ) : (
+        <span class="api-badge api-badge-open">Any valid token</span>
+      )
+    }
+  </div>
+  {e.description && <div class="api-description" set:html={textToHtml(e.description)} />}
+
+  {
+    params.length > 0 && (
+      <>
+        <h3 class="api-sub">Parameters</h3>
+        <Fields fields={params} />
+      </>
+    )
+  }
+
+  {
+    variants.map((v) => {
+      const fields = fieldsOf(v.schema);
+      return (
+        fields.length > 0 && (
+          <>
+            <h3 class="api-sub">
+              Body{v.label && <span class="api-variant">{v.label}</span>}
+            </h3>
+            <Fields fields={fields} />
+          </>
+        )
+      );
+    })
+  }
+
+  <Code code={curlExample(e)} lang="bash" />
+</section>

@@ -1,0 +1,16 @@
+---
+import { buttonVariants } from "@/components/react/ui/button";
+import Site from "@/layouts/Site.astro";
+---
+
+<Site title="Not found">
+  <div class="mx-auto flex max-w-md flex-col items-center justify-center px-4 py-32 text-center">
+    <p class="flex items-center gap-2 font-mono text-[13px] text-muted"><span class="led" style="--led: var(--bad)"></span> 404</p>
+    <h1 class="mt-4 text-3xl font-semibold text-fg">This page is not running.</h1>
+    <p class="mt-3 text-muted">It may have moved, or it never existed.</p>
+    <div class="mt-8 flex gap-2">
+      <a href="/" class={buttonVariants({ variant: "primary" })}>Go home</a>
+      <a href="/docs/" class={buttonVariants()}>Read the docs</a>
+    </div>
+  </div>
+</Site>

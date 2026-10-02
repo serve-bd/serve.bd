@@ -1,0 +1,26 @@
+---
+// A compact list of fields: name, type, required, and the description when there is one.
+import { type Field, textToHtml } from "@/lib/openapi";
+
+interface Props {
+  fields: Field[];
+}
+
+const { fields } = Astro.props;
+---
+
+<ul class="api-fields not-content">
+  {
+    fields.map((f) => (
+      <li>
+        <div class="api-field-head">
+          <code class="api-field-name">{f.name}</code>
+          <span class="api-field-type">{f.type}</span>
+          {f.required && <span class="api-field-required">required</span>}
+          {f.defaultValue && <span class="api-field-default">default {f.defaultValue}</span>}
+        </div>
+        {f.description && <div class="api-field-description" set:html={textToHtml(f.description)} />}
+      </li>
+    ))
+  }
+</ul>

@@ -1,0 +1,193 @@
+---
+title: "Services and templates"
+description: "One-click services from the catalog, and your own templates."
+---
+
+Templates are one-click services: a Compose stack with its variables filled in for you. Serve ships with a catalog, and you can add your own. Browse the full list on the [templates page](/templates).
+
+## The catalog
+
+The catalog has 163 templates in these categories:
+
+| Category | Templates |
+| --- | --- |
+| Productivity | 44 |
+| Developer tools | 23 |
+| Media | 15 |
+| Databases | 12 |
+| Security | 11 |
+| Communication | 11 |
+| Monitoring | 9 |
+| CMS | 9 |
+| Storage | 9 |
+| Automation | 8 |
+| AI | 7 |
+| Analytics | 5 |
+
+### How the catalog updates
+
+Every Serve instance reads `templates/index.json` from the `main` branch on GitHub every few minutes, in the background. A new template shows up without a new Serve release. If GitHub can't be reached, Serve uses the copy bundled in its image.
+
+## Deploying a template
+
+1. Open a project and choose **New service**.
+2. Pick a template from the catalog.
+3. Check the variables. Serve generates passwords and keys, and fills in the public URL. Some templates show a note first, for example about the first login.
+4. Create the service. Serve gives the main service a generated domain. Nothing runs yet.
+5. Review the settings, then choose **Deploy**.
+
+The result is a normal Compose stack. You can change its settings, add a domain or set up backups like any other service.
+
+:::note
+Some templates mount the Docker socket or paths on the host. They are marked as needing host access, and only admins of the Root organization can create them.
+:::
+
+## Custom templates
+
+You can save your own stacks as templates for your organization. Go to **Organization → Templates** and choose **New template**.
+
+- **Name**, **Category** and an optional **Description**.
+- **Icon**: the URL of a square PNG or SVG. Leave it empty for a lettered tile.
+- The `docker-compose.yml`, pasted in or imported from a **Compose file URL**, like a GitHub link.
+- **Service** and **Port**: which service gets the generated domain, and the port it listens on inside the container. Choose **No domain** for a stack without a web address.
+
+For each `${VARIABLE}` in the file, choose how Serve fills it:
+
+| Kind | Value |
+| --- | --- |
+| Value | A default the user can change |
+| Password | 24 random characters |
+| Secret | A random 32-byte token |
+| Hex key | 64 hex characters |
+| 32-character key | 32 hex characters (16 bytes) |
+| App key (base64:) | A Laravel-style `APP_KEY` |
+| Public URL | `https://` plus the domain. Follows the domain |
+| Public hostname | The domain only. Follows the domain |
+
+## Contributing a template
+
+Templates for the public catalog live in the `templates` folder of the Serve repository. Send a pull request to add one.
+
+### Folder layout
+
+Make a folder named after the template's id, using lowercase letters, numbers and hyphens:
+
+```text
+templates/my-app/
+  template.json   details shown in the catalog
+  compose.yml     the stack
+  logo.svg        optional: a white glyph on a transparent background
+```
+
+### template.json
+
+```json
+{
+  "name": "My App",
+  "description": "One short sentence.",
+  "category": "Productivity",
+  "website": "https://example.com",
+  "color": "#2563EB",
+  "expose": { "service": "app", "port": 8080 },
+  "vars": [
+    { "key": "DB_PASSWORD", "generate": "password" },
+    { "key": "APP_URL", "publicUrl": true },
+    { "key": "ADMIN_EMAIL", "value": "admin@example.com", "label": "Admin email" }
+  ]
+}
+```
+
+`expose` names the compose service and port that get the generated domain. `vars` must list every `${VAR}` in `compose.yml` that has no default. `label` shows the variable on the configure step.
+
+Each var uses one of these keys:
+
+| Key | Value |
+| --- | --- |
+| `"generate": "password"` | 24 random characters |
+| `"generate": "secret"` | A random token |
+| `"generate": "hex32"` | 64 hex characters |
+| `"generate": "hex16"` | Exactly 32 hex characters |
+| `"generate": "base64key"` | A `base64:` app key |
+| `"publicUrl": true` | `https://` plus the main domain |
+| `"publicHost": true` | The main domain only |
+| `"serviceUrl": "admin"` | The URL of another exposed service |
+| `"serviceHost": "admin"` | The domain of another exposed service |
+| `"value": "..."` | A fixed default |
+
+### Optional keys
+
+- `popular`: shown first in the catalog.
+- `note`: shown before creating, for example about the first login or extra ports.
+- `hostAccess`: the template mounts the Docker socket or host paths. Only Root admins may create it.
+- `minVersion`: the oldest Serve version that can run it.
+- `domains`: more services that get a domain of their own, like `[{ "service": "admin", "port": 3002 }]`.
+
+`domains`, `serviceUrl`, `serviceHost` and `hex16` need `"minVersion": "0.1.9"`. The build checks it.
+
+### compose.yml
+
+- Pin a major version where the project publishes one.
+- Add `restart: unless-stopped`.
+- Add health checks to databases, and `depends_on` with `condition: service_healthy` on what needs them.
+- Use named volumes and declare them.
+- Leave out `ports:` unless the app needs a non-HTTP port.
+- Put config files in a top-level `configs:` entry with `content: |`.
+- Run one-time setup in its own service, and have the app wait for it.
+
+```yaml
+services:
+  app:
+    image: example/my-app:1
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/app
+      APP_URL: ${APP_URL}
+    configs:
+      - source: app-config
+        target: /etc/my-app/config.yaml
+    depends_on:
+      db:
+        condition: service_healthy
+      setup:
+        condition: service_completed_successfully
+
+  setup:
+    image: example/my-app:1
+    command: ["my-app", "init"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: app
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 10s
+      retries: 5
+
+configs:
+  app-config:
+    content: |
+      admin_email: ${ADMIN_EMAIL}
+
+volumes:
+  db-data:
+```
+
+### Build and test
+
+Run the build, then commit the folder and `templates/index.json` together:
+
+```bash
+pnpm templates:build
+pnpm test
+```
+
+`pnpm test` checks every template and that `index.json` is up to date.

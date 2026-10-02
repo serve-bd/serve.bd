@@ -1,0 +1,11 @@
+---
+// The page title with its sidebar group above it and its description below it.
+import { sectionOf } from "../../lib/docs";
+
+const { entry } = Astro.locals.starlightRoute;
+const section = sectionOf(entry.id);
+---
+
+{section && <p class="mt-4 mb-0 font-mono text-[12px] text-accent">{section}</p>}
+<h1 id="_top" class="mt-1 text-[32px] leading-tight font-semibold tracking-tight text-fg">{entry.data.title}</h1>
+{entry.data.description && <p class="mt-2 text-[16px] text-muted">{entry.data.description}</p>}

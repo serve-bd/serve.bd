@@ -1,0 +1,20 @@
+---
+import { ArrowRight } from "lucide-react";
+import { TemplateCatalog } from "@/components/react/template-catalog";
+import Site from "@/layouts/Site.astro";
+import { categories, templates } from "@/lib/templates";
+---
+
+<Site title="Templates" description={`${templates.length} one-click services for Serve: analytics, automation, CMS, storage, AI and more.`}>
+  <div class="mx-auto max-w-6xl px-4 pt-16 pb-24 sm:px-6 sm:pt-20">
+    <div class="mb-8 max-w-2xl">
+      <p class="mb-3 font-mono text-[12px] tracking-wide text-accent uppercase">Templates</p>
+      <h1 class="text-4xl font-semibold tracking-tight text-fg sm:text-5xl">{templates.length} services, one click each.</h1>
+      <p class="mt-4 text-[16px] leading-relaxed text-muted">
+        Each template comes with its domain, secrets and volumes set up. New templates reach every Serve install without an update.{" "}
+        <a href="/docs/templates/" class="inline-flex items-center gap-1 text-accent hover:underline">Make your own <ArrowRight className="size-3.5" /></a>
+      </p>
+    </div>
+    <TemplateCatalog client:load templates={templates} categories={categories} />
+  </div>
+</Site>

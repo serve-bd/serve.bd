@@ -1,0 +1,248 @@
+---
+title: "API"
+description: "Everything the dashboard does, over HTTP."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+The Serve API lets you do from a script or CI what you do in the dashboard: create services, deploy, set variables, add domains, back up databases and more. It speaks JSON over HTTPS.
+
+## Make a token
+
+1. In the dashboard, open **Keys & tokens** and choose **Create API token**.
+2. Give it a name and pick what it may do. Start from a preset and add or remove permissions:
+
+   | Preset | Permissions |
+   | --- | --- |
+   | **Read only** | `projects.view`, `logs.view` |
+   | **Deploy** | Read only, plus `services.deploy` |
+   | **Manage services** | Deploy, plus `services.manage`, `variables.edit`, `domains.manage` |
+   | **Admin** | Everything (`admin`) |
+
+3. Pick all projects or only some, and when the token expires.
+4. Copy the token. It starts with `srv_` and is shown only once.
+
+## Your first request
+
+Every request goes to `https://<instance>/api/v1` and sends the token as a bearer token. Put both in your shell:
+
+```bash
+export SERVE_URL=https://serve.example.com/api/v1
+export SERVE_TOKEN=srv_...
+```
+
+Ask the API who the token is:
+
+```bash
+curl "$SERVE_URL/me" -H "Authorization: Bearer $SERVE_TOKEN"
+```
+
+```json
+{
+  "token": { "id": "...", "name": "CI", "granted": ["projects.view", "logs.view", "services.deploy"] },
+  "user": { "...": "..." },
+  "organization": { "...": "..." },
+  "permissions": ["projects.view", "services.deploy", "logs.view"],
+  "admin": false,
+  "projectIds": null
+}
+```
+
+`permissions` is what the token may do right now. `projectIds` is `null` when it reaches every project.
+
+## Permissions
+
+A token carries the same permissions that roles are made of:
+
+| Permission | Lets the token |
+| --- | --- |
+| `projects.view` | See projects, services, deployments and their status |
+| `projects.manage` | Create, rename and delete projects and environments |
+| `services.deploy` | Deploy, redeploy, roll back, start, stop and restart services |
+| `services.manage` | Create and delete services and change their settings |
+| `domains.manage` | Add, edit and remove domains, ports and proxy options |
+| `variables.edit` | Add, change and delete environment and shared variables |
+| `variables.view-secrets` | Reveal secret variables, database passwords and connection URLs |
+| `databases.backups` | Run, download, restore and import database backups |
+| `console.access` | Open a shell inside containers and servers |
+| `logs.view` | Read build, runtime and request logs |
+| `members.manage` | Invite and remove members, change roles and project access |
+| `integrations.manage` | Git providers, Cloudflare, S3, registries, notifications, templates and certificates |
+| `admin` | Everything an organization admin may do, including all of the above |
+
+Three rules:
+
+- **A token never does more than its owner may do right now.** If the owner's role changes, the token changes with it.
+- **A token limited to some projects** answers `404` for every other project, as if it did not exist.
+- **Instance routes** (`/instance/...`) need an `admin` token whose owner is an admin of the Root organization.
+
+Each endpoint in the reference shows the permissions it needs.
+
+## Errors
+
+Errors are JSON with a message:
+
+```json
+{
+  "error": "This token cannot do this. It needs: services.deploy (Deploy). A token never has more than its owner's role allows.",
+  "missing": ["services.deploy"]
+}
+```
+
+| Status | Means |
+| --- | --- |
+| `400` | The body is wrong. The message names the field. |
+| `401` | The token is missing, wrong or expired. |
+| `403` | The token lacks a permission. `missing` lists what it needs. |
+| `404` | Not found, or not in the token's projects. |
+| `405` | Wrong method. The `Allow` header lists the right ones. |
+| `409` | Conflict, such as a name already in use or a deploy in progress. |
+| `413` | The body is larger than 10 MB. |
+
+## Common tasks
+
+### Find a project and its services
+
+```bash
+curl "$SERVE_URL/projects" -H "Authorization: Bearer $SERVE_TOKEN"
+curl "$SERVE_URL/projects/$PROJECT_ID" -H "Authorization: Bearer $SERVE_TOKEN"
+```
+
+The project comes with its `environments` and `services`. New services need a `projectId` and an `environmentId`.
+
+### Create an app
+
+From a Docker image:
+
+```bash
+curl -X POST "$SERVE_URL/services" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "app",
+    "projectId": "<projectId>",
+    "environmentId": "<environmentId>",
+    "name": "web",
+    "source": { "type": "image", "image": "nginx:alpine" },
+    "port": 80,
+    "deploy": true
+  }'
+```
+
+From Git, use `"source": { "type": "git", "repository": "acme/web", "branch": "main" }`. The answer is `201` with the new service's `id`.
+
+### Create a database
+
+```bash
+curl -X POST "$SERVE_URL/services" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "type": "database", "projectId": "<projectId>", "environmentId": "<environmentId>", "name": "db", "engine": "postgres", "deploy": true }'
+```
+
+`engine` is one of `postgres`, `mysql`, `mariadb`, `mongodb`, `redis`, `valkey` or `clickhouse`.
+
+### Create a service from a template
+
+List the templates with `GET /templates`, then create a compose service with the template's id. Secrets you leave out are generated.
+
+```bash
+curl -X POST "$SERVE_URL/services" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "type": "compose", "projectId": "<projectId>", "environmentId": "<environmentId>", "name": "n8n", "template": "n8n", "deploy": true }'
+```
+
+### Deploy and wait for it
+
+```bash
+curl -X POST "$SERVE_URL/services/$SERVICE_ID/deploy" -H "Authorization: Bearer $SERVE_TOKEN"
+# 202 { "deploymentId": "..." }
+
+curl "$SERVE_URL/deployments/$DEPLOYMENT_ID" -H "Authorization: Bearer $SERVE_TOKEN"
+```
+
+Poll the deployment until its `status` is `success`, `failed` or `cancelled`. It also returns the end of the build log as `logTail`.
+
+### Set variables
+
+Set some keys and remove others with `null`. Variables you leave out stay as they are.
+
+```bash
+curl -X PATCH "$SERVE_URL/services/$SERVICE_ID/variables" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "variables": { "API_URL": "https://api.example.com", "OLD_KEY": null }, "redeploy": true }'
+```
+
+### Add a domain
+
+```bash
+curl -X POST "$SERVE_URL/services/$SERVICE_ID/domains" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "hostname": "app.example.com" }'
+```
+
+The domain gets HTTPS with a free certificate. Point its DNS at your server first.
+
+### Get database connection details
+
+```bash
+curl "$SERVE_URL/services/$SERVICE_ID/connection" -H "Authorization: Bearer $SERVE_TOKEN"
+```
+
+You get the host, port, user and database. Passwords and URLs are included only when the token has `variables.view-secrets`.
+
+### Back up and restore
+
+```bash
+curl -X POST "$SERVE_URL/services/$SERVICE_ID/backups" -H "Authorization: Bearer $SERVE_TOKEN"
+curl "$SERVE_URL/services/$SERVICE_ID/backups" -H "Authorization: Bearer $SERVE_TOKEN"
+
+curl -X POST "$SERVE_URL/backups/$BACKUP_ID/restore" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "backupFirst": true }'
+```
+
+`backupFirst` backs up the current data before the restore.
+
+### Read logs
+
+```bash
+curl "$SERVE_URL/services/$SERVICE_ID/logs?tail=200" -H "Authorization: Bearer $SERVE_TOKEN"
+```
+
+`tail` is the number of lines per container, from 10 to 5000.
+
+## Older endpoints
+
+Scripts written for earlier versions keep working:
+
+- `GET` and `PATCH /services/{id}/env`
+- `POST /services/{id}/deploy`, `/start`, `/stop` and `/restart`
+- `GET /deployments/{id}`
+
+Older tokens keep their scopes. Each one now means a set of permissions:
+
+| Old scope | Permissions |
+| --- | --- |
+| `read` | `projects.view`, `logs.view` |
+| `read:sensitive` | `read`, plus `variables.view-secrets` |
+| `deploy` | `read`, plus `services.deploy` |
+| `write` | `deploy`, plus `services.manage`, `variables.edit`, `domains.manage` |
+| `admin` | `admin` |
+
+To deploy from CI without a token, you can also use a [deploy hook](/docs/deployments/).
+
+## Reference
+
+Every endpoint, with its permissions, fields and a curl example. The same description is on your instance at `GET /api/v1/openapi.json`, as OpenAPI 3.1, with no token needed.
+
+<CardGrid>
+  <LinkCard href="/docs/api/services/" title="Services" description="Create, change, start and stop apps, databases and stacks." />
+  <LinkCard href="/docs/api/deployments/" title="Deployments" description="Deploy, follow, cancel and roll back." />
+  <LinkCard href="/docs/api/variables/" title="Variables" description="Service, environment, project and organization variables." />
+  <LinkCard href="/docs/api/databases/" title="Databases" description="Connection details, settings, domains and branches." />
+</CardGrid>

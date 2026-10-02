@@ -1,0 +1,13 @@
+---
+import { CopyButton } from "@/components/react/copy-button";
+import { site } from "@/lib/site";
+import { cn } from "@/lib/utils";
+
+const { class: className } = Astro.props;
+---
+
+<div class={cn("flex h-11 w-full max-w-xl items-center gap-3 rounded-xl border border-line bg-surface pr-1.5 pl-4 font-mono text-[13px] shadow-sm", className)}>
+  <span class="text-faint select-none">$</span>
+  <code class="scrollbar-none min-w-0 flex-1 overflow-x-auto text-left whitespace-nowrap text-fg-2">{site.install}</code>
+  <CopyButton client:visible value={site.install} />
+</div>

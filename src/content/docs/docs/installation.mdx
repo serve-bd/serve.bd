@@ -1,0 +1,139 @@
+---
+title: "Installation"
+description: "Install Serve on a Linux server with one command."
+---
+
+You install Serve with one command on a fresh Linux server. The installer sets up Docker, writes the configuration to `/data/serve` and starts the dashboard.
+
+## Requirements
+
+- A Linux server (Ubuntu, Debian, Fedora, Rocky…) with 2 GB of RAM or more. Builds need it.
+- Root access. If you are not root, the installer restarts itself through `sudo` and asks for your password.
+- `curl`.
+
+The installer installs Docker from `get.docker.com` if it is missing. Serve needs Docker Compose v2. If your Docker is too old, update it and run the installer again.
+
+:::caution[Use a dedicated server]
+Serve controls Docker, and control of Docker is equal to root on the host. Install Serve on a server that you use only for Serve.
+:::
+
+## Install
+
+Run this on the server:
+
+```bash
+curl -fsSL https://serve.bd/install.sh | bash
+```
+
+`https://serve.bd/install.sh` redirects to [`install.sh` on the `main` branch](https://github.com/serve-bd/serve/blob/main/install.sh) of the Serve repository. You always get the latest installer. To read it before you run it:
+
+```bash
+curl -fsSL https://serve.bd/install.sh -o install.sh
+less install.sh
+bash install.sh
+```
+
+### Prompts and defaults
+
+On a new install, the installer asks for three ports. Press Enter to keep a default.
+
+| Prompt | Default |
+| --- | --- |
+| Dashboard port | `8000` |
+| HTTP port for your apps | `80` |
+| HTTPS port for your apps | `443` |
+
+The three ports must all be different. If a port is already in use, the installer warns you and asks "Use it anyway?".
+
+Serve changes the Docker daemon settings once (see [Reference](/docs/reference)). This restarts Docker. If other containers already run on the server, the installer asks before it restarts Docker. If you say no, Serve still works, but it has fewer address ranges for its networks.
+
+### Installer environment overrides
+
+Set these before the command to skip a question or change what gets installed. A value you set is not asked for.
+
+| Variable | What it does |
+| --- | --- |
+| `SERVE_VERSION` | Release to install, like `0.2.0`. Default: the newest release. |
+| `SERVE_IMAGE` | Exact image to run. Overrides `SERVE_VERSION`. |
+| `SERVE_DASHBOARD_PORT` | Host port for the dashboard. Default `8000`. |
+| `SERVE_PROXY_HTTP_PORT` | Host port for HTTP traffic to your apps. Default `80`. |
+| `SERVE_PROXY_HTTPS_PORT` | Host port for HTTPS traffic to your apps. Default `443`. |
+| `SERVE_YES` | Set to `1` to ask nothing and use the defaults and overrides. |
+| `SERVE_REPO`, `SERVE_IMAGE_REPO`, `SERVE_REPO_RAW` | Advanced: install from another repository or image registry. |
+
+For example, to install a fixed version without questions:
+
+```bash
+curl -fsSL https://serve.bd/install.sh | SERVE_VERSION=0.2.0 SERVE_YES=1 bash
+```
+
+## What the installer creates
+
+- `/data/serve`, the directory for everything Serve keeps. Do not move it.
+- `/data/serve/.env` with the configuration and secrets (permissions `600`).
+- `/data/serve/docker-compose.yml`, which runs Serve.
+- `/data/serve/restore-instance.sh`, which restores an [instance backup](/docs/instance-backups).
+- Three containers: the dashboard (`serve`), the worker (`serve-worker`) and Serve's database (`serve-db`).
+
+The image is pinned to an exact version, like `ghcr.io/serve-bd/serve:0.2.0`, never a moving tag.
+
+## The .env file
+
+The installer generates the secrets on a new install. Running it again keeps the file and only changes `SERVE_IMAGE`.
+
+| Variable | Value |
+| --- | --- |
+| `SERVE_IMAGE` | The image that runs, like `ghcr.io/serve-bd/serve:0.2.0`. |
+| `SERVE_DASHBOARD_PORT` | Host port of the dashboard. |
+| `SERVE_DB_PASSWORD` | Password of Serve's database. |
+| `DATABASE_URL` | Connection URL of Serve's database (`serve-db`). |
+| `BETTER_AUTH_SECRET` | Secret for sign-in sessions. |
+| `SERVE_ENCRYPTION_KEY` | Key that encrypts stored secrets. Keep a copy. |
+| `BETTER_AUTH_URL` | Address of the dashboard, `http://IP:PORT` at first. |
+| `SERVE_DATA_DIR` | `/data/serve`. |
+| `SERVE_NETWORK` | `serve`, the Docker network of Serve. |
+| `SERVE_PROXY_HTTP_PORT` | Host port for HTTP traffic to apps. |
+| `SERVE_PROXY_HTTPS_PORT` | Host port for HTTPS traffic to apps. |
+| `SERVE_DASHBOARD_UPSTREAM` | `serve:3000`, where the proxy finds the dashboard. |
+| `SERVE_NETWORK_SUBNET` | Optional. Subnet of the `serve` network. Default `10.209.0.0/16`. |
+| `SERVE_TUNNEL_PORT` | Optional. Port for servers without a public IP. Default `7822`. |
+
+:::caution[Save your encryption key]
+`SERVE_ENCRYPTION_KEY` is never in a backup. Without it, a restored Serve cannot read its secrets. Keep it in a password manager.
+:::
+
+## Open the dashboard
+
+The installer waits until `/api/health` answers, then prints the address. Open it in your browser:
+
+```text
+http://<server-ip>:8000
+```
+
+Create the owner account on that page. The owner belongs to the Root organization and can manage the whole instance.
+
+If Serve does not become healthy, check the logs:
+
+```bash
+cd /data/serve && docker compose logs
+```
+
+## After install
+
+1. **Settings → General:** give the dashboard a domain with HTTPS. Git webhooks need it.
+2. **Git providers:** connect GitHub (one click) or another provider.
+3. **Projects → New project → New service:** add an app, database or service, check its settings, then deploy.
+4. **Servers → Add server** (optional): add more machines over SSH, or with **No public IP** for machines behind NAT.
+
+[Your first deploy](/docs/first-deploy) walks through these steps. To remove Serve later, see [Uninstalling](/docs/uninstalling).
+
+## Firewall ports
+
+Open these ports on the server. You pick the dashboard and app ports during install.
+
+| Port | Used for |
+| --- | --- |
+| 80, 443 (TCP) | Your apps, through the proxy |
+| 8000 (TCP) | The dashboard, until it has a domain |
+| 7822 (TCP) | Only when a server without a public IP is added |
+| 51820 (UDP) | Only between servers in a private network |

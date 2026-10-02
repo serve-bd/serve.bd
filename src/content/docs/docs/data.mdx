@@ -1,0 +1,84 @@
+---
+title: "Browse and edit data"
+description: "Look inside a database, run queries and edit rows from the Data tab."
+---
+
+The **Data** tab of a database shows what is inside it. Browse tables, collections or keys, run queries, and edit rows like a spreadsheet. It works with every engine: PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey and ClickHouse.
+
+The database must be running. Queries run as Serve's own login, stop after 30 seconds and show up to 1,000 rows.
+
+## Read only by default
+
+The page opens in **Read only** mode, so nothing you do there can change data. To make changes, turn off the **Read only** switch and confirm with **Allow changes**. A **Changes allowed** badge then shows.
+
+Every query you run with changes allowed, and every save, is written to the [activity log](/docs/security).
+
+In read only mode:
+
+| Engine | What runs |
+| --- | --- |
+| PostgreSQL, MySQL, MariaDB | One statement at a time, in a read-only transaction that is rolled back. PostgreSQL also refuses `COPY`. |
+| ClickHouse | Queries run in ClickHouse's read only mode. |
+| MongoDB | `find`, `aggregate`, `count` and `distinct`. Pipelines can't use `$out` or `$merge`. |
+| Redis, Valkey | Read commands like `GET`, `HGETALL`, `SCAN` and `TTL`. `KEYS` is refused even with changes allowed, because it can stop a big database while it runs. Use `SCAN` or the key list. |
+
+## Browse
+
+Pick a database at the top. The left side lists its tables (or collections), with an approximate row count. **Find a table** filters the list.
+
+- **Rows** shows 50 rows per page. Click a column header to sort, and use **Filter** for one condition, like `status` **equals** `active`. Click a value to see all of it and copy it.
+- **Structure** shows the columns, their types, defaults and the indexes. For MongoDB it lists the fields seen in the first 100 documents.
+- **MongoDB** collections show documents, with a JSON **Filter** and **Sort**, like `{ "status": "active" }`.
+- **Redis and Valkey** show database numbers 0 to 15. Type a **Pattern**, like `user:*`, and choose **Scan** to list keys. Open a key to see its type, expiry, size and value.
+
+## Query
+
+The **Query** tab runs your own queries.
+
+- **SQL engines:** type SQL and choose **Run**, or press `Ctrl+Enter` (`Cmd+Enter` on a Mac).
+- **MongoDB:** pick a **Collection** and an **Operation** (find, aggregate, count, distinct, insert, update or delete), then type the JSON.
+- **Redis and Valkey:** type one command, like `GET "user:1"`, and press Enter. Recent commands show as chips you can click again.
+
+A query can be up to 64 KB.
+
+## Edit rows
+
+With changes allowed, the rows of a PostgreSQL, MySQL or MariaDB table become an editable grid.
+
+| Key | What it does |
+| --- | --- |
+| Arrow keys | Move between cells |
+| Type, `Enter` or `F2` | Edit the cell. Typing replaces the value |
+| `Enter` | Save the cell and move down |
+| `Tab`, `Shift+Tab` | Save the cell and move right or left |
+| `Esc` | Cancel the edit |
+| `Delete` | Set the cell to NULL, when the column allows it |
+
+- **Add row** adds a new row at the top. Empty cells get the column's default.
+- Tick rows and choose **Delete** to delete them. **Keep the row** undoes it.
+- **Open the row** shows every column of a row in a dialog. Long values open there too.
+
+Changed cells are highlighted. Nothing is saved until you choose **Save changes**. **Discard** throws the changes away.
+
+Serve saves all changes in one transaction, so either all of them are saved or none. Before saving, it checks that every changed or deleted row still exists. If one was deleted in the meantime, nothing is saved and you refresh the rows. The check uses the primary key only, so a value someone else changed in the meantime is overwritten. You can save up to 500 changes at once.
+
+Some cells can't be edited in the grid:
+
+- Primary key values. Change them in the **Query** tab.
+- Binary, bit and geometry values.
+- Rows of a table without a primary key. You can still add new rows.
+- ClickHouse rows. Change them with `ALTER TABLE … UPDATE` in the **Query** tab.
+
+### MongoDB documents
+
+With changes allowed, choose the pencil on a document to edit it as JSON. The whole document is replaced, and its `_id` stays the same.
+
+Redis and Valkey keys are changed with commands in the **Query** tab.
+
+## Branches
+
+If the database has [branches](/docs/databases#branches), a **Branch** menu shows at the top. Pick **Main data** or a branch to open that copy. For a branch that copied every database of the server, a second menu picks the database.
+
+## Permissions
+
+The Data tab needs the **Console** permission, like the container console. Without it, the tab is hidden. With **Console**, you can browse, query and edit: turning off **Read only** is the only extra step. Give **Console** only to people who may change data.

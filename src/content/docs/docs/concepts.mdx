@@ -1,0 +1,80 @@
+---
+title: "Concepts"
+description: "Projects, environments, services, servers and deployments."
+---
+
+This page explains the main parts of Serve and how they fit together. Read it once, and the rest of the docs will make more sense.
+
+## Projects
+
+A project groups the services that belong together, like a web app, its database and a worker. You create one from **Projects → New project**. Each project has a name, an optional description and a color. The project canvas shows its services and how they connect.
+
+## Environments
+
+A project has one or more environments, like `production` and `staging`. A new project starts with `production`. Each environment has its own services, variables and domains, so you can run a copy of your stack for testing without touching production.
+
+Variables can be shared at three levels: environment, project and organization. See [Environment variables](/docs/environment-variables).
+
+## Services
+
+A service is one thing that runs. Serve has three types.
+
+### App
+
+An app runs your own code or a ready-made image. You can deploy it from:
+
+- A Git repository (GitHub, GitLab, Gitea/Forgejo, Bitbucket or any Git URL).
+- A Docker image from Docker Hub or any registry.
+- A Dockerfile you paste in.
+
+Serve builds apps from Git with a Dockerfile, Nixpacks, a static site build or its own detection. See [Apps](/docs/apps) and [Builds](/docs/builds).
+
+### Database
+
+A database is a managed PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey or ClickHouse service. Serve sets up the credentials and runs scheduled backups to disk or S3. PostgreSQL also supports branches. See [Databases](/docs/databases) and [Backups](/docs/backups).
+
+### Compose stack
+
+A compose stack runs several containers from a `docker-compose.yml` file. You paste the file or point to one in a repository. One-click services from the [template catalog](/docs/templates) are compose stacks too.
+
+## Servers
+
+A server is a machine where services run. The server where you installed Serve is the first one. You can add more:
+
+- **Public IP or hostname:** Serve connects over SSH.
+- **No public IP:** for machines at home or in an office behind NAT. You run a one-line join command on the machine, and it connects out to the dashboard.
+
+Each server has its own reverse proxy (nginx, Caddy or Traefik). Servers can join a private network over WireGuard so apps reach each other by private hostnames. See [Servers](/docs/servers) and [Private networks](/docs/private-networks).
+
+## Deployments
+
+A deployment is one run that builds and starts a version of a service. A deployment starts when you click **Deploy**, push to Git, call a deploy hook or the API, roll back or redeploy.
+
+Serve keeps every deployment with its build log. You can roll back to an earlier one in one click. With the rolling strategy, the new version starts and passes its health check before the old one stops. Pull requests can get their own preview deployments. See [Deployments](/docs/deployments).
+
+## Domains
+
+A domain sends web traffic to a service. The reverse proxy on the server routes each domain to the right container and serves it over HTTPS with a certificate from Let's Encrypt, Cloudflare or one you upload. Serve can also generate a domain for you from a wildcard domain or sslip.io. See [Domains](/docs/domains) and [Cloudflare](/docs/cloudflare).
+
+## Organizations
+
+An organization has its own projects, integrations and members. One Serve instance can host many organizations, and you switch between them with the org switcher.
+
+- The **Root** organization belongs to the instance owner.
+- Each member has a role: Owner, Admin, Developer, Viewer or a custom role.
+- A member can see all projects or only chosen ones.
+- The instance owner can set limits on what each organization uses, like projects, databases, CPU and memory.
+
+See [Teams](/docs/teams) and [Security](/docs/security).
+
+## How they fit together
+
+```text
+Organization
+└── Project
+    └── Environment (production, staging, …)
+        └── Service (app, database or compose stack)
+            ├── Deployments
+            ├── Domains
+            └── runs on a Server
+```

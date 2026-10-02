@@ -1,0 +1,282 @@
+---
+import { Activity, ArrowRight, Building2, Check, KeyRound, LogIn, Minus, ShieldCheck, Smartphone } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import TeamCanvas from "@/components/site/TeamCanvas.astro";
+import Site from "@/layouts/Site.astro";
+
+const roles = ["Owner", "Admin", "Developer", "Viewer"];
+// Default permissions of the built-in roles. Developer and Viewer can be changed per organization.
+const permissions: { label: string; text: string; roles: string[] }[] = [
+  { label: "View projects", text: "Projects, services, deployments, status", roles: ["Owner", "Admin", "Developer", "Viewer"] },
+  { label: "Manage projects", text: "Create, rename, delete projects and environments", roles: ["Owner", "Admin"] },
+  { label: "Deploy", text: "Deploy, roll back, start, stop, restart", roles: ["Owner", "Admin", "Developer"] },
+  { label: "Manage services", text: "Create, delete and change services", roles: ["Owner", "Admin", "Developer"] },
+  { label: "Manage domains", text: "Domains, ports and proxy options", roles: ["Owner", "Admin", "Developer"] },
+  { label: "Edit variables", text: "Environment and shared variables", roles: ["Owner", "Admin", "Developer"] },
+  { label: "See secret values", text: "Secret variables, passwords, connection URLs", roles: ["Owner", "Admin"] },
+  { label: "Database backups", text: "Run, download, restore, import", roles: ["Owner", "Admin", "Developer"] },
+  { label: "View logs", text: "Build, runtime and request logs", roles: ["Owner", "Admin", "Developer", "Viewer"] },
+  { label: "Console", text: "A shell inside containers and servers", roles: ["Owner", "Admin", "Developer"] },
+  { label: "Manage members", text: "Invites, roles and project access", roles: ["Owner", "Admin"] },
+  { label: "Manage integrations", text: "Git, Cloudflare, S3, registries, notifications…", roles: ["Owner", "Admin"] },
+];
+
+const security = [
+  { icon: Smartphone, title: "Two-factor authentication", text: "Each user can ask for a 6-digit code from an authenticator app, with backup codes." },
+  {
+    icon: LogIn,
+    title: "Single sign-on",
+    text: "Sign in with GitHub, Google or OpenID Connect for your company login. Limit GitHub sign-in to members of a GitHub organization.",
+  },
+  {
+    icon: Building2,
+    title: "Who can sign in",
+    text: "Allow only emails from your domains, turn sign-up off, and choose the organization and role new accounts join.",
+  },
+  { icon: KeyRound, title: "Passwords optional", text: "Turn password sign-in off and allow only your providers." },
+  { icon: ShieldCheck, title: "Allowed addresses", text: "Only the IP addresses on the list can open the dashboard, like 203.0.113.7 or 10.0.0.0/8." },
+  { icon: Activity, title: "Activity log", text: "An audit trail of who changed what, and when. Changes made through the API show up too." },
+];
+
+const limits = [
+  "Projects",
+  "Services",
+  "Apps",
+  "Docker Compose stacks",
+  "Databases",
+  "Domains",
+  "CPU",
+  "Memory",
+  "Volume storage",
+  "Backup storage",
+  "Builds at once",
+  "Servers",
+  "Servers it adds",
+];
+
+const branding = ["Product name", "Logo", "Dark mode logo", "Favicon", "Accent colour"];
+
+const scopes = [
+  "projects.view",
+  "projects.manage",
+  "services.deploy",
+  "services.manage",
+  "domains.manage",
+  "variables.edit",
+  "variables.view-secrets",
+  "databases.backups",
+  "console.access",
+  "logs.view",
+  "members.manage",
+  "integrations.manage",
+];
+---
+
+<Site title="Teams" description="Organizations, roles and project access for your whole team, with SSO, two-factor authentication and API tokens that never do more than their owner.">
+  {/* Hero */}
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex font-mono text-[12px] tracking-wide text-accent uppercase">Features / Teams</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">Everyone in. Only where they belong.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          Invite your team into an organization. Roles decide what each person can do, project access decides where, and API tokens never do more than the person who
+          made them.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/docs/teams/" class={buttonVariants({ variant: "primary", size: "lg" })}>Read the docs <ArrowRight /></a>
+          <a href="/docs/installation/" class={buttonVariants({ size: "lg" })}>Install Serve</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <TeamCanvas />
+      </div>
+    </div>
+  </div>
+
+  {/* Roles */}
+  <Section>
+    <SectionTitle eyebrow="Roles" title="Four roles to start. Make your own.">
+      Every member has one role. Owner and Admin can do everything, except that only an Owner manages owners and deletes the organization. Change what Developer and
+      Viewer may do, or build your own roles from the same twelve permissions.
+    </SectionTitle>
+    <div class="overflow-x-auto rounded-2xl border border-line bg-surface shadow-sm">
+      <table class="w-full min-w-[620px] text-left text-sm">
+        <thead>
+          <tr class="border-b border-line">
+            <th class="px-5 py-3 text-[12px] font-medium text-muted">Permission</th>
+            {roles.map((r) => <th class="w-[13%] px-3 py-3 text-center text-[13px] font-semibold text-fg">{r}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            permissions.map((p) => (
+              <tr class="border-b border-line last:border-0">
+                <td class="px-5 py-3">
+                  <span class="font-medium text-fg">{p.label}</span>
+                  <span class="mt-0.5 block text-[13px] text-muted">{p.text}</span>
+                </td>
+                {roles.map((r) => (
+                  <td class="px-3 py-3 text-center">
+                    {p.roles.includes(r) ? (
+                      <Check className="mx-auto size-4 text-accent" aria-label="Yes" />
+                    ) : (
+                      <Minus className="mx-auto size-4 text-faint" aria-label="No" />
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      These are the defaults. Developer and Viewer are editable, and custom roles live under Organization → Roles. Owner and Admin are fixed.
+    </p>
+  </Section>
+
+  {/* Project access */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="Project access" title="All projects, or just the ones you pick.">
+          Give a member every project, including ones created later, or only the projects you choose. Their role still decides what they can do there. Every other
+          project answers 404, as if it did not exist.
+        </SectionTitle>
+        <p class="text-[13px] leading-relaxed text-faint">
+          Invite people by email or share an invite link yourself. Invite links expire after 7 days.
+        </p>
+      </div>
+      <div class="self-center overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+        <div class="flex items-center justify-between border-b border-line px-4 py-3">
+          <div>
+            <p class="text-[13px] font-semibold text-fg">Sam Ortiz</p>
+            <p class="text-[12px] text-muted">sam@acme.dev</p>
+          </div>
+          <span class="rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-[12px] font-medium text-fg-2">Developer</span>
+        </div>
+        <div class="flex flex-col gap-3 px-4 py-4 text-[13px] text-fg-2">
+          <p class="flex items-center gap-2.5">
+            <span class="size-4 rounded-full border border-line-strong bg-bg"></span>
+            All projects
+          </p>
+          <p class="flex items-center gap-2.5">
+            <span class="flex size-4 items-center justify-center rounded-full border border-accent"><span class="size-2 rounded-full bg-accent"></span></span>
+            Only these projects
+          </p>
+          <div class="ml-6 flex flex-wrap gap-1.5">
+            {
+              [
+                { name: "shop", on: true },
+                { name: "api", on: true },
+                { name: "billing", on: false },
+              ].map((p) => (
+                <span
+                  class:list={[
+                    "rounded-full border px-2.5 py-0.5 font-mono text-[12px]",
+                    p.on ? "border-accent/40 text-accent-strong" : "border-line text-faint line-through",
+                  ]}
+                >
+                  {p.name}
+                </span>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Sign-in and security */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Sign-in and security" title="Lock the door the way you like.">
+      Sign-in rules apply at once, with nothing to restart. Set them up under Settings → Sign-in and Settings → Security.
+    </SectionTitle>
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {
+        security.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      OpenID Connect works with your company login, like Okta, Microsoft Entra ID, Authentik or Keycloak.
+    </p>
+  </Section>
+
+  {/* Organizations and branding */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="Organizations" title="Many organizations on one instance.">
+          Each organization has its own projects, members, integrations and shared variables. Move between yours with the organization switcher. Let every user create organizations,
+          or keep that to Root admins, and set limits on what each one uses.
+        </SectionTitle>
+        <div class="flex flex-wrap gap-1.5">
+          {limits.map((l) => <span class="rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-fg-2">{l}</span>)}
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed text-faint">
+          Limits apply to new projects, services, domains, deploys and backups. Nothing that exists is removed. Members see their usage under Organization → Usage.
+        </p>
+      </div>
+      <div>
+        <SectionTitle eyebrow="White-label" title="Your name on the dashboard.">
+          Settings → Branding replaces Serve's name, logo and colour on the dashboard, the sign-in page, the browser tab and emails.
+        </SectionTitle>
+        <div class="flex flex-wrap gap-1.5">
+          {branding.map((b) => <span class="rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-fg-2">{b}</span>)}
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed text-faint">Reset branding puts the name and colour back to the defaults.</p>
+      </div>
+    </div>
+  </Section>
+
+  {/* API tokens */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <SectionTitle eyebrow="API tokens" title="Tokens that know their place.">
+          A token carries the same twelve permissions that roles are made of, or admin for everything. Pick some projects or all of them, and when it expires. It can never
+          do more than its owner may do right now: change the role, and the token changes with it.
+        </SectionTitle>
+        <div class="flex flex-wrap gap-1.5">
+          {scopes.map((s) => <span class="rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-fg-2">{s}</span>)}
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed text-faint">
+          Start from a preset: Read only, Deploy, Manage services or Admin. Tokens start with srv_ and expire after 7, 30 or 90 days, a year, or never.
+        </p>
+      </div>
+      <div class="self-center overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+        <p class="border-b border-line px-4 py-2.5 text-[12px] text-muted">Who is this token?</p>
+        <pre class="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed text-fg-2"><code>curl "$SERVE_URL/me" \
+  -H "Authorization: Bearer $SERVE_TOKEN"
+
+<span class="text-faint"># what it may do right now</span>
+"permissions": [<span class="text-accent">"projects.view"</span>, <span class="text-accent">"services.deploy"</span>, <span class="text-accent">"logs.view"</span>]</code></pre>
+      </div>
+    </div>
+  </Section>
+
+  {/* Call to action */}
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Bring the whole team.</h2>
+      <p class="mt-3 text-muted">Organizations, roles and SSO come with every Serve install. Nothing to add.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Install Serve <ArrowRight /></a>
+        <a href="/docs/security/" class={buttonVariants({ size: "lg" })}>Security docs</a>
+        <a href="/docs/api/" class={buttonVariants({ size: "lg" })}>API docs</a>
+      </div>
+    </div>
+  </Section>
+</Site>

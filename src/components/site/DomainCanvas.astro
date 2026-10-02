@@ -1,0 +1,132 @@
+---
+/*
+ * A domain on a canvas: a visitor looks up app.acme.dev (a record Serve created in Cloudflare), then
+ * connects over HTTPS to the server's reverse proxy, which passes the request to the app's container.
+ * A Let's Encrypt certificate hangs off the proxy. The switch above the canvas swaps the proxy
+ * between nginx, Caddy and Traefik, like the server's Proxy page.
+ * Labels sit above or beside their lines, so every line stays visible end to end.
+ */
+import { Box, Cloud, Globe, Server, ShieldCheck } from "lucide-react";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasIconCard from "./CanvasIconCard.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 584;
+const CW = 264;
+const CH = 104;
+const X = [36, 472, 908];
+const ROW = [56, 240, 424];
+const cy = (y: number) => y + CH / 2;
+const midX = (a: number) => (X[a] + CW + X[a + 1]) / 2;
+const line = (x1: number, x2: number, y: number) => `M ${x1} ${y} L ${x2 - 4} ${y}`;
+
+const proxies = [
+  { id: "nginx", name: "nginx", detail: "Reverse proxy · fast and predictable" },
+  { id: "caddy", name: "Caddy", detail: "Reverse proxy · automatic HTTPS" },
+  { id: "traefik", name: "Traefik", detail: "Reverse proxy · built-in ACME" },
+];
+---
+
+<div class="dc relative" data-proxy="nginx" data-proxy-switch>
+  <div class="mb-3 flex justify-center md:absolute md:top-5 md:right-5 md:z-10 md:mb-0">
+    <div role="radiogroup" aria-label="Reverse proxy" class="flex items-center gap-1 rounded-full border border-line bg-surface p-1 shadow-sm">
+      <span class="pr-1 pl-2.5 text-[12px] text-muted">Reverse proxy</span>
+      {
+        proxies.map((p, i) => (
+          <button
+            type="button"
+            role="radio"
+            aria-checked={i === 0 ? "true" : "false"}
+            data-value={p.id}
+            class="cursor-pointer rounded-full px-3 py-1 text-[12px] font-medium text-fg-2 transition-colors hover:text-fg aria-checked:bg-fg aria-checked:text-bg"
+          >
+            {p.name}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div
+    class="cv-frame cv-wide"
+    role="img"
+    aria-label="A visitor opens app.acme.dev. The DNS lookup goes to a record Serve created in Cloudflare, then the request arrives over HTTPS on port 443 at the server's reverse proxy, which passes it to the web app's container. A Let's Encrypt certificate that renews automatically is attached to the proxy."
+  >
+    <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      <CanvasDefs id="dm" />
+      <rect width={W} height={H} fill="url(#dm-dots)"></rect>
+
+      {/* The server: its proxy, the app and the certificate. */}
+      <rect x="448" y={ROW[1] - 52} width="748" height={ROW[2] + CH + 24 - (ROW[1] - 52)} rx="24" class="cv-server"></rect>
+      <text x="472" y={ROW[1] - 24} class="cv-server-label">fsn1-main · 203.0.113.10</text>
+
+      {/* Visitor → DNS, then visitor → proxy → app. */}
+      <path d={`M ${X[0] + CW / 2} ${ROW[1]} L ${X[0] + CW / 2} ${ROW[0] + CH + 4}`} class="cv-edge" marker-end="url(#dm-arrow)"></path>
+      <CanvasPill x={X[0] + CW / 2 + 58} y={(ROW[0] + CH + ROW[1]) / 2} text="DNS lookup" />
+      <path d={line(X[0] + CW, X[1], cy(ROW[1]))} class="cv-edge-accent" marker-end="url(#dm-arrow-accent)"></path>
+      <CanvasPill x={midX(0)} y={cy(ROW[1]) - 18} text="HTTPS · 443" accent />
+      <path d={line(X[1] + CW, X[2], cy(ROW[1]))} class="cv-edge" marker-end="url(#dm-arrow)"></path>
+      <CanvasPill x={midX(1)} y={cy(ROW[1]) - 18} text="web:3000" />
+      {/* Certificate → proxy. */}
+      <path d={`M ${X[1] + CW / 2} ${ROW[2]} L ${X[1] + CW / 2} ${ROW[1] + CH + 4}`} class="cv-edge" marker-end="url(#dm-arrow)"></path>
+      <CanvasPill x={X[1] + CW / 2 + 72} y={(ROW[1] + CH + ROW[2]) / 2} text="TLS certificate" />
+
+      <CanvasIconCard x={X[0]} y={ROW[0]} name="Cloudflare DNS" detail="A  app → 203.0.113.10" icon={Cloud} status="Record created by Serve" />
+      <CanvasIconCard x={X[0]} y={ROW[1]} name="app.acme.dev" detail="A visitor's browser" icon={Globe} status="Secure connection" />
+      <CanvasIconCard x={X[1]} y={ROW[1]} icon={Server} selected>
+        <Fragment slot="name">{proxies.map((p) => <span data-px={p.id}>{p.name}</span>)}</Fragment>
+        <Fragment slot="detail">{proxies.map((p) => <span data-px={p.id}>{p.detail}</span>)}</Fragment>
+      </CanvasIconCard>
+      <CanvasIconCard x={X[2]} y={ROW[1]} name="web" detail="Container · port 3000" icon={Box} />
+      <CanvasIconCard x={X[1]} y={ROW[2]} name="app.acme.dev" detail="Let's Encrypt certificate" icon={ShieldCheck} status="Renews automatically" />
+
+      <text x={X[2]} y={ROW[2] + 40} class="cv-note">Switch the proxy any time.</text>
+      <text x={X[2]} y={ROW[2] + 58} class="cv-note">Serve keeps the settings of each one.</text>
+    </svg>
+  </div>
+
+  <div class="cv-frame cv-tall" role="img" aria-label="A visitor opens app.acme.dev, looks it up in Cloudflare DNS and reaches the server's reverse proxy over HTTPS. The proxy, with a Let's Encrypt certificate, passes the request to the web app.">
+    <svg viewBox="0 0 330 790" aria-hidden="true">
+      <CanvasDefs id="dmt" />
+      <rect width="330" height="790" fill="url(#dmt-dots)"></rect>
+      <path d="M 165 136 V 168" class="cv-edge" marker-end="url(#dmt-arrow)"></path>
+      <CanvasPill x={226} y={152} text="DNS lookup" />
+      <path d="M 165 276 V 368" class="cv-edge-accent" marker-end="url(#dmt-arrow-accent)"></path>
+      <CanvasPill x={236} y={308} text="HTTPS · 443" accent />
+      <rect x="10" y="326" width="310" height="452" rx="22" class="cv-server"></rect>
+      <text x="26" y="350" class="cv-server-label">fsn1-main</text>
+      <path d="M 165 476 V 508" class="cv-edge" marker-end="url(#dmt-arrow)"></path>
+      {/* Certificate → proxy, along the left. */}
+      <path d="M 40 698 H 30 Q 24 698 24 692 V 430 Q 24 424 30 424 H 36" class="cv-edge" marker-end="url(#dmt-arrow)"></path>
+      <CanvasIconCard x={22} y={32} w={286} name="app.acme.dev" detail="A visitor's browser" icon={Globe} status="Secure connection" />
+      <CanvasIconCard x={22} y={172} w={286} name="Cloudflare DNS" detail="A  app → 203.0.113.10" icon={Cloud} status="Record created by Serve" />
+      <CanvasIconCard x={40} y={372} w={268} icon={Server} selected>
+        <Fragment slot="name">{proxies.map((p) => <span data-px={p.id}>{p.name}</span>)}</Fragment>
+        <Fragment slot="detail">{proxies.map((p) => <span data-px={p.id}>{p.detail}</span>)}</Fragment>
+      </CanvasIconCard>
+      <CanvasIconCard x={40} y={512} w={268} name="web" detail="Container · port 3000" icon={Box} />
+      <CanvasIconCard x={40} y={646} w={268} name="app.acme.dev" detail="Let's Encrypt certificate" icon={ShieldCheck} status="Renews automatically" />
+    </svg>
+  </div>
+</div>
+
+<style>
+  .dc:not([data-proxy="nginx"]) [data-px="nginx"],
+  .dc:not([data-proxy="caddy"]) [data-px="caddy"],
+  .dc:not([data-proxy="traefik"]) [data-px="traefik"] {
+    display: none;
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>("[data-proxy-switch]")) {
+    const buttons = root.querySelectorAll<HTMLButtonElement>("button[data-value]");
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        root.dataset.proxy = button.dataset.value;
+        for (const b of buttons) b.setAttribute("aria-checked", String(b === button));
+      });
+    }
+  }
+</script>

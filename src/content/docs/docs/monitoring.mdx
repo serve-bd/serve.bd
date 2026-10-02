@@ -1,0 +1,124 @@
+---
+title: "Monitoring"
+description: "Metrics, uptime and notifications."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Serve checks that your services are up, opens incidents when they go down and alerts you when a server runs low on resources. Notifications go to the channels you choose.
+
+## Uptime checks
+
+Set up a check in a service's **Settings → Monitoring**. Turn on **Check this service**, then fill in the fields:
+
+| Field | What it does |
+| --- | --- |
+| **Check** | **HTTP request** loads a URL and checks the status code, like a visitor. **Containers** checks that all containers run and their health checks pass. |
+| **URL** / **Path** | What to load. A path is used with the service's primary domain. |
+| **Accepted status codes** | For example `200-399`, `200,204` or `2xx`. |
+| **Response must contain** | Fails the check when this text is missing from the page. |
+| **Interval** | How often to check, from every 30 seconds to every 10 minutes. |
+| **Timeout** | Seconds to wait for an answer. |
+| **Down after** | Failed checks in a row before the service counts as down. |
+
+**Check now** runs the check right away and shows the result. Paused checks keep their history.
+
+An HTTP check needs a domain on the service. Add one first. See [Domains](/docs/domains).
+
+## The Monitoring page
+
+**Monitoring** in the sidebar shows:
+
+- **Uptime checks**: every checked service with an uptime bar for the last 30 days.
+- **Open incidents**: services that are down right now.
+- **Recent incidents**: past outages and when they ended.
+- Alerts about servers.
+
+An incident opens when a check fails **Down after** times in a row, and closes when the check passes again.
+
+## Server resource alerts
+
+Each server has an **Alerts** page with **Resource alerts**. Serve compares the server's samples with your limits for CPU, memory and disk.
+
+- **CPU duration**: minutes above the CPU limit before Serve alerts.
+- **Disk warning** and **Disk critical**: percent of disk used.
+
+Crossing a limit alerts your notification channels. An alert clears 5 points below its limit. The page lists current and past alerts. See [Servers](/docs/servers).
+
+## Notifications
+
+Add channels under **Integrations → Notifications**. Serve supports:
+
+Slack, Discord, Microsoft Teams, Google Chat, Mattermost, Rocket.Chat, Telegram, Matrix, ntfy, Gotify, Pushover, Pushbullet, PagerDuty, Opsgenie, Email, Twilio and Webhook.
+
+### Severity filter
+
+Each channel has a severity filter:
+
+| Filter | Sends |
+| --- | --- |
+| Everything | Successes and problems. |
+| Problems only | Warnings and failures. |
+| Critical only | Outages, crashes and failed backups. |
+
+### Events
+
+You choose which events each channel gets.
+
+| Group | Events |
+| --- | --- |
+| Deployments | Deployment succeeded, Deployment failed |
+| Uptime & incidents | Uptime check failing, Uptime check recovered, Service crashed, Container restarting repeatedly |
+| Backups | Backup succeeded, Backup failed |
+| Certificates | Certificate issued or renewed, Certificate failed |
+| Servers | Server CPU, memory or disk high; Disk full, cleanup ran |
+| Tasks | Scheduled task failed |
+| Organization | Organization limit reached |
+| Instance | Instance backup succeeded, Instance backup failed, Update available, Instance updated, Update failed |
+
+### Message placeholders
+
+In a channel's **Message** section you can change the **Title** and **Text** it sends. These placeholders are filled in:
+
+| Placeholder | Value |
+| --- | --- |
+| `{title}` | Short summary, like "api deployed" |
+| `{body}` | Details of the event |
+| `{event}` | Event name, like "Deployment failed" |
+| `{status}` | succeeded, failed, down, up… |
+| `{severity}` | info, warning or critical |
+| `{service}` | Service name |
+| `{project}` | Project name |
+| `{environment}` | Environment name |
+| `{server}` | Server name |
+| `{organization}` | Organization name |
+| `{error}` | Error message, if any |
+| `{url}` | Link to the page in Serve |
+
+Unknown placeholders stay as you typed them, so mistakes are easy to spot.
+
+```text
+[{severity}] {title} in {project}/{environment}: {url}
+```
+
+## Email
+
+Serve sends email for password resets, invitations and notifications. Set it up under **Settings → Email**, then pick a provider in **Send with**:
+
+| Provider | What you need |
+| --- | --- |
+| SMTP | Any mail server: your own, Gmail, Amazon SES, Mailgun… **SMTP host**, **Port**, user and **Password**. |
+| Resend | An **API key** from the Resend dashboard. |
+| Postmark | A **Server API token**. |
+| Mailroom | A Mailroom API key with the `emails:send` scope. The From address must be on a domain verified in Mailroom. |
+
+Every provider also needs a **From address**, and optionally a **From name**.
+
+:::caution
+If you turn email off, password reset by email and email notifications stop working.
+:::
+
+<CardGrid>
+<LinkCard href="/docs/servers" title="Servers" description="Alerts and cleanup per server." />
+<LinkCard href="/docs/teams" title="Teams" description="Invite people who get notified." />
+</CardGrid>

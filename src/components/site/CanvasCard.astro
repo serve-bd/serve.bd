@@ -1,0 +1,82 @@
+---
+/*
+ * A service card on a feature canvas, built like the dashboard's project canvas card (264 × 104):
+ * icon, name and detail on top; the status under a line. Use inside <svg>: it is HTML in a foreignObject,
+ * so it scales with the drawing and stays sharp.
+ */
+import { Box, Cloud, Database, GitBranch, GitPullRequest, Globe, Server } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  x: number;
+  y: number;
+  w?: number;
+  name: string;
+  detail?: string;
+  icon?: "app" | "db" | "branch" | "pr" | "server" | "cloud" | "globe";
+  /** Engine color, for a database icon like the dashboard's. */
+  color?: string;
+  status?: string;
+  tone?: "ok" | "info" | "warn" | "idle";
+  pulse?: boolean;
+  selected?: boolean;
+  /**
+   * Plays a copy once: "Copying data…" with a filling bar, then "Running". It ends there and does not loop.
+   */
+  copy?: boolean;
+}
+
+const { x, y, w = 264, name, detail, icon = "app", color, status = "Running", tone = "ok", pulse, selected, copy } = Astro.props;
+const H = 104;
+const Icon = { app: Box, db: Database, branch: GitBranch, pr: GitPullRequest, server: Server, cloud: Cloud, globe: Globe }[icon];
+---
+
+<foreignObject x={x} y={y} width={w} height={H} class="overflow-visible">
+  <div
+    class={cn(
+      "relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border bg-surface font-sans shadow-sm",
+      selected ? "border-accent" : "border-line-strong",
+    )}
+  >
+    <div class="flex items-start gap-3 px-3.5 pt-3">
+      {
+        color ? (
+          <span
+            class="flex size-7 shrink-0 items-center justify-center rounded-lg text-white shadow-sm [&_svg]:size-3.5"
+            style={`background: linear-gradient(160deg, color-mix(in oklab, ${color} 88%, white), ${color})`}
+          >
+            <Icon />
+          </span>
+        ) : (
+          <span class="flex size-7 shrink-0 items-center justify-center rounded-lg border border-line bg-surface-2 text-fg-2 shadow-sm [&_svg]:size-3.5">
+            <Icon />
+          </span>
+        )
+      }
+      <div class="flex min-w-0 flex-1 flex-col">
+        <span class="truncate text-[13px] leading-5 font-semibold text-fg">{name}</span>
+        {detail && <span class="truncate text-[11px] leading-4 text-muted">{detail}</span>}
+      </div>
+    </div>
+    {
+      copy ? (
+        <div class="grid border-t border-line px-3.5 py-2 text-[11px] font-medium text-fg-2">
+          <span class="cv-copying col-start-1 row-start-1 flex items-center gap-2">
+            <span class="led" data-pulse style="--led: var(--info)" />
+            Copying data…
+          </span>
+          <span class="cv-copied col-start-1 row-start-1 flex items-center gap-2">
+            <span class="led" style="--led: var(--ok)" />
+            Running
+          </span>
+        </div>
+      ) : (
+        <div class="flex items-center gap-2 border-t border-line px-3.5 py-2 text-[11px] font-medium text-fg-2">
+          <span class="led" data-pulse={pulse || undefined} style={`--led: var(--${tone})`} />
+          {status}
+        </div>
+      )
+    }
+    {copy && <span class="cv-progress absolute bottom-0 left-0 h-[2px] w-full bg-info" />}
+  </div>
+</foreignObject>

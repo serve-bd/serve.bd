@@ -1,0 +1,62 @@
+---
+/*
+ * A card on a feature canvas, the same as CanvasCard (264 × 104, like the dashboard's project canvas card),
+ * but it takes any Lucide icon and an optional badge on the right, such as a member's role.
+ * The "name" and "detail" slots replace the text when it has to change, like a proxy switch.
+ */
+import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  x: number;
+  y: number;
+  w?: number;
+  name?: string;
+  detail?: string;
+  icon: LucideIcon;
+  badge?: string;
+  accentBadge?: boolean;
+  status?: string;
+  tone?: "ok" | "info" | "warn" | "idle";
+  pulse?: boolean;
+  selected?: boolean;
+}
+
+const { x, y, w = 264, name, detail, icon: Icon, badge, accentBadge, status = "Running", tone = "ok", pulse, selected } = Astro.props;
+const H = 104;
+---
+
+<foreignObject x={x} y={y} width={w} height={H} class="overflow-visible">
+  <div
+    class={cn(
+      "relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border bg-surface font-sans shadow-sm",
+      selected ? "border-accent" : "border-line-strong",
+    )}
+  >
+    <div class="flex items-start gap-3 px-3.5 pt-3">
+      <span class="flex size-7 shrink-0 items-center justify-center rounded-lg border border-line bg-surface-2 text-fg-2 shadow-sm [&_svg]:size-3.5">
+        <Icon />
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col">
+        <span class="truncate text-[13px] leading-5 font-semibold text-fg"><slot name="name">{name}</slot></span>
+        <span class="truncate text-[11px] leading-4 text-muted"><slot name="detail">{detail}</slot></span>
+      </div>
+      {
+        badge && (
+          <span
+            class={cn(
+              "mt-0.5 shrink-0 rounded-full border px-2 py-px text-[10px] leading-4 font-medium",
+              accentBadge ? "border-accent/40 text-accent-strong" : "border-line bg-surface-2 text-fg-2",
+            )}
+          >
+            {badge}
+          </span>
+        )
+      }
+    </div>
+    <div class="flex items-center gap-2 border-t border-line px-3.5 py-2 text-[11px] font-medium text-fg-2">
+      <span class="led" data-pulse={pulse || undefined} style={`--led: var(--${tone})`}></span>
+      <slot name="status">{status}</slot>
+    </div>
+  </div>
+</foreignObject>

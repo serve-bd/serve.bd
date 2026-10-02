@@ -1,0 +1,116 @@
+---
+title: "Deployments"
+description: "Zero downtime, health checks, rollbacks, previews and hooks."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+A deployment builds or pulls a new image, starts new containers and moves traffic to them. This page covers how Serve does that, how to trigger it and how to watch it.
+
+## Strategies
+
+Set the **Strategy** under **Settings → Deploy**.
+
+| Strategy | What happens | Use it for |
+| --- | --- | --- |
+| Rolling | Start new containers, wait for the health check, switch traffic, then stop the old ones. No downtime | Most apps |
+| Recreate | Stop the old containers first, then start the new ones | Apps that need a single writer, like apps using SQLite |
+
+Some apps always stop first, even with **Rolling**: apps that publish host ports, and apps that keep data in a volume on a path the image declares. Two copies of them can't run at once, so they have a short downtime.
+
+**Drain time** gives old containers time to finish in-flight requests before they stop.
+
+### Pre-deploy command
+
+The **Pre-deploy command** runs once in a container from the new image, with its variables, before traffic switches. Use it for database migrations:
+
+```bash
+npm run migrate
+```
+
+## Health check
+
+New containers must pass the health check before they get traffic. Set it under **Settings → Health check**.
+
+| Field | What it does |
+| --- | --- |
+| Path | The HTTP path to check. Without a path, the deploy waits for the port to accept connections |
+| Port | The port to check. Defaults to the app port |
+| Interval | Time between checks |
+| Timeout | Give up and roll back after this long |
+| Start period | Wait before the first check |
+| Expected status | Status codes that count as healthy, like `200-399`. Default: any status below 500 |
+| Successes needed | How many checks in a row must pass |
+
+## Rollbacks
+
+Each past deployment has a rollback button. It runs the image from that deployment again. Images kept for rollbacks survive server cleanup.
+
+## Deploy on push
+
+Turn on **Deploy on push** to deploy every time you push to the app's branch. Use **Watch paths** to deploy only when certain files change. See [Builds](/docs/builds).
+
+Serve adds the webhook to the repository for you when it can. If it could not, the service shows a warning with a **Register webhook** button. You can also add it by hand: copy the **Git webhook URL** and **Webhook secret** from **Settings → Webhooks** into your Git host. The URL looks like this:
+
+```text
+https://serve.example.com/api/webhooks/git/<serviceId>
+```
+
+:::caution
+Git webhooks need the dashboard on a domain with HTTPS. Set this up in **Settings → General**.
+:::
+
+Rotating the secret breaks existing webhooks and deploy hooks until you update them.
+
+## Deploy hooks
+
+A **Deploy hook** is a URL that deploys the latest commit when called. Use it from CI or any script. Find it under **Settings → Webhooks**. It accepts GET or POST.
+
+Pass the secret as a query parameter:
+
+```bash
+curl -X POST "https://serve.example.com/api/deploy-hooks/<serviceId>?token=<secret>"
+```
+
+Or in the `x-deploy-token` header, which keeps it out of logs:
+
+```bash
+curl -X POST "https://serve.example.com/api/deploy-hooks/<serviceId>" \
+  -H "x-deploy-token: <secret>"
+```
+
+The response holds the new deployment's ID:
+
+```json
+{ "ok": true, "deploymentId": "..." }
+```
+
+For more control, use the [API](/docs/api).
+
+## Pull request previews
+
+Serve can deploy each pull request as its own preview app. Turn on **Deploy pull requests** under **Settings → Previews**. Pull request events arrive through the same webhook as pushes. Pull requests from forks are never deployed.
+
+### Preview URLs
+
+The **URL template** sets where each preview is reached. `{pr}` becomes the pull request number and goes in the first label, like `pr-{pr}.example.com`. If you enter `*.example.com`, the first label becomes `pr-{pr}`. Leave it empty for a generated address.
+
+One wildcard DNS record, like `*.example.com`, pointed at the server covers every preview. If you use a Cloudflare Tunnel, or the DNS zone is in a connected Cloudflare account, each preview gets its own DNS record instead.
+
+### Preview databases
+
+By default, previews get the app's variables, so they use its production database. To avoid that, turn on **Copy a database for each preview**. When a pull request opens, Serve restores a fresh dump into a new database and deploys the preview against it. The copy is removed with the preview.
+
+- **Database to copy**: the database in this environment to copy.
+- **Variable**: the preview gets the copy's connection URL in this variable.
+- **How**: **A branch** creates a second database inside the same database server, named `pr-<n>`. It is quick and runs nothing new. **A separate copy** creates a new database service for each preview and uses more memory.
+- **Hide personal data**: for SQL databases, runs your **Clean-up SQL** on the copy after the restore, before the preview starts. If it fails, the copy is removed and the preview is not deployed.
+
+## Logs and console
+
+Each deployment has its build log. A service also has tabs for runtime logs, request logs and metrics. The console tab opens a shell inside the running container.
+
+<CardGrid>
+<LinkCard href="/docs/domains" title="Domains" description="Point a domain at your app." />
+<LinkCard href="/docs/monitoring" title="Monitoring" description="Uptime checks and alerts." />
+</CardGrid>

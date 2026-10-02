@@ -1,0 +1,173 @@
+---
+import { Activity, ArrowRight, Hammer, History, Repeat, Webhook } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import PipelineCanvas from "@/components/site/PipelineCanvas.astro";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import Site from "@/layouts/Site.astro";
+
+const steps = [
+  {
+    n: "01",
+    title: "Pick a source",
+    text: "A repository from a connected Git provider, any public repository, a Docker image from a registry, a Dockerfile or a Compose file.",
+  },
+  { n: "02", title: "Serve builds it", text: "Automatic uses your Dockerfile if there is one, otherwise it detects the language and writes one for you. Images skip the build." },
+  { n: "03", title: "Push to deploy", text: "Turn on Deploy on push and every push to the branch builds and deploys again. Watch paths limit it to the files that matter." },
+];
+
+const sources = ["GitHub", "GitLab", "Gitea", "Forgejo", "Bitbucket", "Any Git host", "Docker image", "Dockerfile", "Compose"];
+
+const builders = [
+  { name: "Automatic", text: "Your Dockerfile if present, otherwise built-in detection." },
+  { name: "Dockerfile", text: "Always builds from a Dockerfile, with a target stage and build arguments." },
+  { name: "Nixpacks", text: "Builds with Nixpacks, when it is installed on the server." },
+  { name: "Static site", text: "Builds the files and serves them with nginx." },
+];
+
+const detection = [
+  { lang: "Node.js, Bun, Next.js", by: "package.json", note: "npm, pnpm, yarn or bun from the lockfile. Node version from engines.node" },
+  { lang: "Static front-ends", by: "Vite, Create React App, Astro, Angular, Parcel", note: "When there is no start script. Served by nginx" },
+  { lang: "Python", by: "requirements.txt, pyproject.toml, Pipfile", note: "Start command from a Procfile. Django gets migrate and gunicorn" },
+  { lang: "Go", by: "go.mod", note: "" },
+  { lang: "Rust", by: "Cargo.toml", note: "" },
+  { lang: "PHP", by: "composer.json or index.php", note: "Runs on php:8.4-apache" },
+  { lang: "Plain HTML", by: "index.html", note: "Served as a static site" },
+];
+
+const safety = [
+  {
+    icon: Repeat,
+    title: "Rolling deploys",
+    text: "New containers start next to the old ones. Traffic moves only when they are healthy, then the old ones stop. Drain time lets requests finish.",
+  },
+  { icon: Activity, title: "Health checks", text: "Check a path, a port and the expected status. If the new version never gets healthy, the deploy gives up and the old one keeps serving." },
+  { icon: Hammer, title: "Pre-deploy command", text: "Run migrations once, in a container from the new image with its variables, before traffic switches." },
+  { icon: History, title: "One-click rollback", text: "Every past deployment has a rollback button that runs its image again. Images kept for rollbacks survive server cleanup." },
+  { icon: Webhook, title: "Deploy hooks", text: "A secret URL that deploys the latest commit when called. Use it from CI or any script, or use the API." },
+];
+
+const hook = `curl -X POST "https://serve.example.com/api/deploy-hooks/<serviceId>" \\
+  -H "x-deploy-token: <secret>"`;
+---
+
+<Site title="Git to production" description="Deploy from a Git repository, a Docker image, a Dockerfile or a Compose file. Serve builds it, health-checks it and switches traffic with no downtime.">
+  {/* Hero */}
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex font-mono text-[12px] tracking-wide text-accent uppercase">Features / Git to production</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">Apps from anywhere, live on push.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          Point Serve at a repository, a Docker image, a Dockerfile or a Compose file. It builds the image, waits for the health check and moves traffic to the new version
+          with no downtime.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/docs/apps/" class={buttonVariants({ variant: "primary", size: "lg" })}>Read the docs <ArrowRight /></a>
+          <a href="/docs/installation/" class={buttonVariants({ size: "lg" })}>Install Serve</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <PipelineCanvas />
+      </div>
+    </div>
+  </div>
+
+  {/* How it works */}
+  <Section>
+    <SectionTitle eyebrow="How it works" title="From a repository to a URL." />
+    <ol class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li class="border-t border-line pt-5">
+            <span class="font-mono text-[13px] text-faint">{s.n}</span>
+            <h3 class="mt-2 text-[16px] font-semibold text-fg">{s.title}</h3>
+            <p class="mt-1.5 text-[15px] leading-relaxed text-muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="mt-10 flex flex-wrap gap-1.5">
+      {sources.map((s) => <span class="rounded-full border border-line bg-surface px-2.5 py-0.5 font-mono text-[12px] text-fg-2">{s}</span>)}
+    </div>
+  </Section>
+
+  {/* Builds */}
+  <Section class="border-t border-line">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[2fr_3fr]">
+      <div>
+        <SectionTitle eyebrow="Built-in detection" title="No Dockerfile? No problem.">
+          With the Automatic builder and no Dockerfile, Serve looks at the repository and writes a Dockerfile for it. If it guesses wrong, set the commands yourself.
+        </SectionTitle>
+        <dl class="flex flex-col gap-4">
+          {
+            builders.map((b) => (
+              <div class="border-l-2 border-line pl-4">
+                <dt class="text-[14px] font-semibold text-fg">{b.name}</dt>
+                <dd class="mt-0.5 text-sm leading-relaxed text-muted">{b.text}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <div class="self-center overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+        <p class="border-b border-line px-4 py-2.5 text-[12px] text-muted">Detected from your repository</p>
+        <ul class="divide-y divide-line">
+          {
+            detection.map((d) => (
+              <li class="grid grid-cols-1 gap-1 px-4 py-3 sm:grid-cols-[10rem_1fr] sm:gap-4">
+                <span class="text-[14px] font-medium text-fg">{d.lang}</span>
+                <span class="min-w-0">
+                  <span class="block font-mono text-[12.5px] text-fg-2">{d.by}</span>
+                  {d.note && <span class="mt-0.5 block text-[13px] text-muted">{d.note}</span>}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      Monorepo? Set a root directory and watch paths for each app. Builds need about 2 GB of memory, so you can build on a separate server and push each image to a registry.
+    </p>
+  </Section>
+
+  {/* Safe deploys */}
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Safe deploys" title="Ship often. Break nothing." />
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {
+        safety.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+      <div class="flex flex-col justify-center gap-3 bg-surface p-6">
+        <p class="text-sm text-muted">Deploy from CI</p>
+        <pre class="overflow-x-auto rounded-lg border border-line bg-bg px-3 py-2.5 font-mono text-[11.5px] leading-relaxed text-fg-2"><code>{hook}</code></pre>
+      </div>
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      Apps that need a single writer, like apps using SQLite, can use the Recreate strategy instead: the old containers stop before the new ones start.
+    </p>
+  </Section>
+
+  {/* Call to action */}
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Push. It's live.</h2>
+      <p class="mt-3 text-muted">Builds, health checks and rollbacks come with every Serve app.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Install Serve <ArrowRight /></a>
+        <a href="/docs/builds/" class={buttonVariants({ size: "lg" })}>Builds</a>
+        <a href="/docs/deployments/" class={buttonVariants({ size: "lg" })}>Deployments</a>
+      </div>
+    </div>
+  </Section>
+</Site>

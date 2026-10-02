@@ -1,0 +1,98 @@
+---
+title: "Security"
+description: "Two-factor authentication, single sign-on and the activity log."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+This page covers how people sign in to Serve and how you lock the dashboard down. It also covers the activity log and the encryption key that protects your secrets.
+
+## Two-factor authentication
+
+Each user can turn on two-factor authentication on their **Account** page. Serve then asks for a 6-digit code from an authenticator app when they sign in.
+
+1. Go to **Account → Two-factor authentication** and choose **Enable**.
+2. Confirm your password.
+3. Scan the QR code with 1Password, Google Authenticator or any TOTP app.
+4. Enter the code.
+5. Store the backup codes somewhere safe.
+
+Two-factor authentication protects password sign-in. You need a password to turn it on or off, so set one first if you only sign in through a provider.
+
+The **Account** page also shows your signed-in devices, where you can sign out other devices, and your sign-in methods. Keep at least one sign-in method.
+
+## Single sign-on
+
+Set up providers under **Settings → Sign-in**. Changes apply at once; nobody needs to restart anything.
+
+| Provider | Use it for |
+| --- | --- |
+| GitHub | Sign in with a GitHub account. You can limit sign-in to members of a **GitHub organization**. |
+| Google | Sign in with a Google or Workspace account. |
+| OpenID Connect | Your company login, like Okta, Microsoft Entra ID, Authentik or Keycloak. |
+
+For each provider, create an OAuth app at the provider, add the callback URL that Serve shows, then paste the app's **Client ID** and **Client secret**.
+
+:::note
+Most providers only accept `https` callback URLs. Give the dashboard a domain with HTTPS in **Settings → General** first.
+:::
+
+### OpenID Connect fields
+
+| Field | What to enter |
+| --- | --- |
+| **Issuer URL** | For example `https://login.example.com`. Serve reads its `/.well-known/openid-configuration`. |
+| **Scopes** | Default: `openid email profile`. |
+| **Button text** | The label on the sign-in page. Default: **Sign in with SSO**. |
+
+### Who can sign in
+
+Each provider has these rules:
+
+- **Only allow emails from**: comma separated domains, like `example.com` or `*@example.com`. Subdomains count. Leave empty to allow any email.
+- **Allow new accounts**: when off, only people who already have an account, or were invited, can sign in.
+- **New accounts join**: the organization and role new accounts get.
+- **Show on the sign-in page**: turn a provider off and it disappears from the sign-in page. Its settings stay.
+
+## Turning off password sign-in
+
+Under **Settings → Sign-in → Email and password** you can turn password sign-in off and allow only your providers. A Root admin must have linked one of those providers on their **Account** page first. Saved passwords stay, and people who are signed in now stay signed in.
+
+If you lock yourself out, set this in `/data/serve/.env` and restart Serve:
+
+```bash
+SERVE_ALLOW_PASSWORD_LOGIN=1
+```
+
+While it is set, password sign-in stays on. Remove it again to go back to the setting in the dashboard.
+
+## Allowed addresses
+
+**Settings → Security → Dashboard access** has an **Allowed addresses** list. Only these IP addresses can open the dashboard. Enter one per line, like `203.0.113.7` or `10.0.0.0/8`.
+
+The list applies to the dashboard domain only, so set a dashboard domain first.
+
+:::caution
+Make sure the address you connect from is on the list before you save.
+:::
+
+The same page has a **Security review** that checks your setup each time you open it.
+
+## Activity log
+
+**Activity** in the sidebar is an audit trail of changes made in the organization: who did what, and when. Changes made through the [API](/docs/api) show up there too. Revealing the instance encryption key is logged as well.
+
+## Encryption key
+
+Serve encrypts secrets such as variable values, tokens and passwords with `SERVE_ENCRYPTION_KEY` from `/data/serve/.env`.
+
+- The key is never in a backup.
+- Without it, a restored Serve cannot read its secrets.
+- **Settings → Backups → Show encryption key** shows it.
+
+Keep it in a password manager. See [Instance backups](/docs/instance-backups).
+
+<CardGrid>
+<LinkCard href="/docs/teams" title="Teams" description="Organizations, roles and permissions." />
+<LinkCard href="/docs/instance-backups" title="Instance backups" description="Back up and restore Serve itself." />
+</CardGrid>
