@@ -35,7 +35,7 @@ Then open the dashboard and create your account. That's it.
 - **Push to deploy.** Connect GitHub or any Git host. Every push builds and goes live.
 - **Databases that take care of themselves.** PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey and
   ClickHouse, with scheduled backups and one-click restore.
-- **One click for popular apps.** More than 160 ready templates: n8n, Plausible, Ghost, Nextcloud,
+- **One click for popular apps.** More than 260 ready templates: n8n, Plausible, Ghost, Nextcloud,
   Grafana and many more.
 - **Domains and HTTPS, done.** Add a domain and get a certificate that renews itself.
 - **Made for teams.** Roles, project access, two-factor sign-in and an activity log.

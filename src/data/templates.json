@@ -45,6 +45,15 @@
   "logo": "/templates/adminer.svg"
  },
  {
+  "id": "ampache",
+  "name": "Ampache",
+  "description": "Web based audio and video streaming server for your music library.",
+  "category": "Media",
+  "website": "https://ampache.org",
+  "color": "#FF6600",
+  "logo": null
+ },
+ {
   "id": "answer",
   "name": "Apache Answer",
   "description": "Q&A platform for communities, help centers and knowledge bases.",
@@ -60,6 +69,15 @@
   "category": "AI",
   "website": "https://anythingllm.com",
   "color": "#0E0F0F",
+  "logo": null
+ },
+ {
+  "id": "apprise",
+  "name": "Apprise",
+  "description": "One API to send notifications to over 100 services like email, Slack and Telegram.",
+  "category": "Communication",
+  "website": "https://github.com/caronc/apprise-api",
+  "color": "#3F51B5",
   "logo": null
  },
  {
@@ -96,6 +114,15 @@
   "category": "Automation",
   "website": "https://automatisch.io",
   "color": "#6E3AD8",
+  "logo": null
+ },
+ {
+  "id": "baikal",
+  "name": "Baikal",
+  "description": "Light CalDAV and CardDAV server to sync calendars and contacts.",
+  "category": "Productivity",
+  "website": "https://sabre.io/baikal",
+  "color": "#3B82F6",
   "logo": null
  },
  {
@@ -153,6 +180,33 @@
   "logo": "/templates/budibase.svg"
  },
  {
+  "id": "cadvisor",
+  "name": "cAdvisor",
+  "description": "Resource usage and performance of every container on the server.",
+  "category": "Monitoring",
+  "website": "https://github.com/google/cadvisor",
+  "color": "#4285F4",
+  "logo": null
+ },
+ {
+  "id": "cal-com",
+  "name": "Cal.com",
+  "description": "Scheduling infrastructure: booking pages, calendars and team availability, with PostgreSQL.",
+  "category": "Productivity",
+  "website": "https://cal.com",
+  "color": "#292929",
+  "logo": "/templates/cal-com.svg"
+ },
+ {
+  "id": "calibre-web",
+  "name": "Calibre-Web",
+  "description": "Browse, read and download the e-books of a Calibre library.",
+  "category": "Media",
+  "website": "https://github.com/janeczku/calibre-web",
+  "color": "#45B29D",
+  "logo": "/templates/calibre-web.svg"
+ },
+ {
   "id": "changedetection",
   "name": "changedetection.io",
   "description": "Watch websites for changes and get notified.",
@@ -198,6 +252,15 @@
   "logo": "/templates/code-server.svg"
  },
  {
+  "id": "convertx",
+  "name": "ConvertX",
+  "description": "Convert files between over a thousand formats in the browser.",
+  "category": "Productivity",
+  "website": "https://github.com/C4illin/ConvertX",
+  "color": "#7C3AED",
+  "logo": null
+ },
+ {
   "id": "couchdb",
   "name": "CouchDB",
   "description": "Document database with an HTTP API and multi-master sync.",
@@ -205,6 +268,15 @@
   "website": "https://couchdb.apache.org",
   "color": "#E42528",
   "logo": "/templates/couchdb.svg"
+ },
+ {
+  "id": "cyberchef",
+  "name": "CyberChef",
+  "description": "A web app to encode, decode, encrypt, compress and analyse data.",
+  "category": "Security",
+  "website": "https://gchq.github.io/CyberChef/",
+  "color": "#4D8EC3",
+  "logo": null
  },
  {
   "id": "dashy",
@@ -216,6 +288,15 @@
   "logo": null
  },
  {
+  "id": "dbgate",
+  "name": "DbGate",
+  "description": "A database manager in the browser for Postgres, MySQL, MongoDB, Redis and more.",
+  "category": "Databases",
+  "website": "https://dbgate.org",
+  "color": "#1B6EC2",
+  "logo": null
+ },
+ {
   "id": "directus",
   "name": "Directus",
   "description": "Headless CMS and instant REST/GraphQL API for any SQL database.",
@@ -223,6 +304,42 @@
   "website": "https://directus.io",
   "color": "#263238",
   "logo": "/templates/directus.svg"
+ },
+ {
+  "id": "directus-mysql",
+  "name": "Directus (MySQL)",
+  "description": "Headless CMS and instant REST/GraphQL API, with MySQL.",
+  "category": "CMS",
+  "website": "https://directus.io",
+  "color": "#263238",
+  "logo": "/templates/directus-mysql.svg"
+ },
+ {
+  "id": "directus-sqlite",
+  "name": "Directus (SQLite)",
+  "description": "Headless CMS and instant REST/GraphQL API, with SQLite.",
+  "category": "CMS",
+  "website": "https://directus.io",
+  "color": "#263238",
+  "logo": "/templates/directus-sqlite.svg"
+ },
+ {
+  "id": "docker-registry",
+  "name": "Docker Registry",
+  "description": "A private registry for your container images, with a password.",
+  "category": "Developer tools",
+  "website": "https://distribution.github.io/distribution/",
+  "color": "#2496ED",
+  "logo": "/templates/docker-registry.svg"
+ },
+ {
+  "id": "dockge",
+  "name": "Dockge",
+  "description": "Manage Docker Compose stacks on the server from a web interface.",
+  "category": "Developer tools",
+  "website": "https://dockge.kuma.pet",
+  "color": "#74C2FF",
+  "logo": null
  },
  {
   "id": "docmost",
@@ -252,6 +369,15 @@
   "logo": null
  },
  {
+  "id": "dolibarr",
+  "name": "Dolibarr",
+  "description": "ERP and CRM for small businesses: invoices, orders, stock, HR and more, with MariaDB.",
+  "category": "Productivity",
+  "website": "https://www.dolibarr.org",
+  "color": "#263C5C",
+  "logo": "/templates/dolibarr.svg"
+ },
+ {
   "id": "dozzle",
   "name": "Dozzle",
   "description": "Real-time log viewer for every container on the server.",
@@ -279,6 +405,51 @@
   "logo": "/templates/drupal.svg"
  },
  {
+  "id": "drupal-mariadb",
+  "name": "Drupal (MariaDB)",
+  "description": "Flexible CMS for content-rich websites, with MariaDB.",
+  "category": "CMS",
+  "website": "https://www.drupal.org",
+  "color": "#0678BE",
+  "logo": "/templates/drupal-mariadb.svg"
+ },
+ {
+  "id": "drupal-mysql",
+  "name": "Drupal (MySQL)",
+  "description": "Flexible CMS for content-rich websites, with MySQL.",
+  "category": "CMS",
+  "website": "https://www.drupal.org",
+  "color": "#0678BE",
+  "logo": "/templates/drupal-mysql.svg"
+ },
+ {
+  "id": "drupal-sqlite",
+  "name": "Drupal (SQLite)",
+  "description": "Flexible CMS for content-rich websites, with no database server.",
+  "category": "CMS",
+  "website": "https://www.drupal.org",
+  "color": "#0678BE",
+  "logo": "/templates/drupal-sqlite.svg"
+ },
+ {
+  "id": "duplicati",
+  "name": "Duplicati",
+  "description": "Encrypted backups to cloud storage and remote servers, with a web interface.",
+  "category": "Storage",
+  "website": "https://duplicati.com",
+  "color": "#1E3A8A",
+  "logo": "/templates/duplicati.svg"
+ },
+ {
+  "id": "easy-appointments",
+  "name": "Easy!Appointments",
+  "description": "Online appointment booking for customers, with services, providers and calendar sync, with MySQL.",
+  "category": "Productivity",
+  "website": "https://easyappointments.org",
+  "color": "#35A768",
+  "logo": null
+ },
+ {
   "id": "element-web",
   "name": "Element Web",
   "description": "Matrix chat client in the browser.",
@@ -297,6 +468,24 @@
   "logo": "/templates/emby.svg"
  },
  {
+  "id": "espocrm",
+  "name": "EspoCRM",
+  "description": "CRM for sales, contacts, deals and customer support, with MariaDB.",
+  "category": "Productivity",
+  "website": "https://www.espocrm.com",
+  "color": "#2C5F8A",
+  "logo": null
+ },
+ {
+  "id": "etherpad",
+  "name": "Etherpad",
+  "description": "Real time collaborative text editor, with Postgres.",
+  "category": "Productivity",
+  "website": "https://etherpad.org",
+  "color": "#44B492",
+  "logo": null
+ },
+ {
   "id": "excalidraw",
   "name": "Excalidraw",
   "description": "Virtual whiteboard for hand-drawn style diagrams.",
@@ -304,6 +493,24 @@
   "website": "https://excalidraw.com",
   "color": "#6965DB",
   "logo": "/templates/excalidraw.svg"
+ },
+ {
+  "id": "ezbookkeeping",
+  "name": "ezBookkeeping",
+  "description": "Personal finance app to track income, spending and accounts.",
+  "category": "Productivity",
+  "website": "https://ezbookkeeping.mayswind.net",
+  "color": "#C67E48",
+  "logo": null
+ },
+ {
+  "id": "fider",
+  "name": "Fider",
+  "description": "Collect and rank customer feedback and feature requests in one place, with PostgreSQL.",
+  "category": "Productivity",
+  "website": "https://fider.io",
+  "color": "#2B2D42",
+  "logo": null
  },
  {
   "id": "filebrowser",
@@ -324,6 +531,15 @@
   "logo": "/templates/firefly-iii.svg"
  },
  {
+  "id": "flaresolverr",
+  "name": "FlareSolverr",
+  "description": "Proxy server that gets past Cloudflare challenges for your indexer apps.",
+  "category": "Media",
+  "website": "https://github.com/FlareSolverr/FlareSolverr",
+  "color": "#6D28D9",
+  "logo": null
+ },
+ {
   "id": "flowise",
   "name": "Flowise",
   "description": "Build LLM apps and AI agents with a drag-and-drop editor.",
@@ -340,6 +556,33 @@
   "website": "https://forgejo.org",
   "color": "#F97316",
   "logo": "/templates/forgejo.svg"
+ },
+ {
+  "id": "forgejo-mysql",
+  "name": "Forgejo (MySQL)",
+  "description": "Community-run Git forge with issues, pull requests and Actions, with MySQL.",
+  "category": "Developer tools",
+  "website": "https://forgejo.org",
+  "color": "#F97316",
+  "logo": "/templates/forgejo-mysql.svg"
+ },
+ {
+  "id": "forgejo-postgres",
+  "name": "Forgejo (PostgreSQL)",
+  "description": "Community-run Git forge with issues, pull requests and Actions, with PostgreSQL.",
+  "category": "Developer tools",
+  "website": "https://forgejo.org",
+  "color": "#F97316",
+  "logo": "/templates/forgejo-postgres.svg"
+ },
+ {
+  "id": "formbricks",
+  "name": "Formbricks",
+  "description": "Surveys and forms for websites, apps and links, with PostgreSQL and Redis.",
+  "category": "Analytics",
+  "website": "https://formbricks.com",
+  "color": "#00C4B8",
+  "logo": "/templates/formbricks.svg"
  },
  {
   "id": "freshrss",
@@ -387,6 +630,24 @@
   "logo": "/templates/gitea.svg"
  },
  {
+  "id": "gitea-mysql",
+  "name": "Gitea (MySQL)",
+  "description": "Lightweight self-hosted Git service with issues and CI, with MySQL.",
+  "category": "Developer tools",
+  "website": "https://about.gitea.com",
+  "color": "#609926",
+  "logo": "/templates/gitea-mysql.svg"
+ },
+ {
+  "id": "gitea-postgres",
+  "name": "Gitea (PostgreSQL)",
+  "description": "Lightweight self-hosted Git service with issues and CI, with PostgreSQL.",
+  "category": "Developer tools",
+  "website": "https://about.gitea.com",
+  "color": "#609926",
+  "logo": "/templates/gitea-postgres.svg"
+ },
+ {
   "id": "gitlab",
   "name": "GitLab",
   "description": "Complete DevOps platform with Git hosting, issues, CI/CD and a container registry.",
@@ -403,6 +664,15 @@
   "website": "https://github.com/glanceapp/glance",
   "color": "#8C7650",
   "logo": "/templates/glance.svg"
+ },
+ {
+  "id": "glances",
+  "name": "Glances",
+  "description": "CPU, memory, disk, network and container stats for the server.",
+  "category": "Monitoring",
+  "website": "https://nicolargo.github.io/glances/",
+  "color": "#6CC24A",
+  "logo": null
  },
  {
   "id": "glitchtip",
@@ -432,6 +702,15 @@
   "logo": null
  },
  {
+  "id": "gotenberg",
+  "name": "Gotenberg",
+  "description": "An API that turns HTML, Markdown and office files into PDF.",
+  "category": "Developer tools",
+  "website": "https://gotenberg.dev",
+  "color": "#00A9A5",
+  "logo": null
+ },
+ {
   "id": "gotify",
   "name": "Gotify",
   "description": "Simple server for sending and receiving push messages.",
@@ -448,6 +727,15 @@
   "website": "https://grafana.com",
   "color": "#F46800",
   "logo": "/templates/grafana.svg"
+ },
+ {
+  "id": "grav",
+  "name": "Grav",
+  "description": "Fast flat-file CMS with no database, built on Markdown pages.",
+  "category": "CMS",
+  "website": "https://getgrav.org",
+  "color": "#221E1F",
+  "logo": "/templates/grav.svg"
  },
  {
   "id": "grocy",
@@ -495,6 +783,24 @@
   "logo": "/templates/homarr.svg"
  },
  {
+  "id": "home-assistant",
+  "name": "Home Assistant",
+  "description": "Open source home automation that puts local control and privacy first.",
+  "category": "Automation",
+  "website": "https://www.home-assistant.io",
+  "color": "#18BCF2",
+  "logo": "/templates/home-assistant.svg"
+ },
+ {
+  "id": "homebox",
+  "name": "Homebox",
+  "description": "Home inventory to track your things, where they are and their warranties.",
+  "category": "Productivity",
+  "website": "https://homebox.software",
+  "color": "#5B7F3A",
+  "logo": null
+ },
+ {
   "id": "homepage",
   "name": "Homepage",
   "description": "A modern, customisable start page for your services.",
@@ -502,6 +808,24 @@
   "website": "https://gethomepage.dev",
   "color": "#009BD5",
   "logo": "/templates/homepage.svg"
+ },
+ {
+  "id": "hoppscotch",
+  "name": "Hoppscotch",
+  "description": "An open source API client for REST, GraphQL and WebSocket, with Postgres.",
+  "category": "Developer tools",
+  "website": "https://hoppscotch.io",
+  "color": "#10B981",
+  "logo": "/templates/hoppscotch.svg"
+ },
+ {
+  "id": "httpbin",
+  "name": "httpbin",
+  "description": "A simple HTTP request and response service for testing clients.",
+  "category": "Developer tools",
+  "website": "https://github.com/mccutchen/go-httpbin",
+  "color": "#4B5563",
+  "logo": null
  },
  {
   "id": "huginn",
@@ -540,6 +864,15 @@
   "logo": "/templates/influxdb.svg"
  },
  {
+  "id": "invoice-ninja",
+  "name": "Invoice Ninja",
+  "description": "Invoices, quotes, payments, expenses and time tracking for freelancers and businesses, with MySQL.",
+  "category": "Productivity",
+  "website": "https://invoiceninja.com",
+  "color": "#000000",
+  "logo": "/templates/invoice-ninja.svg"
+ },
+ {
   "id": "invoiceshelf",
   "name": "InvoiceShelf",
   "description": "Invoicing and expense tracking for freelancers and small businesses.",
@@ -556,6 +889,24 @@
   "website": "https://it-tools.tech",
   "color": "#18A058",
   "logo": null
+ },
+ {
+  "id": "jackett",
+  "name": "Jackett",
+  "description": "Proxy that turns torrent tracker sites into one API for your media apps.",
+  "category": "Media",
+  "website": "https://github.com/Jackett/Jackett",
+  "color": "#2C3E50",
+  "logo": null
+ },
+ {
+  "id": "jaeger",
+  "name": "Jaeger",
+  "description": "Distributed tracing to follow requests across your services.",
+  "category": "Monitoring",
+  "website": "https://www.jaegertracing.io",
+  "color": "#66CFE3",
+  "logo": "/templates/jaeger.svg"
  },
  {
   "id": "jellyfin",
@@ -585,6 +936,24 @@
   "logo": "/templates/joomla.svg"
  },
  {
+  "id": "joomla-mariadb",
+  "name": "Joomla (MariaDB)",
+  "description": "Content management system for websites of any size, with MariaDB.",
+  "category": "CMS",
+  "website": "https://www.joomla.org",
+  "color": "#5091CD",
+  "logo": "/templates/joomla-mariadb.svg"
+ },
+ {
+  "id": "joplin-server",
+  "name": "Joplin Server",
+  "description": "Sync server for the Joplin note taking apps, with Postgres.",
+  "category": "Productivity",
+  "website": "https://joplinapp.org",
+  "color": "#1071D3",
+  "logo": "/templates/joplin-server.svg"
+ },
+ {
   "id": "jupyter",
   "name": "JupyterLab",
   "description": "Notebooks for Python, data science and scientific computing.",
@@ -592,6 +961,15 @@
   "website": "https://jupyter.org",
   "color": "#F37626",
   "logo": "/templates/jupyter.svg"
+ },
+ {
+  "id": "kanboard",
+  "name": "Kanboard",
+  "description": "Simple Kanban project management with boards, swimlanes and automatic actions.",
+  "category": "Productivity",
+  "website": "https://kanboard.org",
+  "color": "#D52D2D",
+  "logo": null
  },
  {
   "id": "karakeep",
@@ -630,6 +1008,15 @@
   "logo": "/templates/keycloak.svg"
  },
  {
+  "id": "keycloak-mysql",
+  "name": "Keycloak (MySQL)",
+  "description": "Identity and access management: SSO, OAuth 2.0, OpenID Connect and SAML, with MySQL.",
+  "category": "Security",
+  "website": "https://www.keycloak.org",
+  "color": "#4D4D4D",
+  "logo": "/templates/keycloak-mysql.svg"
+ },
+ {
   "id": "kimai",
   "name": "Kimai",
   "description": "Time tracking for freelancers and teams, with invoices and reports.",
@@ -639,12 +1026,30 @@
   "logo": null
  },
  {
+  "id": "koel",
+  "name": "Koel",
+  "description": "Personal music streaming server with a modern web player, with MariaDB.",
+  "category": "Media",
+  "website": "https://koel.dev",
+  "color": "#F97316",
+  "logo": null
+ },
+ {
   "id": "komga",
   "name": "Komga",
   "description": "Media server for comics, manga, magazines and ebooks.",
   "category": "Media",
   "website": "https://komga.org",
   "color": "#005ED3",
+  "logo": null
+ },
+ {
+  "id": "kopia",
+  "name": "Kopia",
+  "description": "Fast, encrypted, deduplicated backups with a web interface.",
+  "category": "Storage",
+  "website": "https://kopia.io",
+  "color": "#1F6FEB",
   "logo": null
  },
  {
@@ -675,12 +1080,48 @@
   "logo": null
  },
  {
+  "id": "librespeed",
+  "name": "LibreSpeed",
+  "description": "Light speed test you run in the browser against your own server.",
+  "category": "Monitoring",
+  "website": "https://librespeed.org",
+  "color": "#2E7D32",
+  "logo": null
+ },
+ {
+  "id": "libretranslate",
+  "name": "LibreTranslate",
+  "description": "A machine translation API that runs on your own server.",
+  "category": "AI",
+  "website": "https://libretranslate.com",
+  "color": "#1565C0",
+  "logo": "/templates/libretranslate.svg"
+ },
+ {
   "id": "lidarr",
   "name": "Lidarr",
   "description": "Automatically finds, downloads and organizes music.",
   "category": "Media",
   "website": "https://lidarr.audio",
   "color": "#009252",
+  "logo": null
+ },
+ {
+  "id": "limesurvey",
+  "name": "LimeSurvey",
+  "description": "Professional online surveys with many question types and reports, with MariaDB.",
+  "category": "Analytics",
+  "website": "https://www.limesurvey.org",
+  "color": "#14AE5C",
+  "logo": "/templates/limesurvey.svg"
+ },
+ {
+  "id": "linkding",
+  "name": "linkding",
+  "description": "Fast and simple bookmark manager with tags and archiving.",
+  "category": "Productivity",
+  "website": "https://linkding.link",
+  "color": "#5856E0",
   "logo": null
  },
  {
@@ -711,6 +1152,15 @@
   "logo": null
  },
  {
+  "id": "lldap",
+  "name": "LLDAP",
+  "description": "Light LDAP server with a simple web UI to manage users and groups.",
+  "category": "Security",
+  "website": "https://github.com/lldap/lldap",
+  "color": "#2C6CB4",
+  "logo": null
+ },
+ {
   "id": "logto",
   "name": "Logto",
   "description": "Authentication and authorization for apps, with OIDC, social sign-in and multi-tenancy.",
@@ -726,6 +1176,15 @@
   "category": "Monitoring",
   "website": "https://grafana.com/oss/loki/",
   "color": "#F46800",
+  "logo": null
+ },
+ {
+  "id": "lychee",
+  "name": "Lychee",
+  "description": "Photo management with albums, sharing and a clean gallery, with MariaDB.",
+  "category": "Media",
+  "website": "https://lycheeorg.dev",
+  "color": "#E8384F",
   "logo": null
  },
  {
@@ -756,6 +1215,15 @@
   "logo": "/templates/matomo.svg"
  },
  {
+  "id": "matomo-mysql",
+  "name": "Matomo (MySQL)",
+  "description": "Full-featured web analytics you own, with MySQL.",
+  "category": "Analytics",
+  "website": "https://matomo.org",
+  "color": "#3152A0",
+  "logo": "/templates/matomo-mysql.svg"
+ },
+ {
   "id": "mattermost",
   "name": "Mattermost",
   "description": "Team chat and collaboration. A Slack alternative.",
@@ -783,6 +1251,15 @@
   "logo": "/templates/mealie.svg"
  },
  {
+  "id": "mediawiki",
+  "name": "MediaWiki",
+  "description": "The wiki software behind Wikipedia, with MariaDB.",
+  "category": "CMS",
+  "website": "https://www.mediawiki.org",
+  "color": "#3366CC",
+  "logo": null
+ },
+ {
   "id": "meilisearch",
   "name": "Meilisearch",
   "description": "Lightning-fast, typo-tolerant search engine with a simple API.",
@@ -808,6 +1285,24 @@
   "website": "https://www.metabase.com",
   "color": "#509EE3",
   "logo": "/templates/metabase.svg"
+ },
+ {
+  "id": "metabase-mysql",
+  "name": "Metabase (MySQL)",
+  "description": "Business intelligence dashboards and questions for your data, with MySQL.",
+  "category": "Analytics",
+  "website": "https://www.metabase.com",
+  "color": "#509EE3",
+  "logo": "/templates/metabase-mysql.svg"
+ },
+ {
+  "id": "microbin",
+  "name": "MicroBin",
+  "description": "Small pastebin and file sharing app with expiring and encrypted uploads.",
+  "category": "Productivity",
+  "website": "https://microbin.eu",
+  "color": "#4E7BB8",
+  "logo": null
  },
  {
   "id": "miniflux",
@@ -846,6 +1341,24 @@
   "logo": "/templates/n8n.svg"
  },
  {
+  "id": "n8n-queue",
+  "name": "n8n (queue mode)",
+  "description": "Workflow automation in queue mode: a main instance and a worker, with PostgreSQL and Redis.",
+  "category": "Automation",
+  "website": "https://n8n.io",
+  "color": "#EA4B71",
+  "logo": "/templates/n8n-queue.svg"
+ },
+ {
+  "id": "n8n-sqlite",
+  "name": "n8n (SQLite)",
+  "description": "Workflow automation with a visual editor and 400+ integrations, with SQLite.",
+  "category": "Automation",
+  "website": "https://n8n.io",
+  "color": "#EA4B71",
+  "logo": "/templates/n8n-sqlite.svg"
+ },
+ {
   "id": "navidrome",
   "name": "Navidrome",
   "description": "Music server and streamer compatible with Subsonic apps.",
@@ -873,6 +1386,24 @@
   "logo": "/templates/nextcloud.svg"
  },
  {
+  "id": "nextcloud-mariadb",
+  "name": "Nextcloud (MariaDB)",
+  "description": "Files, calendar, contacts and office in your own cloud, with MariaDB.",
+  "category": "Productivity",
+  "website": "https://nextcloud.com",
+  "color": "#0082C9",
+  "logo": "/templates/nextcloud-mariadb.svg"
+ },
+ {
+  "id": "nextcloud-sqlite",
+  "name": "Nextcloud (SQLite)",
+  "description": "Files, calendar, contacts and office in your own cloud, with SQLite. Good for one or two users.",
+  "category": "Productivity",
+  "website": "https://nextcloud.com",
+  "color": "#0082C9",
+  "logo": "/templates/nextcloud-sqlite.svg"
+ },
+ {
   "id": "nexus",
   "name": "Nexus Repository",
   "description": "Artifact repository for Maven, npm, Docker, PyPI and more.",
@@ -891,6 +1422,15 @@
   "logo": null
  },
  {
+  "id": "nocodb-sqlite",
+  "name": "NocoDB (SQLite)",
+  "description": "Turn a database into a smart spreadsheet, with SQLite.",
+  "category": "Productivity",
+  "website": "https://nocodb.com",
+  "color": "#7C3AED",
+  "logo": null
+ },
+ {
   "id": "node-red",
   "name": "Node-RED",
   "description": "Low-code, flow-based programming for events, APIs and IoT.",
@@ -900,6 +1440,15 @@
   "logo": "/templates/node-red.svg"
  },
  {
+  "id": "nodebb",
+  "name": "NodeBB",
+  "description": "Modern community forum with real-time chat and notifications, with Redis.",
+  "category": "Communication",
+  "website": "https://nodebb.org",
+  "color": "#1E5EBC",
+  "logo": "/templates/nodebb.svg"
+ },
+ {
   "id": "ntfy",
   "name": "ntfy",
   "description": "Send push notifications to your phone or desktop over HTTP.",
@@ -907,6 +1456,15 @@
   "website": "https://ntfy.sh",
   "color": "#317F6F",
   "logo": "/templates/ntfy.svg"
+ },
+ {
+  "id": "ocis",
+  "name": "ownCloud Infinite Scale",
+  "description": "File sync and sharing platform with spaces, built in Go.",
+  "category": "Storage",
+  "website": "https://owncloud.dev/ocis",
+  "color": "#041E42",
+  "logo": "/templates/ocis.svg"
  },
  {
   "id": "odoo",
@@ -945,6 +1503,42 @@
   "logo": "/templates/open-webui.svg"
  },
  {
+  "id": "opengist",
+  "name": "Opengist",
+  "description": "Self-hosted pastebin for code snippets, backed by Git.",
+  "category": "Developer tools",
+  "website": "https://opengist.io",
+  "color": "#E9762B",
+  "logo": null
+ },
+ {
+  "id": "openobserve",
+  "name": "OpenObserve",
+  "description": "Logs, metrics and traces in one place, with low storage cost.",
+  "category": "Monitoring",
+  "website": "https://openobserve.ai",
+  "color": "#3F7994",
+  "logo": null
+ },
+ {
+  "id": "openproject",
+  "name": "OpenProject",
+  "description": "Project management with Gantt charts, agile boards, time tracking and wikis.",
+  "category": "Productivity",
+  "website": "https://www.openproject.org",
+  "color": "#0770B8",
+  "logo": "/templates/openproject.svg"
+ },
+ {
+  "id": "outline",
+  "name": "Outline",
+  "description": "Fast, collaborative knowledge base and wiki for teams, with PostgreSQL and Redis.",
+  "category": "Productivity",
+  "website": "https://www.getoutline.com",
+  "color": "#000000",
+  "logo": "/templates/outline.svg"
+ },
+ {
   "id": "owncast",
   "name": "Owncast",
   "description": "Self-hosted live video streaming and chat.",
@@ -970,6 +1564,15 @@
   "website": "https://docs.paperless-ngx.com",
   "color": "#17541F",
   "logo": "/templates/paperless-ngx.svg"
+ },
+ {
+  "id": "passbolt",
+  "name": "Passbolt",
+  "description": "Password manager for teams, with end to end encryption and MariaDB.",
+  "category": "Security",
+  "website": "https://www.passbolt.com",
+  "color": "#D40101",
+  "logo": "/templates/passbolt.svg"
  },
  {
   "id": "pgadmin",
@@ -1026,6 +1629,24 @@
   "logo": null
  },
  {
+  "id": "pigallery2",
+  "name": "PiGallery 2",
+  "description": "Fast, read-only photo gallery for your photo folders.",
+  "category": "Media",
+  "website": "https://bpatrik.github.io/pigallery2",
+  "color": "#F57C00",
+  "logo": null
+ },
+ {
+  "id": "piwigo",
+  "name": "Piwigo",
+  "description": "Photo gallery for organizing and sharing large photo collections, with MariaDB.",
+  "category": "Media",
+  "website": "https://piwigo.org",
+  "color": "#FF7700",
+  "logo": "/templates/piwigo.svg"
+ },
+ {
   "id": "planka",
   "name": "Planka",
   "description": "Kanban boards for projects and teams, in real time.",
@@ -1042,6 +1663,15 @@
   "website": "https://plausible.io",
   "color": "#5850EC",
   "logo": "/templates/plausible.svg"
+ },
+ {
+  "id": "plex",
+  "name": "Plex Media Server",
+  "description": "Organize and stream your movies, shows, music and photos.",
+  "category": "Media",
+  "website": "https://www.plex.tv",
+  "color": "#EBAF00",
+  "logo": "/templates/plex.svg"
  },
  {
   "id": "pocketbase",
@@ -1089,6 +1719,15 @@
   "logo": null
  },
  {
+  "id": "psitransfer",
+  "name": "PsiTransfer",
+  "description": "Simple file sharing with resumable uploads and expiring download links.",
+  "category": "Storage",
+  "website": "https://github.com/psi-4ward/psitransfer",
+  "color": "#2E7D32",
+  "logo": null
+ },
+ {
   "id": "qbittorrent",
   "name": "qBittorrent",
   "description": "BitTorrent client with a web interface.",
@@ -1125,6 +1764,51 @@
   "logo": "/templates/radarr.svg"
  },
  {
+  "id": "radicale",
+  "name": "Radicale",
+  "description": "Small CalDAV and CardDAV server for calendars, contacts and tasks.",
+  "category": "Productivity",
+  "website": "https://radicale.org",
+  "color": "#A40000",
+  "logo": null
+ },
+ {
+  "id": "rallly",
+  "name": "Rallly",
+  "description": "Schedule group meetings with polls to find the best date and time, with PostgreSQL.",
+  "category": "Productivity",
+  "website": "https://rallly.co",
+  "color": "#4F46E5",
+  "logo": null
+ },
+ {
+  "id": "readeck",
+  "name": "Readeck",
+  "description": "Save web pages to read later, with highlights, labels and e-book export.",
+  "category": "Productivity",
+  "website": "https://readeck.org",
+  "color": "#0D8A9E",
+  "logo": null
+ },
+ {
+  "id": "redash",
+  "name": "Redash",
+  "description": "Query your databases with SQL and build dashboards to share, with PostgreSQL and Redis.",
+  "category": "Analytics",
+  "website": "https://redash.io",
+  "color": "#FF7964",
+  "logo": "/templates/redash.svg"
+ },
+ {
+  "id": "redis-commander",
+  "name": "Redis Commander",
+  "description": "Redis with a web interface to browse and edit keys.",
+  "category": "Databases",
+  "website": "https://github.com/joeferner/redis-commander",
+  "color": "#FF4438",
+  "logo": "/templates/redis-commander.svg"
+ },
+ {
   "id": "redisinsight",
   "name": "Redis Insight",
   "description": "Visual browser, profiler and CLI for Redis and Valkey.",
@@ -1134,6 +1818,15 @@
   "logo": "/templates/redisinsight.svg"
  },
  {
+  "id": "registry-browser",
+  "name": "Docker Registry UI",
+  "description": "A private container registry with a web interface to browse and delete images.",
+  "category": "Developer tools",
+  "website": "https://joxit.dev/docker-registry-ui/",
+  "color": "#2496ED",
+  "logo": "/templates/registry-browser.svg"
+ },
+ {
   "id": "rocketchat",
   "name": "Rocket.Chat",
   "description": "Team chat with channels, threads and video calls. A Slack alternative.",
@@ -1141,6 +1834,42 @@
   "website": "https://www.rocket.chat",
   "color": "#F5455C",
   "logo": "/templates/rocketchat.svg"
+ },
+ {
+  "id": "romm",
+  "name": "RomM",
+  "description": "Scan, organize and play your retro game collection in the browser, with MariaDB.",
+  "category": "Media",
+  "website": "https://romm.app",
+  "color": "#553E98",
+  "logo": null
+ },
+ {
+  "id": "roundcube",
+  "name": "Roundcube",
+  "description": "Webmail client for any IMAP mail server.",
+  "category": "Communication",
+  "website": "https://roundcube.net",
+  "color": "#37BEFF",
+  "logo": "/templates/roundcube.svg"
+ },
+ {
+  "id": "rundeck",
+  "name": "Rundeck",
+  "description": "Run jobs and runbooks on your servers from a web interface.",
+  "category": "Automation",
+  "website": "https://www.rundeck.com",
+  "color": "#F73F39",
+  "logo": "/templates/rundeck.svg"
+ },
+ {
+  "id": "sabnzbd",
+  "name": "SABnzbd",
+  "description": "Usenet binary downloader with a web interface.",
+  "category": "Media",
+  "website": "https://sabnzbd.org",
+  "color": "#F5C400",
+  "logo": null
  },
  {
   "id": "seafile",
@@ -1170,12 +1899,30 @@
   "logo": null
  },
  {
+  "id": "semaphore",
+  "name": "Semaphore UI",
+  "description": "A web interface to run Ansible, Terraform and shell scripts, with Postgres.",
+  "category": "Automation",
+  "website": "https://semaphoreui.com",
+  "color": "#1E88E5",
+  "logo": null
+ },
+ {
   "id": "send",
   "name": "Send",
   "description": "Share files with end-to-end encryption and links that expire.",
   "category": "Storage",
   "website": "https://github.com/timvisee/send",
   "color": "#0060DF",
+  "logo": null
+ },
+ {
+  "id": "shiori",
+  "name": "Shiori",
+  "description": "Simple bookmark manager that saves a readable copy of each page.",
+  "category": "Productivity",
+  "website": "https://github.com/go-shiori/shiori",
+  "color": "#E04E39",
   "logo": null
  },
  {
@@ -1242,6 +1989,33 @@
   "logo": "/templates/sonarr.svg"
  },
  {
+  "id": "speedtest-tracker",
+  "name": "Speedtest Tracker",
+  "description": "Runs internet speed tests on a schedule and charts the results.",
+  "category": "Monitoring",
+  "website": "https://speedtest-tracker.dev",
+  "color": "#F59E0B",
+  "logo": null
+ },
+ {
+  "id": "sqlpad",
+  "name": "SQLPad",
+  "description": "Write and run SQL queries in the browser, and chart the results.",
+  "category": "Databases",
+  "website": "https://getsqlpad.com",
+  "color": "#2C3E50",
+  "logo": null
+ },
+ {
+  "id": "stash",
+  "name": "Stash",
+  "description": "Organizer for your video collection with tagging, scraping and previews.",
+  "category": "Media",
+  "website": "https://stashapp.cc",
+  "color": "#137CBD",
+  "logo": null
+ },
+ {
   "id": "stirling-pdf",
   "name": "Stirling PDF",
   "description": "Merge, split, convert, sign and OCR PDFs in the browser.",
@@ -1287,6 +2061,15 @@
   "logo": null
  },
  {
+  "id": "tautulli",
+  "name": "Tautulli",
+  "description": "Monitoring, history and statistics for Plex Media Server.",
+  "category": "Media",
+  "website": "https://tautulli.com",
+  "color": "#E5A00D",
+  "logo": null
+ },
+ {
   "id": "teable",
   "name": "Teable",
   "description": "Spreadsheet-like database on PostgreSQL. An Airtable alternative.",
@@ -1305,6 +2088,15 @@
   "logo": null
  },
  {
+  "id": "transmission",
+  "name": "Transmission",
+  "description": "Lightweight BitTorrent client with a web interface.",
+  "category": "Media",
+  "website": "https://transmissionbt.com",
+  "color": "#D70008",
+  "logo": "/templates/transmission.svg"
+ },
+ {
   "id": "triliumnext",
   "name": "Trilium Notes",
   "description": "Hierarchical note-taking app for building a personal knowledge base.",
@@ -1312,6 +2104,24 @@
   "website": "https://triliumnotes.org",
   "color": "#000000",
   "logo": "/templates/triliumnext.svg"
+ },
+ {
+  "id": "tubearchivist",
+  "name": "Tube Archivist",
+  "description": "Download, index and watch your YouTube channels and playlists, with Elasticsearch and Redis.",
+  "category": "Media",
+  "website": "https://www.tubearchivist.com",
+  "color": "#1E9EA6",
+  "logo": null
+ },
+ {
+  "id": "twenty",
+  "name": "Twenty",
+  "description": "Modern open source CRM with a clean interface and custom objects, with PostgreSQL and Redis.",
+  "category": "Productivity",
+  "website": "https://twenty.com",
+  "color": "#141414",
+  "logo": "/templates/twenty.svg"
  },
  {
   "id": "typesense",
@@ -1359,6 +2169,15 @@
   "logo": "/templates/vaultwarden.svg"
  },
  {
+  "id": "vaultwarden-postgres",
+  "name": "Vaultwarden (PostgreSQL)",
+  "description": "Bitwarden-compatible password manager server, with PostgreSQL.",
+  "category": "Security",
+  "website": "https://github.com/dani-garcia/vaultwarden",
+  "color": "#175DDC",
+  "logo": "/templates/vaultwarden-postgres.svg"
+ },
+ {
   "id": "verdaccio",
   "name": "Verdaccio",
   "description": "Private npm registry that also caches the public one.",
@@ -1366,6 +2185,15 @@
   "website": "https://verdaccio.org",
   "color": "#4B5E40",
   "logo": "/templates/verdaccio.svg"
+ },
+ {
+  "id": "victoriametrics",
+  "name": "VictoriaMetrics",
+  "description": "A fast time series database that speaks the Prometheus API.",
+  "category": "Monitoring",
+  "website": "https://victoriametrics.com",
+  "color": "#621773",
+  "logo": "/templates/victoriametrics.svg"
  },
  {
   "id": "vikunja",
@@ -1422,6 +2250,15 @@
   "logo": null
  },
  {
+  "id": "whoami",
+  "name": "whoami",
+  "description": "A tiny web server that prints the request it gets. Good for testing domains.",
+  "category": "Developer tools",
+  "website": "https://github.com/traefik/whoami",
+  "color": "#24A1C1",
+  "logo": "/templates/whoami.svg"
+ },
+ {
   "id": "wikijs",
   "name": "Wiki.js",
   "description": "Modern, powerful wiki with a Markdown and visual editor.",
@@ -1447,6 +2284,69 @@
   "website": "https://wordpress.org",
   "color": "#21759B",
   "logo": "/templates/wordpress.svg"
+ },
+ {
+  "id": "wordpress-mysql",
+  "name": "WordPress (MySQL)",
+  "description": "The world's most popular CMS, with MySQL.",
+  "category": "CMS",
+  "website": "https://wordpress.org",
+  "color": "#21759B",
+  "logo": "/templates/wordpress-mysql.svg"
+ },
+ {
+  "id": "wordpress-redis",
+  "name": "WordPress (Redis)",
+  "description": "The world's most popular CMS, with MariaDB and a Redis object cache.",
+  "category": "CMS",
+  "website": "https://wordpress.org",
+  "color": "#21759B",
+  "logo": "/templates/wordpress-redis.svg"
+ },
+ {
+  "id": "wordpress-standalone",
+  "name": "WordPress (no database)",
+  "description": "The world's most popular CMS, connected to a MySQL or MariaDB database you already run.",
+  "category": "CMS",
+  "website": "https://wordpress.org",
+  "color": "#21759B",
+  "logo": "/templates/wordpress-standalone.svg"
+ },
+ {
+  "id": "writefreely",
+  "name": "WriteFreely",
+  "description": "Minimal, distraction-free blogging platform with federation.",
+  "category": "CMS",
+  "website": "https://writefreely.org",
+  "color": "#2D2D2D",
+  "logo": null
+ },
+ {
+  "id": "xwiki",
+  "name": "XWiki",
+  "description": "Enterprise wiki with structured data and extensions, with Postgres.",
+  "category": "Productivity",
+  "website": "https://www.xwiki.org",
+  "color": "#F57C00",
+  "logo": null
+ },
+ {
+  "id": "yourls",
+  "name": "YOURLS",
+  "description": "Your own URL shortener with click stats, with MySQL.",
+  "category": "Productivity",
+  "website": "https://yourls.org",
+  "color": "#1F5C99",
+  "logo": null
+ },
+ {
+  "id": "zipkin",
+  "name": "Zipkin",
+  "description": "Distributed tracing to find slow requests across your services.",
+  "category": "Monitoring",
+  "website": "https://zipkin.io",
+  "color": "#FE7139",
+  "logo": null
  },
  {
   "id": "zipline",

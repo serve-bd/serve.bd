@@ -33,7 +33,7 @@ affected.
 | `src/components/api` | Endpoint and field lists of the API reference |
 | `src/styles` | `tokens.css` (Serve design tokens), `site.css` (marketing), `docs.css` (Starlight in Serve's style) |
 | `src/data` | `templates.json` (catalog, copied from `serve/templates`) and `openapi.json` |
-| `scripts` | API sync, link check, share image |
+| `scripts` | API, installer and template sync, link check, share image |
 
 ## Add a docs page
 
@@ -65,6 +65,18 @@ bun run api:sync ./openapi.json
 
 The getting-started guide is `src/content/docs/docs/api.mdx`. The version shown on the site is `version`
 in `src/lib/site.ts`.
+
+## Templates
+
+`src/data/templates.json` and the logos in `public/templates` come from the `templates` folder of the Serve
+repository. After templates change there, copy them over:
+
+```bash
+bun run templates:sync ../serve
+```
+
+The templates page, the counts on the landing and feature pages, and the search all read this file. The table
+of categories in `src/content/docs/docs/templates.mdx` is written by hand: update it too.
 
 ## Share image
 

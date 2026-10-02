@@ -7,22 +7,45 @@ Templates are one-click services: a Compose stack with its variables filled in f
 
 ## The catalog
 
-The catalog has 163 templates in these categories:
+The catalog has 263 templates in these categories:
 
 | Category | Templates |
 | --- | --- |
-| Productivity | 44 |
-| Developer tools | 23 |
-| Media | 15 |
-| Databases | 12 |
-| Security | 11 |
-| Communication | 11 |
-| Monitoring | 9 |
-| CMS | 9 |
-| Storage | 9 |
-| Automation | 8 |
-| AI | 7 |
-| Analytics | 5 |
+| Productivity | 71 |
+| Developer tools | 35 |
+| Media | 30 |
+| CMS | 21 |
+| Monitoring | 17 |
+| Security | 16 |
+| Databases | 15 |
+| Communication | 14 |
+| Automation | 13 |
+| Storage | 13 |
+| Analytics | 10 |
+| AI | 8 |
+
+### Database variants
+
+Popular apps come in several variants, so you can pick the database you want. Each variant is its own template:
+
+| App | Default template | Other variants |
+| --- | --- | --- |
+| WordPress | `wordpress` (MariaDB) | `wordpress-mysql`, `wordpress-redis` (MariaDB and a Redis object cache), `wordpress-standalone` |
+| Joomla | `joomla` (MySQL) | `joomla-mariadb` |
+| Drupal | `drupal` (PostgreSQL) | `drupal-mysql`, `drupal-mariadb`, `drupal-sqlite` |
+| Matomo | `matomo` (MariaDB) | `matomo-mysql` |
+| Nextcloud | `nextcloud` (PostgreSQL and Redis) | `nextcloud-mariadb`, `nextcloud-sqlite` |
+| Gitea | `gitea` (SQLite) | `gitea-postgres`, `gitea-mysql` |
+| Forgejo | `forgejo` (SQLite) | `forgejo-postgres`, `forgejo-mysql` |
+| n8n | `n8n` (PostgreSQL) | `n8n-sqlite`, `n8n-queue` |
+| NocoDB | `nocodb` (PostgreSQL) | `nocodb-sqlite` |
+| Directus | `directus` (PostgreSQL) | `directus-mysql`, `directus-sqlite` |
+| Vaultwarden | `vaultwarden` (SQLite) | `vaultwarden-postgres` |
+| Keycloak | `keycloak` (PostgreSQL) | `keycloak-mysql` |
+| Metabase | `metabase` (PostgreSQL) | `metabase-mysql` |
+
+- `wordpress-standalone` runs WordPress only. It connects to a MySQL or MariaDB database you already have, like a [Serve database service](/docs/databases).
+- `n8n-queue` runs n8n in queue mode: a main service and a worker, with PostgreSQL and Redis.
 
 ### How the catalog updates
 
