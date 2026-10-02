@@ -31,6 +31,8 @@ Each zone shows its DNS records. You can add, edit and delete records, filter by
 
 When you add a domain to a service, tick **Create the DNS record** and Serve creates the record for you. See [Domains](/docs/domains).
 
+For a proxied record, the DNS check reads the record through the connected account, because public DNS only shows Cloudflare's addresses. The check passes when Cloudflare forwards to the server's IP. It fails and shows the real target when Cloudflare forwards somewhere else. If no connected account manages the zone, the check stays a warning. This applies to the dashboard domain check and to the DNS badges on service domains.
+
 ## SSL mode
 
 You can change the zone's **SSL/TLS mode** from Serve. The change takes effect in Cloudflare immediately.
@@ -72,7 +74,7 @@ Then point your client at `localhost:5432`. The database page shows the exact co
 
 ## Wildcard certificates
 
-Let's Encrypt can only issue wildcard certificates like `*.example.com` with DNS validation. Choose **Let's Encrypt via Cloudflare DNS** as the source on the **Certificates** page. Validation goes through your connected Cloudflare zone, so port 80 does not need to be reachable. The certificate renews automatically. In v0.1.15 and v0.1.16 these certificates fail to issue, see the [known issue](/docs/domains#lets-encrypt).
+Let's Encrypt can only issue wildcard certificates like `*.example.com` with DNS validation. Choose **Let's Encrypt via Cloudflare DNS** as the source on the **Certificates** page. Validation goes through your connected Cloudflare zone, so port 80 does not need to be reachable. The certificate renews automatically. In v0.1.15 and v0.1.16 these certificates fail to issue. v0.2.0 fixes it, see the [known issue](/docs/domains#add-a-domain).
 
 A wildcard certificate pairs well with a server's **Wildcard domain** and with pull request previews, where one wildcard DNS record covers all previews.
 

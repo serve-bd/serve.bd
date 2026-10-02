@@ -74,6 +74,8 @@ Let's Encrypt needs an **Account email**. Set it under **Settings → General**.
 
 Certificates renew automatically.
 
+A service's domains get their certificates on the service's first deploy, not when you add the service or the domain. If a certificate on the server already covers the domain, like a wildcard, Serve uses it at once. Before the first deploy, the service's **Domains** tab shows **Certificate on first deploy**. If a request fails, you can retry it right away.
+
 ## Certificate sources
 
 The **Certificates** page lists every certificate and where it comes from.
@@ -86,6 +88,8 @@ The **Certificates** page lists every certificate and where it comes from.
 | Uploaded | A certificate and key you upload yourself. |
 
 See [Cloudflare](/docs/cloudflare) to connect an account.
+
+To change an uploaded certificate, open its menu and choose **Upload replacement**. The new certificate replaces the old one in place, with the same files and paths. It does not add a second certificate.
 
 When you remove a domain, or delete the app or database that had it, Serve deletes the Let's Encrypt certificate it got for that name. It waits until nothing else on the server uses the certificate. Uploaded, Cloudflare Origin CA, wildcard and multi-name certificates are kept.
 
@@ -119,12 +123,20 @@ Each server has **Addressing** settings that decide which domain a new service g
 
 If the zone is in a connected Cloudflare account, you can tick **Create the DNS record** and Serve creates it for you. **Proxy through Cloudflare** turns on the orange cloud for that record.
 
+A proxied record points to Cloudflare, not to your server. So for a proxied domain, the DNS check reads the record through your connected Cloudflare account:
+
+- It passes when Cloudflare forwards to the server's IP.
+- It fails when Cloudflare forwards somewhere else, and shows the real target.
+- It stays a warning when no connected account manages the zone.
+
+This applies to the dashboard domain check and to the DNS badges on service domains. See [Cloudflare](/docs/cloudflare).
+
 :::tip
 Let's Encrypt with HTTP validation only works once DNS points to the server and port 80 is reachable. If the certificate fails, check the DNS record and your firewall first.
 :::
 
 :::caution[Known issue in v0.1.15 and v0.1.16]
-In these versions, certificates from **Let's Encrypt via Cloudflare DNS** fail with `certbot: error: unrecognized arguments`. This includes renewals. HTTP validation still works. The fix is in the next release.
+In these versions, certificates from **Let's Encrypt via Cloudflare DNS** fail with `certbot: error: unrecognized arguments`. This includes renewals. HTTP validation still works. v0.2.0 fixes it, so [update Serve](/docs/updating).
 :::
 
 ## Domain options

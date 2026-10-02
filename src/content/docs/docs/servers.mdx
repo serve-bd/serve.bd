@@ -63,7 +63,7 @@ Each server has these pages:
 | General | Name, connection details and status. |
 | Metrics | CPU, memory, disk and load over time. |
 | Services | The containers running on the server. |
-| Resources | Disk usage of the data directory and Docker. |
+| Resources | Disk usage of the data directory and Docker, and the containers on the server. |
 | Alerts | **Resource alerts** for CPU, memory and disk. |
 | Docker cleanup | Clean up Docker now, and see past cleanups. |
 | Domains | **Addressing** and domains on this server. See [Domains](/docs/domains). |
@@ -75,6 +75,10 @@ Each server has these pages:
 ### Alerts
 
 Samples are compared with the limits you set. **CPU duration** is the number of minutes above the limit before Serve alerts. **Disk warning** and **Disk critical** are percentages used. Crossing a limit alerts your [notification channels](/docs/monitoring). An alert clears 5 points below its limit.
+
+### Containers Serve did not start
+
+A server can already run containers that Serve did not start. On the **Resources** page, filter by **Unmanaged** to see them. From a container's **…** menu, you can move or copy it into a project. See [Move containers into a project](/docs/moving-containers).
 
 ## Cleanup
 
@@ -102,6 +106,7 @@ Terminal commands can break the server and the services on it. On the main serve
 You need the **Console** permission to open it. See [Teams](/docs/teams).
 
 <CardGrid>
+<LinkCard href="/docs/moving-containers" title="Move containers into a project" description="Bring containers Serve did not start into a project." />
 <LinkCard href="/docs/private-networks" title="Private networks" description="Connect servers with WireGuard." />
 <LinkCard href="/docs/monitoring" title="Monitoring" description="Uptime checks, alerts and notifications." />
 </CardGrid>

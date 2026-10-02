@@ -35,6 +35,18 @@ Set environment variables in the project's settings under **Shared variables**. 
 KEY=${{environment.KEY}}
 ```
 
+Shared variables reach an app only by reference. A shared variable can also hold a reference itself. For example, set the environment variable `DATABASE_URL` to:
+
+```text
+DATABASE_URL=${{postgres.DATABASE_URL}}
+```
+
+An app then pulls it in with:
+
+```text
+DATABASE_URL=${{environment.DATABASE_URL}}
+```
+
 ## References
 
 A variable's value can reference other values. Serve resolves them when the service deploys.
@@ -56,6 +68,26 @@ For example, to give an app the connection URL of a database service named `post
 
 ```text
 DATABASE_URL=${{postgres.DATABASE_URL}}
+```
+
+### Database variables
+
+A database service provides these variables:
+
+| Variable | Value |
+| --- | --- |
+| `HOST` | The database's private hostname |
+| `PORT` | Its port |
+| `USERNAME` | The main user |
+| `PASSWORD` | The main user's password |
+| `DATABASE` | The main database |
+| `DATABASE_URL` | The connection URL |
+| `POSTGRES_URL`, `MYSQL_URL`, `MONGO_URL` or `REDIS_URL` | The connection URL, named after the engine |
+
+PostgreSQL URLs use the `postgresql://` scheme. Some libraries, like Tortoise ORM, only accept `postgres://`. For them, build the URL from the parts:
+
+```text
+DATABASE_URL=postgres://${{postgres.USERNAME}}:${{postgres.PASSWORD}}@${{postgres.HOST}}:${{postgres.PORT}}/${{postgres.DATABASE}}
 ```
 
 ## Built-in variables

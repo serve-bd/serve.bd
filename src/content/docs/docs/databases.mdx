@@ -144,6 +144,17 @@ Serve's own login, branch logins and the users built into the database are shown
 
 Making a login or seeing its password gives access to the data, so those steps also need **See secret values**.
 
+## Keep data after a delete
+
+When you delete a database, the box **Also delete volumes and stored data** decides what happens to its data. If you leave it unticked, Serve keeps the data volume and remembers it. This works only for a database that was deployed at least once.
+
+To use the kept data again, choose **New service → Database** and pick **Kept data of &lt;name&gt;** under **Start from**. The new database starts on that volume, with the user and password it had, on the server where the data is. Each kept data can start one database.
+
+The volume then belongs to the new database. If you delete that database with the box ticked, the volume is deleted.
+
+- Only the data volume is kept. Extra volumes from **Persistent storage** are not.
+- When you delete a whole project, its volumes are deleted. Nothing is kept.
+
 ## Data
 
 The **Data** tab shows what is inside the database. You can browse tables, run queries and edit rows. See [Browse and edit data](/docs/data).

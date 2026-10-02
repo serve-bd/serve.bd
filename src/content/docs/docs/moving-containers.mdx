@@ -1,0 +1,91 @@
+---
+title: "Move containers into a project"
+description: "Bring containers that already run on a server into Serve, by moving or copying them."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+A server you add may already run containers that Serve did not start. Serve can turn each one into a service in a project. **Move** puts the service in the container's place, on the same data. **Copy** makes a new service with its own copy of the data and leaves the container running.
+
+## Start
+
+1. Open **Servers**, pick the server and open its **Resources** page.
+2. Filter by **Unmanaged** to see the containers Serve did not start.
+3. Open a container's **…** menu and choose **Move into a project** or **Copy into a project**.
+
+Only admins of the Root organization can do this.
+
+Serve reads the container: its image, variables, entrypoint and command, volumes, host ports, and the names it answers to on its Docker networks. The new service gets the same settings.
+
+## Run as
+
+Pick how the service runs:
+
+- **Database**: a Serve database service, with backups, the **Data** tab and users.
+- **Container**: the service runs exactly as the container does now, without the database tools.
+
+**Database** is offered for these containers:
+
+- PostgreSQL, MySQL, MariaDB and MongoDB.
+- Redis and Valkey, only when they start with `--requirepass` and `--appendonly yes`. Other flags are kept.
+
+Before it moves a database, Serve signs in with the password it finds in the variables or in `--requirepass`. If that fails, it asks you for the password. Any other container moves as a container.
+
+## Move
+
+The service takes the container's place on the same volumes. Nothing is copied.
+
+- The service keeps the container's old names on its old networks, so containers you have not moved yet still reach it. It also answers to the container's name in the project.
+- The old container is stopped and renamed to `<name>-before-serve`. Its restart policy is turned off. It is kept, so you can go back to it.
+- If the service does not start, Serve starts the old container again.
+
+How long the move stops traffic:
+
+| Container | Downtime |
+| --- | --- |
+| An app without volumes or host ports | None. The new service starts and is healthy before the old container stops. |
+| A database, or anything with volumes or host ports | A few seconds. |
+
+After a move, the service can't move to another server, because its data is on this one. Copies of the service, like previews and environment copies, get their own data.
+
+## Copy
+
+The container keeps running, and the service gets its own data.
+
+- **Databases**: Serve dumps every database with the engine's own tool (`pg_dump`, `mysqldump` or `mariadb-dump`, `mongodump`, or an RDB dump) while the container runs. Then it restores the dump into the new service on its own volume. The dump stays in the service's **Backups** tab as an import.
+- **Other containers**: the container stops while Serve copies its volumes into the service's own volumes, then starts again. Folders on the server (bind mounts) stay shared between the two.
+
+Changes made after the copy stay in the original container. For PostgreSQL, MySQL, MariaDB and MongoDB, only the main user is copied. Other users are not. Host ports and the old network names stay with the original container.
+
+## Your data is protected
+
+Docker refuses to delete a volume that a container uses, even a stopped one. So after a move, the volumes can't be deleted by accident while the service exists.
+
+The Resources page also won't start a container whose data a running container uses. This keeps the old container and the new service from writing to the same data at once.
+
+:::caution[Folders on the server]
+Folders on the server (bind mounts) have none of this protection. Take care when you delete or change them.
+:::
+
+## Domains
+
+Proxy labels on the old container are not carried over. After the move, add the service's domains in Serve. See [Domains](/docs/domains).
+
+## Deploy from git after a move
+
+A service moved as a **Container** runs the container's current image. To build it from a repository later, set the repository on the service. Later deploys build from the repository with the same variables.
+
+If the image has the standard label `org.opencontainers.image.source`, Serve fills in the repository for you.
+
+Images that Serve builds from git have these labels:
+
+| Label | Value |
+| --- | --- |
+| `org.opencontainers.image.source` | The repository URL. It never holds a token. |
+| `org.opencontainers.image.revision` | The commit. |
+| `serve.branch` | The branch. |
+
+<CardGrid>
+<LinkCard href="/docs/servers" title="Servers" description="Add servers and see their resources." />
+<LinkCard href="/docs/databases" title="Databases" description="Backups, users and the Data tab." />
+</CardGrid>

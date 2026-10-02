@@ -6,7 +6,7 @@ export const sidebar: [string, string[]][] = [
   ["Apps", ["apps", "builds", "environment-variables", "storage", "deployments"]],
   ["Data", ["databases", "data", "backups", "templates"]],
   ["Networking", ["domains", "cloudflare"]],
-  ["Servers", ["servers", "private-networks", "monitoring"]],
+  ["Servers", ["servers", "moving-containers", "private-networks", "monitoring"]],
   ["Teams", ["teams", "security"]],
   ["Operate", ["updating", "instance-backups", "uninstalling", "reference"]],
 ];
