@@ -3,6 +3,7 @@ export const site = {
   tagline: "Your own cloud for apps, databases and services.",
   description: "Serve is an open source platform for your own servers. Push to deploy, get a domain with HTTPS and manage it all from one dashboard.",
   url: "https://serve.bd",
+  contact: "contact@serve.bd",
   github: "https://github.com/serve-bd/serve",
   releases: "https://github.com/serve-bd/serve/releases",
   license: "Apache 2.0",

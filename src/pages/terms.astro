@@ -1,0 +1,75 @@
+---
+import LegalPage from "@/components/site/LegalPage.astro";
+import { site } from "@/lib/site";
+---
+
+<LegalPage title="Terms and conditions" description="The terms for using serve.bd and the Serve software." updated="3 October 2026">
+  <p>
+    These terms apply when you use {site.url.replace("https://", "")} (the website) or download and run Serve (the software). By using them, you agree to these terms. If
+    you do not agree, do not use them.
+  </p>
+
+  <h2>The software and its license</h2>
+  <p>
+    Serve is open source under the <a href={`${site.github}/blob/main/LICENSE`} target="_blank" rel="noreferrer">{site.license} license</a>. The license decides what you
+    may do with the code: use it, change it and share it, for free and for any purpose, including commercial use. If these terms and the license disagree about the
+    software, the license wins.
+  </p>
+  <p>Templates install third-party apps, like n8n, Ghost or Nextcloud. Each app has its own license and terms, and you must follow them.</p>
+
+  <h2>Your servers, your responsibility</h2>
+  <p>Serve runs on servers you control. You are responsible for:</p>
+  <ul>
+    <li>the servers, their security and their costs,</li>
+    <li>keeping Serve and your apps up to date,</li>
+    <li>backups of your data, and testing that they restore,</li>
+    <li>what you deploy and host, and the people you give access to,</li>
+    <li>following the laws that apply to you and to the data you hold.</li>
+  </ul>
+
+  <h2>Acceptable use</h2>
+  <p>Do not use the website to:</p>
+  <ul>
+    <li>break the law or harm other people,</li>
+    <li>attack, overload or try to break into the website or its servers,</li>
+    <li>scrape it in a way that slows it down for others,</li>
+    <li>pretend to be Serve or its team.</li>
+  </ul>
+  <p>Found a security problem? Report it to <a href={`mailto:${site.contact}`}>{site.contact}</a> before you make it public, and give us time to fix it.</p>
+
+  <h2>Name and logo</h2>
+  <p>
+    The license covers the code, not the Serve name or logo. You may say that your product uses Serve or is built on it. Do not use the name or logo in a way that makes
+    people think we made, support or approve your product, unless we agree in writing.
+  </p>
+
+  <h2>Website content</h2>
+  <p>
+    We try to keep the docs and other pages correct, but they may have mistakes or be out of date. Read commands, like the install script, before you run them. Names and
+    logos of other products belong to their owners and are shown only to tell you what Serve works with.
+  </p>
+
+  <h2>No warranty</h2>
+  <p>
+    The website and the software are provided "as is", without warranty of any kind. We do not promise that they are free of bugs, always available or right for your
+    needs.
+  </p>
+
+  <h2>Limitation of liability</h2>
+  <p>
+    As far as the law allows, we are not liable for any loss or damage that comes from using the website or the software. This includes lost data, lost profit, downtime
+    and security incidents. The {site.license} license has its own limitation of liability for the software.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    We may change these terms. When we do, we update this page and the date at the top. If you keep using the website or the software after a change, you accept the new
+    terms.
+  </p>
+
+  <h2>Governing law</h2>
+  <p>These terms are governed by the laws of Bangladesh, unless the law where you live says otherwise.</p>
+
+  <h2>Contact</h2>
+  <p>Write to <a href={`mailto:${site.contact}`}>{site.contact}</a>.</p>
+</LegalPage>

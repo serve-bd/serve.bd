@@ -1,0 +1,70 @@
+---
+import LegalPage from "@/components/site/LegalPage.astro";
+import { site } from "@/lib/site";
+---
+
+<LegalPage title="Privacy policy" description="What serve.bd collects, why, and what stays on your own servers." updated="3 October 2026">
+  <p>
+    This policy explains what happens to your data when you visit {site.url.replace("https://", "")} (the website) and when you use Serve (the software). The short version:
+    the website collects almost nothing, and Serve runs on your servers, so we never see your apps or your data.
+  </p>
+
+  <h2>The website</h2>
+  <p>The website is a set of static pages. It has no accounts, no forms, no ads and no analytics or tracking scripts. It sets no cookies.</p>
+  <p>Like most web servers, ours writes a log line for each request. A log line can hold:</p>
+  <ul>
+    <li>your IP address,</li>
+    <li>the date and time,</li>
+    <li>the page or file you asked for, like <code>/install.sh</code>,</li>
+    <li>your browser or tool (the user agent) and the page you came from.</li>
+  </ul>
+  <p>
+    We use these logs only to keep the website running and safe, for example to find errors or stop abuse. We keep them only as long as we need them for that. We do not
+    sell them, share them for marketing, or use them to build profiles of people.
+  </p>
+  <p>
+    The website saves your light or dark theme choice in your browser's local storage. This value stays in your browser and is never sent to us. Fonts and images are
+    served from serve.bd itself, not from other companies.
+  </p>
+
+  <h2>The Serve software</h2>
+  <p>
+    Serve is self-hosted: you install it on servers you own or rent. Your apps, databases, logs, backups, users and settings stay on those servers, or in the places you
+    send them, like your own S3 storage. We have no access to them.
+  </p>
+  <p>Serve has no telemetry. It does not send us usage data or anything about your instance. It talks to outside services only when you ask it to:</p>
+  <ul>
+    <li>
+      <strong>Update checks.</strong> If you turn on Check for updates, Serve asks GitHub for the newest release. Nothing about your instance is sent.
+    </li>
+    <li>
+      <strong>The installer.</strong> When you run <code>{site.install}</code>, your server downloads the script from serve.bd, which writes a normal log line as described
+      above. The installer then downloads Serve from GitHub.
+    </li>
+    <li>
+      <strong>Your integrations.</strong> Git hosts, Cloudflare, S3, container registries, notification channels and sign-in providers get the data you send them. Their own
+      privacy policies apply.
+    </li>
+  </ul>
+  <p>If you run Serve for other people, you decide what data your instance holds and you are responsible for it under the laws that apply to you.</p>
+
+  <h2>Other websites</h2>
+  <p>
+    The website links to other sites, like GitHub and the websites of the apps in our template catalog. When you open them, their privacy policies apply, not this one.
+  </p>
+
+  <h2>Email</h2>
+  <p>If you write to us, we use your email address and message only to answer you. We do not add you to a mailing list.</p>
+
+  <h2>Your rights</h2>
+  <p>
+    You can ask us what data we hold about you, and ask us to correct or delete it. Write to <a href={`mailto:${site.contact}`}>{site.contact}</a>. Because we hold so little,
+    in most cases the answer is a few log lines or an email thread.
+  </p>
+
+  <h2>Children</h2>
+  <p>The website and Serve are not made for children under 13, and we do not knowingly collect their data.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If we change this policy, we update this page and the date at the top. For big changes, we also note them in the release notes on GitHub.</p>
+</LegalPage>
