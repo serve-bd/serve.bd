@@ -11,6 +11,7 @@
     "typecheck": "astro check",
     "astro": "astro",
     "api:sync": "bun scripts/sync-openapi.ts",
+    "installer:sync": "bun scripts/sync-installer.ts",
     "check:links": "bun scripts/check-links.ts"
   },
   "dependencies": {

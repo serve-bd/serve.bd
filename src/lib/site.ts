@@ -8,7 +8,7 @@ export const site = {
   license: "Apache 2.0",
   version: "v0.1.16",
   // serve.bd/install.sh redirects here (see "Hosting" in README.md), so the short command always gets the latest script.
-  installScript: "https://raw.githubusercontent.com/serve-bd/serve/main/install.sh",
+  installScript: "https://serve.bd/install.sh",
   install: "curl -fsSL https://serve.bd/install.sh | bash",
 };
 
