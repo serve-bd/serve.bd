@@ -135,10 +135,6 @@ This applies to the dashboard domain check and to the DNS badges on service doma
 Let's Encrypt with HTTP validation only works once DNS points to the server and port 80 is reachable. If the certificate fails, check the DNS record and your firewall first.
 :::
 
-:::caution[Known issue in v0.1.15 and v0.1.16]
-In these versions, certificates from **Let's Encrypt via Cloudflare DNS** fail with `certbot: error: unrecognized arguments`. This includes renewals. HTTP validation still works. v0.2.0 fixes it, so [update Serve](/docs/updating).
-:::
-
 ## Domain options
 
 Each domain has its own options.

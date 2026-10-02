@@ -74,7 +74,7 @@ Then point your client at `localhost:5432`. The database page shows the exact co
 
 ## Wildcard certificates
 
-Let's Encrypt can only issue wildcard certificates like `*.example.com` with DNS validation. Choose **Let's Encrypt via Cloudflare DNS** as the source on the **Certificates** page. Validation goes through your connected Cloudflare zone, so port 80 does not need to be reachable. The certificate renews automatically. In v0.1.15 and v0.1.16 these certificates fail to issue. v0.2.0 fixes it, see the [known issue](/docs/domains#add-a-domain).
+Let's Encrypt can only issue wildcard certificates like `*.example.com` with DNS validation. Choose **Let's Encrypt via Cloudflare DNS** as the source on the **Certificates** page. Validation goes through your connected Cloudflare zone, so port 80 does not need to be reachable. The certificate renews automatically.
 
 A wildcard certificate pairs well with a server's **Wildcard domain** and with pull request previews, where one wildcard DNS record covers all previews.
 
