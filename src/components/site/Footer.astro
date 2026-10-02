@@ -27,11 +27,19 @@ const columns = [
       { href: `${site.github}/blob/main/LICENSE`, label: `${site.license} license` },
     ],
   },
+  {
+    title: "Legal",
+    links: [
+      { href: "/privacy/", label: "Privacy policy" },
+      { href: "/terms/", label: "Terms and conditions" },
+      { href: `mailto:${site.contact}`, label: "Contact" },
+    ],
+  },
 ];
 ---
 
 <footer class="border-t border-line">
-  <div class="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_repeat(3,1fr)]">
+  <div class="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:grid-cols-2 md:grid-cols-[1.5fr_repeat(4,1fr)]">
     <div class="flex flex-col gap-3">
       <a href="/" class="flex items-center gap-2">
         <Mark class="size-6" />
@@ -62,10 +70,6 @@ const columns = [
   </div>
   <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-6 text-[13px] text-faint sm:px-6">
     <p>© {new Date().getFullYear()} Serve. Released under the {site.license} license.</p>
-    <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-      <a href="/privacy/" class="transition-colors hover:text-fg">Privacy</a>
-      <a href="/terms/" class="transition-colors hover:text-fg">Terms</a>
-      <a href={`mailto:${site.contact}`} class="transition-colors hover:text-fg">{site.contact}</a>
-    </div>
+    <a href={site.github} target="_blank" rel="noreferrer" class="transition-colors hover:text-fg">serve-bd/serve on GitHub</a>
   </div>
 </footer>
