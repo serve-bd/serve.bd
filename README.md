@@ -62,3 +62,5 @@ Serve is free and open source under the Apache 2.0 license. Star it on
 [changelog](https://github.com/serve-bd/serve/releases).
 
 This repository holds the serve.bd website. To work on it, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Questions? Write to [contact@serve.bd](mailto:contact@serve.bd).
