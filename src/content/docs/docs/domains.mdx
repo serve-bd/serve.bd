@@ -93,6 +93,10 @@ To change an uploaded certificate, open its menu and choose **Upload replacement
 
 When you remove a domain, or delete the app or database that had it, Serve deletes the Let's Encrypt certificate it got for that name. It waits until nothing else on the server uses the certificate. Uploaded, Cloudflare Origin CA, wildcard and multi-name certificates are kept.
 
+### View a certificate
+
+Choose **View certificate** in a certificate's menu to see the certificate with its chain and the private key, in PEM format, with copy buttons. The key stays hidden until you ask to show it. Only admins can view certificates.
+
 ### Use a certificate in a custom config
 
 To use a certificate in a [custom proxy file](#custom-proxy-files), open its menu on the **Certificates** page and choose **Use in a custom config**. Serve shows the certificate and key paths inside the proxy, and a snippet for the server's proxy:

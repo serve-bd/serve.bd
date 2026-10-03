@@ -67,6 +67,8 @@ Under **Settings → Runtime** you set:
 - **Replicas**: how many containers run the app.
 - **Restart policy**: `always`, `unless-stopped`, `on-failure` or `no`.
 - **Stop after crashes**: Serve stops restarting a container after this many crashes. The default is 10.
+
+When a container keeps restarting, the service shows a warning. A successful deploy clears it at once. If the new version restarts too, the warning comes back.
 - **Scheduled restart**: restart the app on a cron schedule.
 
 ## Advanced settings

@@ -76,6 +76,28 @@ You choose which events each channel gets.
 | Organization | Organization limit reached |
 | Instance | Instance backup succeeded, Instance backup failed, Update available, Instance updated, Update failed |
 
+### What a message holds
+
+Each message carries the details of what happened, when they apply:
+
+- The project, environment, service and server.
+- For deployments: the commit, branch, author, trigger, who started it, how long it took, whether the previous version kept running, and the live URL.
+- For backups: the file and its size.
+- Exit codes, disk use and versions.
+
+Each provider shows them in its own way:
+
+| Provider | How details look |
+| --- | --- |
+| Discord | Embed fields. The end of an error is in a code block |
+| Slack | Fields, and an **Open** button |
+| Microsoft Teams | A fact set |
+| Telegram, Matrix and Google Chat | Lines with labels |
+| Email | A table |
+| Others | A list under the message |
+
+Links in messages use the dashboard domain, not the server's IP and port. They use `https://` when the domain answers there.
+
 ### Message placeholders
 
 In a channel's **Message** section you can change the **Title** and **Text** it sends. These placeholders are filled in:

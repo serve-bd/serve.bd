@@ -68,7 +68,13 @@ A PostgreSQL, MySQL, MariaDB or MongoDB server can hold more than one database. 
 - **Back up now** asks which databases to take, when the server has more than one.
 - For automatic backups, set **Databases to back up**. Tick **Every database**, or single ones.
 
-Without a choice, a backup takes the main database. On MongoDB it takes every database.
+**Every database** means every database on the server when the backup runs, so databases you create later are included. While it is ticked, the list of names is hidden. If you tick databases one by one, the backup takes only those. There is no limit on how many databases a backup takes.
+
+Without a choice, a backup takes the main database. On MongoDB, it takes every database, and with **Every database** it takes the usual full dump.
+
+:::note[Schedules saved before v0.2.4]
+These schedules keep the list of names they had. To include databases created later, tick **Every database** again and save. In the [API](/docs/api), `"databases": ["*"]` means every database.
+:::
 
 A backup with several databases is one file. Restoring it brings back each database as it was, and creates the ones that are missing.
 
