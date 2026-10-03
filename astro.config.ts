@@ -1,6 +1,7 @@
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import tailwindcss from "@tailwindcss/vite";
+import { readdir, rename, rm } from "node:fs/promises";
 import { defineConfig } from "astro/config";
 import { apiSidebar, docId, sidebar } from "./src/lib/docs";
 import { site } from "./src/lib/site";
@@ -17,6 +18,8 @@ export default defineConfig({
       favicon: "/icon.svg",
       head: [
         { tag: "link", attrs: { rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" } },
+        // Replaces Starlight's link to sitemap-index.xml (see singleSitemap below).
+        { tag: "link", attrs: { rel: "sitemap", href: "/sitemap.xml" } },
         { tag: "meta", attrs: { property: "og:image", content: `${site.url}/og.png` } },
         { tag: "meta", attrs: { property: "og:image:width", content: "1200" } },
         { tag: "meta", attrs: { property: "og:image:height", content: "630" } },
@@ -45,6 +48,7 @@ export default defineConfig({
       },
       sidebar: [...sidebar.map(([label, slugs]) => ({ label, items: slugs.map(docId) })), apiSidebar],
     }),
+    singleSitemap(),
   ],
   vite: {
     plugins: [tailwindcss()],
@@ -70,3 +74,21 @@ export default defineConfig({
     },
   },
 });
+
+/**
+ * Starlight's sitemap is an index (sitemap-index.xml) that points to sitemap-0.xml. The site fits in
+ * one file, so keep just that one, as sitemap.xml. Runs after the sitemap is written.
+ */
+function singleSitemap() {
+  return {
+    name: "single-sitemap",
+    hooks: {
+      "astro:build:done": async ({ dir }: { dir: URL }) => {
+        const parts = (await readdir(dir)).filter((f) => /^sitemap-\d+\.xml$/.test(f));
+        if (parts.length !== 1) throw new Error(`Expected one sitemap file, found ${parts.length}.`);
+        await rename(new URL(parts[0], dir), new URL("sitemap.xml", dir));
+        await rm(new URL("sitemap-index.xml", dir));
+      },
+    },
+  };
+}
