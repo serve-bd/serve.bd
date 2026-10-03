@@ -1,5 +1,5 @@
 ---
-import { site } from "@/lib/site";
+import { community, site } from "@/lib/site";
 import Mark from "../Mark.astro";
 
 const columns = [
@@ -23,7 +23,9 @@ const columns = [
     title: "Project",
     links: [
       { href: site.github, label: "GitHub" },
-      { href: `${site.github}/issues`, label: "Issues" },
+      { href: community.discussions, label: "Discussions" },
+      { href: "/docs/community/", label: "Get help" },
+      { href: community.contributing, label: "Contributing" },
       { href: `${site.github}/blob/main/LICENSE`, label: `${site.license} license` },
     ],
   },

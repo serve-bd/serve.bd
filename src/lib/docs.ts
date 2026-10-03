@@ -8,7 +8,7 @@ export const sidebar: [string, string[]][] = [
   ["Networking", ["domains", "cloudflare"]],
   ["Servers", ["servers", "moving-containers", "private-networks", "monitoring"]],
   ["Teams", ["teams", "security"]],
-  ["Operate", ["updating", "instance-backups", "uninstalling", "reference"]],
+  ["Operate", ["updating", "instance-backups", "uninstalling", "reference", "community"]],
 ];
 
 export const docId = (slug: string) => (slug ? `docs/${slug}` : "docs");

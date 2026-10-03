@@ -1,6 +1,6 @@
 ---
 import LegalPage from "@/components/site/LegalPage.astro";
-import { site } from "@/lib/site";
+import { community, site } from "@/lib/site";
 ---
 
 <LegalPage title="Terms and conditions" description="The terms for using serve.bd and the Serve software." updated="3 October 2026">
@@ -35,7 +35,10 @@ import { site } from "@/lib/site";
     <li>scrape it in a way that slows it down for others,</li>
     <li>pretend to be Serve or its team.</li>
   </ul>
-  <p>Found a security problem? Report it to <a href={`mailto:${site.contact}`}>{site.contact}</a> before you make it public, and give us time to fix it.</p>
+  <p>
+    Found a security problem? Report it privately through <a href={community.securityReport} target="_blank" rel="noreferrer">GitHub security advisories</a> or to <a
+      href={`mailto:${site.contact}`}>{site.contact}</a> before you make it public, and give us time to fix it.
+  </p>
 
   <h2>Name and logo</h2>
   <p>

@@ -3,6 +3,8 @@ title: "Services and templates"
 description: "One-click services from the catalog, and your own templates."
 ---
 
+import { LinkButton } from '@astrojs/starlight/components';
+
 Templates are one-click services: a Compose stack with its variables filled in for you. Serve ships with a catalog, and you can add your own. Browse the full list on the [templates page](/templates).
 
 ## The catalog
@@ -87,9 +89,15 @@ For each `${VARIABLE}` in the file, choose how Serve fills it:
 | Public URL | `https://` plus the domain. Follows the domain |
 | Public hostname | The domain only. Follows the domain |
 
+## Request a template
+
+Missing an app? Ask for it. The form asks for the app, its website or repository, its official Docker image and any notes.
+
+<LinkButton href="https://github.com/serve-bd/serve/issues/new?template=template_request.yml" icon="external">Request a template</LinkButton>
+
 ## Contributing a template
 
-Templates for the public catalog live in the `templates` folder of the Serve repository. Send a pull request to add one.
+Templates for the public catalog live in the `templates` folder of the Serve repository. Send a pull request to add one. The [template guide](https://github.com/serve-bd/serve/blob/main/templates/README.md) in the repository explains the format, and the steps below cover the same ground.
 
 ### Folder layout
 

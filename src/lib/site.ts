@@ -13,6 +13,15 @@ export const site = {
   install: "curl -fsSL https://serve.bd/install.sh | bash",
 };
 
+/** Where people ask, report and contribute, on the Serve repository. */
+export const community = {
+  discussions: `${site.github}/discussions`,
+  templateRequest: `${site.github}/issues/new?template=template_request.yml`,
+  securityReport: `${site.github}/security/advisories/new`,
+  contributing: `${site.github}/blob/main/CONTRIBUTING.md`,
+  templatesGuide: `${site.github}/blob/main/templates/README.md`,
+};
+
 /** The feature pages, for the Features menu, the features page and the mobile menu. */
 export const featurePages = [
   { href: "/features/git-to-production/", label: "Git to production", text: "Push code and it builds, deploys and goes live." },

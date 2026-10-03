@@ -5,7 +5,7 @@ import * as React from "react";
 import { TemplateLogo } from "@/components/react/template-logo";
 import type { Template } from "@/lib/templates";
 
-export function TemplateCatalog({ templates, categories }: { templates: Template[]; categories: string[] }) {
+export function TemplateCatalog({ templates, categories, requestUrl }: { templates: Template[]; categories: string[]; requestUrl?: string }) {
   const [query, setQuery] = React.useState("");
   const [category, setCategory] = React.useState("All");
 
@@ -46,7 +46,17 @@ export function TemplateCatalog({ templates, categories }: { templates: Template
         </ToggleGroup>
       </div>
       {shown.length === 0 ? (
-        <p className="py-24 text-center text-muted">No templates match “{query}”.</p>
+        <p className="py-24 text-center text-muted">
+          No templates match “{query}”.
+          {requestUrl && (
+            <>
+              {" "}
+              <a href={requestUrl} target="_blank" rel="noreferrer" className="text-accent hover:underline">
+                Request it
+              </a>
+            </>
+          )}
+        </p>
       ) : (
         <ul className="grid grid-cols-1 gap-3 py-6 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((t) => (
