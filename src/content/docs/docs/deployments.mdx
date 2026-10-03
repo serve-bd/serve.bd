@@ -42,6 +42,16 @@ New containers must pass the health check before they get traffic. Set it under 
 | Expected status | Status codes that count as healthy, like `200-399`. Default: any status below 500 |
 | Successes needed | How many checks in a row must pass |
 
+## Changes waiting for a deploy
+
+Most settings apply on the next deploy. When you change one, the **Redeploy** button shows a dot until you deploy again. These changes count:
+
+- Source, build and runtime settings.
+- Database and Compose settings.
+- Variables, and the shared variables the service uses.
+
+Domains, maintenance and proxy settings apply on their own, without a deploy. They don't add the dot.
+
 ## Rollbacks
 
 Each past deployment has a rollback button. It runs the image from that deployment again. Images kept for rollbacks survive server cleanup.
@@ -59,6 +69,8 @@ https://serve.example.com/api/webhooks/git/<serviceId>
 :::caution
 Git webhooks need the dashboard on a domain with HTTPS. Set this up in **Settings → General**.
 :::
+
+If the dashboard is set to HTTP only but its domain also answers on HTTPS, for example behind a proxy that redirects `http://` to `https://`, Serve uses the `https://` address. This applies to GitHub App webhooks, repository webhooks, and the webhook and deploy hook URLs in **Settings → Webhooks**. A GitHub App moves to the new address within an hour, and whenever you change the dashboard domain settings.
 
 Rotating the secret breaks existing webhooks and deploy hooks until you update them.
 
@@ -109,6 +121,9 @@ By default, previews get the app's variables, so they use its production databas
 ## Logs and console
 
 Each deployment has its build log. A service also has tabs for runtime logs, request logs and metrics. The console tab opens a shell inside the running container.
+
+- **Logs**: for an app with more than one replica, pick one replica to see only its logs. The clock button hides or shows timestamps. On phones, timestamps start hidden.
+- **Metrics**: request charts appear only for a service with a domain. Hover over or tap a request bar to see its numbers. If the service has no domain and its server collects no metrics, the tab is hidden.
 
 <CardGrid>
 <LinkCard href="/docs/domains" title="Domains" description="Point a domain at your app." />
