@@ -51,19 +51,13 @@ Add channels under **Integrations → Notifications**. Serve supports:
 
 Slack, Discord, Microsoft Teams, Google Chat, Mattermost, Rocket.Chat, Telegram, Matrix, ntfy, Gotify, Pushover, Pushbullet, PagerDuty, Opsgenie, Email, Twilio and Webhook.
 
-### Severity filter
-
-Each channel has a severity filter:
-
-| Filter | Sends |
-| --- | --- |
-| Everything | Successes and problems. |
-| Problems only | Warnings and failures. |
-| Critical only | Outages, crashes and failed backups. |
-
 ### Events
 
-You choose which events each channel gets.
+You choose which events each channel gets. A channel sends exactly the events you tick. Problem events have a red dot.
+
+:::note[Channels made before v0.2.5]
+Channels used to have a **Send** filter for problems only or critical only. The filter is gone. On update, Serve unticked the events the filter held back, so each channel keeps getting the same messages.
+:::
 
 | Group | Events |
 | --- | --- |

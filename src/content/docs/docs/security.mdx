@@ -37,6 +37,8 @@ For each provider, create an OAuth app at the provider, add the callback URL tha
 Most providers only accept `https` callback URLs. Give the dashboard a domain with HTTPS in **Settings → General** first.
 :::
 
+If the dashboard is set to HTTP only but its domain also answers on HTTPS, for example behind a proxy that redirects `http://` to `https://`, Serve uses the `https://` address. This applies to sign-in callbacks, invite links and password reset links. If your GitHub or Google sign-in app has an `http://` callback URL, change it to the `https://` URL Serve shows.
+
 ### OpenID Connect fields
 
 | Field | What to enter |

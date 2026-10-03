@@ -66,9 +66,11 @@ The **Backups** list shows every backup. From it you can:
 A PostgreSQL, MySQL, MariaDB or MongoDB server can hold more than one database. You choose which ones a backup takes:
 
 - **Back up now** asks which databases to take, when the server has more than one.
-- For automatic backups, set **Databases to back up**. Tick **Every database**, or single ones.
+- For automatic backups, set **Databases to back up**. Tick **Every database**, or single ones. The choice shows even when the server has one database.
 
-**Every database** means every database on the server when the backup runs, so databases you create later are included. While it is ticked, the list of names is hidden. If you tick databases one by one, the backup takes only those. There is no limit on how many databases a backup takes.
+**Every database** means every database on the server when the backup runs, so databases you create later are included. To skip some, open **Leave some out** under **Every database** and tick the ones to skip. If you tick databases one by one instead, the backup takes only those. There is no limit on how many databases a backup takes.
+
+On PostgreSQL, the built-in `postgres` database is offered like the others, because apps often keep their tables there. **Every database** takes it too.
 
 Without a choice, a backup takes the main database. On MongoDB, it takes every database, and with **Every database** it takes the usual full dump.
 
