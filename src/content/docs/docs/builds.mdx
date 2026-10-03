@@ -1,6 +1,6 @@
 ---
 title: "Builds"
-description: "Dockerfile, Nixpacks and built-in detection."
+description: "Dockerfile, Nixpacks, Railpack, Buildpacks and built-in detection."
 ---
 
 When an app comes from a Git repository, Serve builds a Docker image from it on each deploy. You control how in **Settings → Build**.
@@ -14,7 +14,15 @@ The **Builder** field picks how Serve builds the image.
 | Automatic | Uses a Dockerfile if present, otherwise detects the language |
 | Dockerfile | Always builds from a Dockerfile |
 | Nixpacks | Builds with Nixpacks. Nixpacks must be installed on the server |
+| Railpack | Builds with Railpack. Serve downloads it on first use |
+| Cloud Native Buildpacks | Builds with a buildpacks builder image |
 | Static site | Builds the files and serves them with nginx |
+
+### Cloud Native Buildpacks
+
+Serve fills in a default **Builder image**. Paketo builders also work. A builder image from another publisher needs an admin of the Root organization.
+
+The builder decides how to install and build, so the install and build commands are not used. The start command is optional.
 
 ## Built-in detection
 

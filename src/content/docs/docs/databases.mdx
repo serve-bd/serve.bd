@@ -53,55 +53,111 @@ DATABASE_URL=${{postgres.DATABASE_URL}}
 
 Here `postgres` is the database service's name. Other services also reach the database at its **Private hostname**. See [Environment variables](/docs/environment-variables).
 
+## Public access
+
+A database's **Public access** page, under its settings, decides who can reach it from outside the project. It has a card for the database and, on PostgreSQL, cards for the [pooler](#connection-pooling) and the [read replicas](#read-replicas). Each card has the same parts.
+
 ### Public port
 
-To reach the database from outside, set **Access** to **Public** under **Runtime and network**. Pick a **Public port** and choose where it listens:
+Turn on **Public port** to connect from outside Serve, for example with a desktop client. While it is off, only services in the same project environment can connect.
 
-- **All interfaces**: anyone who can reach the server's port.
-- **This server only**: `127.0.0.1`, for use over an SSH tunnel.
+- **Port**: leave it empty and Serve picks a free one. Once a port is set, it stays, because clients and firewalls point at it. To get a new port, turn public access off, save, then turn it on again.
+- **Who can connect**: **Anyone with the password**, **Only some IP addresses**, or **Only this server** (`127.0.0.1`, for use over an SSH tunnel).
+- With **Only some IP addresses**, enter one address or range per line, like `203.0.113.7` or `198.51.100.0/24`. **Add my IP** adds the address you use now.
+
+**Save and restart** applies the change.
 
 :::caution
-A public database port is open to the internet. Use a strong password, turn on TLS, and limit access in your firewall where you can.
+A public database port is open to the internet. Use a strong password, turn on TLS, and limit who can connect where you can.
 :::
 
 ### Database domain
 
-Give a database a domain, like `db.example.com`, so clients connect to it from anywhere with a real certificate. Open the database's **Domain** card, type the domain and choose **Save**.
+Give a database a domain, like `db.example.com`, so clients connect to it from anywhere with a real certificate. Type the domain in the **Domain** field of the **Public port** card and save. The card header then shows the certificate's state.
 
 On a server with a public IP, Serve then does the rest:
 
-- It opens a public port for the database, for example `15432` for PostgreSQL, and turns on **Public access**.
-- It turns on TLS and gets a Let's Encrypt certificate for the domain. The card header shows the certificate's state.
+- It opens a public port for the database, for example `15432` for PostgreSQL.
+- It turns on TLS and gets a Let's Encrypt certificate for the domain.
 - If the domain's zone is in a connected [Cloudflare](/docs/cloudflare) account, it creates the DNS record. Otherwise, point an `A` record at the server's IP yourself.
-- It restarts the database once and shows the **Connection URL**.
+- It restarts the database once, after the certificate is active, and shows the **Connection URL**.
 
-**Remove** turns off what the domain turned on. If **Public access** or TLS was on before you added the domain, it stays on.
+If the server has no public IP, the card says so, and a domain can't reach the database.
+
+Removing the domain turns off what it turned on. The public port stays. If TLS was on before you added the domain, it stays on.
 
 :::caution[Keep the record DNS only]
 In Cloudflare, the record must be **DNS only** (grey cloud). Cloudflare's proxy (orange cloud) does not carry database traffic. For the same reason, the zone's SSL/TLS mode, like **Full (strict)**, doesn't matter here.
 :::
 
-**Allowed IPs** limits who can connect: one address or range per line, like `203.0.113.7` or `198.51.100.0/24`. Empty means anyone can connect with the password. It is the same list as **Public access**. **Add my IP** adds the address you use now.
-
 For PostgreSQL 16 and newer clients, add `sslmode=verify-full&sslrootcert=system` to the URL to also check the certificate. Other engines' clients check it by default.
 
-Several databases on the same server can share one domain. Each keeps its own port. A domain can't lead to databases on different servers, or through a Cloudflare Tunnel.
+Several databases on the same server can share one domain. Each keeps its own port. A domain can't lead to databases on different servers.
 
-The certificate comes from Let's Encrypt through Cloudflare DNS when the zone is connected, or over HTTP otherwise, which needs the nginx proxy. If the server already has a certificate that covers the name, like an uploaded wildcard, Serve uses that one.
+The certificate comes from Let's Encrypt through Cloudflare DNS when the zone is connected, or over HTTP otherwise, which needs the nginx proxy. If the server already has a certificate that covers the name, like an uploaded wildcard, Serve uses that one. It skips certificates that database clients do not trust: Cloudflare Origin CA certificates and uploaded certificates issued by Cloudflare.
 
-### Cloudflare Tunnel
+If a certificate fails, Serve asks for it again once the domain points at the server. **Retry** on the card asks right away.
 
-A server without a public IP can still give a database a domain, through a [Cloudflare Tunnel](/docs/cloudflare). Create the tunnel first. The **Domain** card then shows a **Route** choice: pick **Cloudflare Tunnel**.
+:::note[Cloudflare Tunnel]
+Since v0.2.6, database domains no longer offer a Cloudflare Tunnel. A domain set up through a tunnel before keeps working until you change or remove it. Clients still connect to it with `cloudflared access tcp`. See [Cloudflare](/docs/cloudflare#databases-through-a-tunnel).
+:::
 
-Cloudflare passes database connections only from `cloudflared` to `cloudflared`. So each computer or app that connects runs it too. It opens a local port that leads through the tunnel:
+### Pooler and replica access
 
-```bash
-cloudflared access tcp --hostname db.example.com --url localhost:5432
+The pooler and the read replicas have cards of their own, with a port, **Who can connect** and an optional domain. Over a public port, they accept TLS connections only. Inside the private network, plain connections still work.
+
+- The pooler opens a port on the database's server.
+- The replicas share one port on every server a replica runs on. Their domain gets an `A` record for each of those servers, and a certificate on each.
+
+Pooler and replica domains lead only to servers with a public IP whose port answers from the internet. The card names the replicas the domain can't reach.
+
+## Connection pooling
+
+PostgreSQL databases can run a connection pooler, PgBouncer, in front of the database. Many app connections then share a few real ones. Turn it on under **Connection pooling** with **Enable connection pooling**. The database keeps running, and no data is touched.
+
+The database's own URL stays the same. Apps opt in with the pooled URL:
+
+```text
+DATABASE_URL=${{postgres.POOLED_DATABASE_URL}}
 ```
 
-Then connect your client to `localhost:5432`. The tunnel encrypts the connection, so the local URL needs no TLS.
+| Setting | What it does |
+| --- | --- |
+| **Mode** | **Transaction**: a connection per transaction. Most efficient, but session features like `LISTEN`/`NOTIFY`, session advisory locks and `SET` for the whole connection don't work through it. **Session**: a connection per app connection. Everything works, with less saving. |
+| **Database connections** | Real connections per database and login. |
+| **App connections** | The most connections the pooler accepts. |
 
-On a server with a public IP, use the normal route instead. Nothing needs to run on the computers that connect.
+Logins added later work through the pooler too, because it checks them against the database.
+
+## Read replicas
+
+A read replica is a live, read-only copy of a PostgreSQL database, for heavy reads like reports and search. Writes still go to the database. Add them under **Read replica** with **Add replica**. The database keeps running.
+
+- A database can have up to 10 replicas.
+- Each replica runs on a **Server**: the database's own server, or one that shares a [private network](/docs/private-networks) with it.
+- Each replica first copies the database, then follows it. Its status says **Copying the database**, then **Following, up to date**, or how many seconds behind it is.
+
+Apps read from the replicas with the read URL. It spreads reads over every replica:
+
+```text
+READ_DATABASE_URL=${{postgres.READ_DATABASE_URL}}
+```
+
+To use one replica only, use `READ_DATABASE_URL_1`, `READ_DATABASE_URL_2` and so on.
+
+Replicas on other servers stop, start and restart with their database. Moving a database to another server takes its pooler and replicas along. The database's **Logs** tab has a tab for the database, its pooler and each replica.
+
+Removing a replica deletes its copy. Apps that read from it move to the other replicas, or lose the read URL if none are left. The database itself is not touched.
+
+### Promote a replica
+
+If the database's server is lost, **Promote** a replica to make it the database:
+
+- The database stops, if its server still answers.
+- The database starts again on the replica's server, with the replica's data. Changes the replica had not received yet are lost.
+- The old data stays in its volume.
+- The other replicas copy the new database again.
+- Public access of the pooler and the replicas is turned off.
 
 ## Users
 

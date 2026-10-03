@@ -12,6 +12,7 @@ const permissions: { label: string; text: string; roles: string[] }[] = [
   { label: "View projects", text: "Projects, services, deployments, status", roles: ["Owner", "Admin", "Developer", "Viewer"] },
   { label: "Manage projects", text: "Create, rename, delete projects and environments", roles: ["Owner", "Admin"] },
   { label: "Deploy", text: "Deploy, roll back, start, stop, restart", roles: ["Owner", "Admin", "Developer"] },
+  { label: "Approve deploys", text: "Approve or reject deploys that wait for approval", roles: ["Owner", "Admin"] },
   { label: "Manage services", text: "Create, delete and change services", roles: ["Owner", "Admin", "Developer"] },
   { label: "Manage domains", text: "Domains, ports and proxy options", roles: ["Owner", "Admin", "Developer"] },
   { label: "Edit variables", text: "Environment and shared variables", roles: ["Owner", "Admin", "Developer"] },
@@ -62,6 +63,7 @@ const scopes = [
   "projects.view",
   "projects.manage",
   "services.deploy",
+  "deploys.approve",
   "services.manage",
   "domains.manage",
   "variables.edit",
@@ -101,7 +103,7 @@ const scopes = [
   <Section>
     <SectionTitle eyebrow="Roles" title="Four roles to start. Make your own.">
       Every member has one role. Owner and Admin can do everything, except that only an Owner manages owners and deletes the organization. Change what Developer and
-      Viewer may do, or build your own roles from the same twelve permissions.
+      Viewer may do, or build your own roles from the same thirteen permissions.
     </SectionTitle>
     <div class="overflow-x-auto rounded-2xl border border-line bg-surface shadow-sm">
       <table class="w-full min-w-[620px] text-left text-sm">
@@ -246,7 +248,7 @@ const scopes = [
     <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
       <div>
         <SectionTitle eyebrow="API tokens" title="Tokens that know their place.">
-          A token carries the same twelve permissions that roles are made of, or admin for everything. Pick some projects or all of them, and when it expires. It can never
+          A token carries the same thirteen permissions that roles are made of, or admin for everything. Pick some projects or all of them, and when it expires. It can never
           do more than its owner may do right now: change the role, and the token changes with it.
         </SectionTitle>
         <div class="flex flex-wrap gap-1.5">

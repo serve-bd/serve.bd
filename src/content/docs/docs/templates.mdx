@@ -82,6 +82,7 @@ For each `${VARIABLE}` in the file, choose how Serve fills it:
 | --- | --- |
 | Value | A default the user can change |
 | Password | 24 random characters |
+| Strong password | A password with upper and lower case letters, a digit and a dash, for apps that ask for one |
 | Secret | A random 32-byte token |
 | Hex key | 64 hex characters |
 | 32-character key | 32 hex characters (16 bytes) |
@@ -138,6 +139,7 @@ Each var uses one of these keys:
 | `"generate": "secret"` | A random token |
 | `"generate": "hex32"` | 64 hex characters |
 | `"generate": "hex16"` | Exactly 32 hex characters |
+| `"generate": "strongPassword"` | A password with upper and lower case letters, a digit and a dash |
 | `"generate": "base64key"` | A `base64:` app key |
 | `"publicUrl": true` | `https://` plus the main domain |
 | `"publicHost": true` | The main domain only |
@@ -153,7 +155,7 @@ Each var uses one of these keys:
 - `minVersion`: the oldest Serve version that can run it.
 - `domains`: more services that get a domain of their own, like `[{ "service": "admin", "port": 3002 }]`.
 
-`domains`, `serviceUrl`, `serviceHost` and `hex16` need `"minVersion": "0.1.9"`. The build checks it.
+`domains`, `serviceUrl`, `serviceHost` and `hex16` need `"minVersion": "0.1.9"`. `strongPassword` needs `"minVersion": "0.2.7"`. The build checks it.
 
 ### compose.yml
 

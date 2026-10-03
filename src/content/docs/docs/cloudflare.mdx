@@ -64,13 +64,13 @@ The dashboard can use a tunnel too. This is useful when the main server has no p
 
 ### Databases through a tunnel
 
-Every database engine can be reached through a Cloudflare Tunnel. Clients connect with `cloudflared`, which forwards a local port to the database:
+Since v0.2.6, new database domains can't use a Cloudflare Tunnel. A database domain set up through a tunnel before keeps working until you change or remove it. Its clients connect with `cloudflared`, which forwards a local port to the database:
 
 ```bash
 cloudflared access tcp --hostname db.example.com --url localhost:5432
 ```
 
-Then point your client at `localhost:5432`. The database page shows the exact command. See [Databases](/docs/databases).
+Then point your client at `localhost:5432`. The database's **Public access** page shows the exact command. For new database domains, use a server with a public IP. See [Databases](/docs/databases#database-domain).
 
 ## Wildcard certificates
 

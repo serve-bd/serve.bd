@@ -42,6 +42,39 @@ New containers must pass the health check before they get traffic. Set it under 
 | Expected status | Status codes that count as healthy, like `200-399`. Default: any status below 500 |
 | Successes needed | How many checks in a row must pass |
 
+## Deploy approvals
+
+A project can make deploys wait until someone approves them. Turn it on under **Project settings → Deploys → Approvals** with **Deploys wait for approval**, for every environment or only the ones you pick.
+
+Each service can change this in its **Approval** card, under **Settings → Deploy** for apps or **Settings → Compose** for stacks:
+
+- **Follow the project**: the default.
+- **Always wait for approval**.
+- **Never wait**.
+
+Only people who can approve deploys can change it.
+
+### Who approves
+
+Owners and admins can approve. Other roles need the **Approve deploys** permission. See [Teams](/docs/teams). Their own deploys start right away.
+
+### What waits
+
+Git pushes, deploy hooks, API calls and manual deploys by other people wait. A waiting deploy shows **Approve** and **Reject** on its deployment page and in the deployments list. The service card shows **Waiting for approval**. If a newer deploy comes in, it replaces the one that was waiting.
+
+These never wait: rollbacks, the first deploy of a new service, databases and pull request previews.
+
+To hear about waiting deploys, tick **Deployment waiting for approval** on a [notification channel](/docs/monitoring#events).
+
+## Deploy freezes
+
+A freeze stops deploys for a while, for example during a sale or at night. Set it under **Project settings → Deploys → Deploy freeze**.
+
+- **Freeze deploys now**: for 1 hour, 4 hours, 24 hours, 3 days, 1 week, or until you turn it off. Add a reason if you like, so others know why.
+- **Every week**: hours on chosen days, with a start and end time, in a time zone you pick. The hours can run past midnight. A weekly freeze covers every environment or the ones you pick.
+
+During a freeze, pushes and deploy hooks are skipped, and the deployments list notes them. Manual deploys are refused. Rollbacks still work. If you approve a waiting deploy during a freeze, it starts when the freeze ends.
+
 ## Changes waiting for a deploy
 
 Most settings apply on the next deploy. When you change one, the **Redeploy** button shows a dot until you deploy again. These changes count:

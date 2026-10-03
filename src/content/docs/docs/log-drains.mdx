@@ -1,0 +1,68 @@
+---
+title: "Log drains"
+description: "Send the logs of your apps, stacks and databases to your own log service."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+A log drain sends the logs of your apps, stacks and databases to your own log service as they are written. Use it to keep logs longer, search them, or alert on them.
+
+## Add a log drain
+
+Go to **Integrations → Log drains** and choose **Add log drain**. Give it a **Name**, pick a **Type** and fill in the fields below. You can edit, test, pause and remove a drain from the same page.
+
+| Type | What Serve sends |
+| --- | --- |
+| HTTP endpoint | JSON batches in a POST. Works with Better Stack, Axiom, Datadog, New Relic, OpenObserve and your own endpoint |
+| Grafana Loki | Logs through Loki's push API. Serve adds the push path to the URL |
+| Elasticsearch or OpenSearch | Logs through the Bulk API, in one index a day, like `serve-logs-2026.10.04` |
+| Splunk | Logs through the HTTP Event Collector |
+| Syslog | RFC 5424 lines over TCP, TLS or UDP |
+
+### Fields per type
+
+- **HTTP endpoint**: the **URL**, and one optional **Header** with its **Value**, like `Authorization: Bearer your-token`. Datadog uses the `DD-API-KEY` header, and New Relic uses `Api-Key`.
+- **Grafana Loki**: the **URL**, and an optional **User** and **Password or token**.
+- **Elasticsearch or OpenSearch**: the **URL**, an optional **User** and **Password or token**, and the **Index** name.
+- **Splunk**: the **URL**, the HTTP Event Collector **Token**, and an optional **Index** and **Source type**.
+- **Syslog**: a URL like `tcp://logs.example.com:514`, `tls://…` or `udp://…`, with a port.
+
+For a self-hosted Splunk or Elasticsearch with its own certificate, tick **Accept a self-signed certificate**.
+
+### Example: OpenObserve
+
+Pick **HTTP endpoint** and set:
+
+```text
+URL:    https://<openobserve-domain>/api/default/<stream>/_json
+Header: Authorization
+Value:  Basic <base64 of email:password>
+```
+
+To run OpenObserve itself, deploy it from the [templates](/templates/?q=OpenObserve). It needs Serve 0.2.7 or newer.
+
+## What to send
+
+Under **What to send**, pick whole projects or single services. A whole project includes the services you add to it later. Nothing is sent until you pick something.
+
+Each service also has **Settings → Log drains**. There you can switch each drain on or off for that service, or add a new drain just for it.
+
+## What each line holds
+
+Each log line carries these fields, so you can filter by them in your log service: `project`, `environment`, `service`, `server` and `stream` (stdout or stderr).
+
+Build logs are not sent. They stay in the dashboard.
+
+## Test and pause
+
+- **Send a test line** sends one sample line, so you can check that it arrives.
+- The switch next to a drain pauses it. Turn it on again to send again.
+
+## How it works
+
+Each server runs Vector, a small log shipper, next to Docker. It reads the logs of the containers and sends them on. A server gets only the drains of the organizations that may use it.
+
+<CardGrid>
+<LinkCard href="/docs/monitoring" title="Monitoring" description="Uptime checks, alerts and notifications." />
+<LinkCard href="/docs/deployments" title="Logs in the dashboard" description="Build, runtime and request logs." />
+</CardGrid>
