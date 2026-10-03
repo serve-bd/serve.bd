@@ -55,14 +55,14 @@ Here `postgres` is the database service's name. Other services also reach the da
 
 ## Public access
 
-A database's **Public access** page, under its settings, decides who can reach it from outside the project. It has a card for the database and, on PostgreSQL, cards for the [pooler](#connection-pooling) and the [read replicas](#read-replicas). Each card has the same parts.
+A database's **Public access** page, under its settings, decides who can reach it from outside the project. It has a card for the database, a card for the [read replicas](#read-replicas) when it has some, and on PostgreSQL a card for the [pooler](#connection-pooling). Each card has the same parts.
 
 ### Public port
 
 Turn on **Public port** to connect from outside Serve, for example with a desktop client. While it is off, only services in the same project environment can connect.
 
 - **Port**: leave it empty and Serve picks a free one. Once a port is set, it stays, because clients and firewalls point at it. To get a new port, turn public access off, save, then turn it on again.
-- **Who can connect**: **Anyone with the password**, **Only some IP addresses**, or **Only this server** (`127.0.0.1`, for use over an SSH tunnel).
+- **Who can connect**: **Anyone with the password**, **Only some IP addresses**, or **Only this server** (`localhost`, or an SSH tunnel). **Only this server** isn't offered while the card has a domain.
 - With **Only some IP addresses**, enter one address or range per line, like `203.0.113.7` or `198.51.100.0/24`. **Add my IP** adds the address you use now.
 
 **Save and restart** applies the change.
@@ -77,7 +77,7 @@ Give a database a domain, like `db.example.com`, so clients connect to it from a
 
 On a server with a public IP, Serve then does the rest:
 
-- It opens a public port for the database, for example `15432` for PostgreSQL.
+- It opens the public port, or picks a free one when the port is empty.
 - It turns on TLS and gets a Let's Encrypt certificate for the domain.
 - If the domain's zone is in a connected [Cloudflare](/docs/cloudflare) account, it creates the DNS record. Otherwise, point an `A` record at the server's IP yourself.
 - It restarts the database once, after the certificate is active, and shows the **Connection URL**.
@@ -107,7 +107,8 @@ Since v0.2.6, database domains no longer offer a Cloudflare Tunnel. A domain set
 The pooler and the read replicas have cards of their own, with a port, **Who can connect** and an optional domain. Over a public port, they accept TLS connections only. Inside the private network, plain connections still work.
 
 - The pooler opens a port on the database's server.
-- The replicas share one port on every server a replica runs on. Their domain gets an `A` record for each of those servers, and a certificate on each.
+- The replicas share one port on every server a replica runs on. By default it is the engine's port plus 12000, like `15306` for MySQL, when that port is free. Their domain gets an `A` record for each of those servers, and a certificate on each.
+- On engines other than PostgreSQL, a replica domain needs [TLS](#tls) turned on for the database.
 
 Pooler and replica domains lead only to servers with a public IP whose port answers from the internet. The card names the replicas the domain can't reach.
 
@@ -127,15 +128,31 @@ DATABASE_URL=${{postgres.POOLED_DATABASE_URL}}
 | **Database connections** | Real connections per database and login. |
 | **App connections** | The most connections the pooler accepts. |
 
-Logins added later work through the pooler too, because it checks them against the database.
+Logins added later work through the pooler too, because it checks them against the database. Other services reach the pooler at `POOLER_HOST`, the database's private hostname plus `-pooler`.
 
 ## Read replicas
 
-A read replica is a live, read-only copy of a PostgreSQL database, for heavy reads like reports and search. Writes still go to the database. Add them under **Read replica** with **Add replica**. The database keeps running.
+A read replica is a live, read-only copy of a database, for heavy reads like reports and search. Writes still go to the database. Read replicas work with PostgreSQL, MySQL, MariaDB, MongoDB, Redis and Valkey. Add them under **Settings → Read replicas** with **Add replica**.
 
-- A database can have up to 10 replicas.
+- A database can have as many replicas as you need. Serve sets no limit. When PostgreSQL needs more replication slots for them, Serve raises its settings.
 - Each replica runs on a **Server**: the database's own server, or one that shares a [private network](/docs/private-networks) with it.
-- Each replica first copies the database, then follows it. Its status says **Copying the database**, then **Following, up to date**, or how many seconds behind it is.
+- Each replica first copies the database, then follows every change. Its status says **Copying the database**, then **Following, up to date**, or how many seconds behind it is. A copy that stops halfway starts again from the beginning. It is never left as a copy you can write to.
+- Replicas run the exact image the database runs, down to its digest. So a tag that moved on Docker Hub can't split them.
+- Replicas work over [TLS](#tls) too. Older database certificates are renewed with the same certificate authority, so MongoDB members can also use them as client certificates.
+
+### Turning replicas on, per engine
+
+| Engine | What happens the first time |
+| --- | --- |
+| PostgreSQL | Nothing. The database keeps running. |
+| MySQL | Serve turns on GTIDs while the database runs. No restart. |
+| MariaDB | The database restarts once, to start its change log. Serve asks first. |
+| MongoDB | The database restarts once, to start its change log. Serve asks first. |
+| Redis and Valkey | Nothing. The database keeps running. |
+
+On MongoDB, the database and its replicas form the replica set `rs0`. Replicas join as members that never vote and never become primary on their own. Their URLs use `directConnection=true`, and the read URLs also set `readPreference=secondaryPreferred`.
+
+Read replicas are tested on MySQL 8.0, 8.4 and 9, MariaDB 10.11 and 11, MongoDB 7 and 8, Redis and Valkey.
 
 Apps read from the replicas with the read URL. It spreads reads over every replica:
 
@@ -143,7 +160,7 @@ Apps read from the replicas with the read URL. It spreads reads over every repli
 READ_DATABASE_URL=${{postgres.READ_DATABASE_URL}}
 ```
 
-To use one replica only, use `READ_DATABASE_URL_1`, `READ_DATABASE_URL_2` and so on.
+To use one replica only, use `READ_DATABASE_URL_1`, `READ_DATABASE_URL_2` and so on, after the replica's number. `READ_HOST` is the shared hostname of all replicas: the database's private hostname plus `-replica`.
 
 Replicas on other servers stop, start and restart with their database. Moving a database to another server takes its pooler and replicas along. The database's **Logs** tab has a tab for the database, its pooler and each replica.
 
@@ -158,6 +175,14 @@ If the database's server is lost, **Promote** a replica to make it the database:
 - The old data stays in its volume.
 - The other replicas copy the new database again.
 - Public access of the pooler and the replicas is turned off.
+
+### Replicas in the API
+
+- `GET /services/{id}/database/replicas` lists the replicas.
+- `PUT /services/{id}/database/replicas` sets them.
+- `POST /services/{id}/database/replicas/{replicaId}/promote` promotes one.
+
+See the [API](/docs/api).
 
 ## Users
 

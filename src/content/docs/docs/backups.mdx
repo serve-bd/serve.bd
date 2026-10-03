@@ -1,9 +1,9 @@
 ---
 title: "Database backups"
-description: "Scheduled backups to disk or S3, and one-click restore."
+description: "Scheduled backups to disk or a bucket, and one-click restore."
 ---
 
-Serve backs up databases with each engine's own dump tools. You set a schedule per database on its **Backups** tab, and keep copies on the server, in S3, or both.
+Serve backs up databases with each engine's own dump tools. You set a schedule per database on its **Backups** tab, and keep copies on the server, in a bucket, or both.
 
 :::note[Instance backups are separate]
 Database backups protect your data. They don't include Serve's own state. To back up the dashboard, certificates and settings, see [Instance backups](/docs/instance-backups). An instance backup does not include app or database data either, so you need both.
@@ -24,14 +24,16 @@ Times use the instance timezone. Change it in **Settings → General**.
 
 ### How many to keep
 
-Older backups are deleted automatically. **Keep the latest** (or **Keep on this server** when you also use S3) sets how many copies stay on the server. **Keep in S3** sets how many stay in the bucket. Keep more in S3 for longer off-site history.
+Older backups are deleted automatically. When you keep backups in one place, **Keep the latest** sets how many copies stay there. When you keep them in both, **Keep on this server** and **Keep in bucket** set each one. Keep more in the bucket for longer off-site history.
 
 ### Where backups are stored
 
-**Store backups in** picks the destination:
+**Store backups in** picks where copies are kept: on this server, in a bucket, or both. Both is the default when you have a bucket.
 
 - **This server**: kept in the data directory. These copies are lost if the server is lost.
-- An S3 destination you added under **Integrations → S3 storage**.
+- A bucket you added under **Integrations → S3 storage**. Any S3-compatible store works, like R2 or B2.
+
+With the bucket only, each copy leaves the server once it is uploaded. A restore downloads it first.
 
 ## S3 storage
 
@@ -86,7 +88,7 @@ Use **Import backup** to restore a dump made elsewhere, for example when you mov
 
 - Drop a dump file in the dashboard, up to 20 GB.
 - Give a **File URL**: a public or pre-signed http(s) link. The server downloads it.
-- Pick a saved **Storage** and the **Object path** of the file inside the bucket.
+- Choose **From bucket**, pick a saved **Storage** and give the **Object path** of the file inside the bucket.
 
 The card lists which file types the engine accepts.
 
