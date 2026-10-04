@@ -15,7 +15,7 @@ if (!from) {
   process.exit(1);
 }
 
-type Entry = { id: string; name: string; description: string; category: string; website?: string | null; color?: string | null };
+type Entry = { id: string; name: string; description: string; category: string; website?: string | null; color?: string | null; fullColorLogo?: boolean };
 
 const dir = path.join(from, "templates");
 const { templates } = JSON.parse(await readFile(path.join(dir, "index.json"), "utf8")) as { templates: Entry[] };
@@ -29,7 +29,16 @@ for (const t of templates) {
   const svg = path.join(dir, t.id, "logo.svg");
   const logo = existsSync(svg) ? `/templates/${t.id}.svg` : null;
   if (logo) await copyFile(svg, `public${logo}`);
-  out.push({ id: t.id, name: t.name, description: t.description, category: t.category, website: t.website ?? null, color: t.color ?? null, logo });
+  out.push({
+    id: t.id,
+    name: t.name,
+    description: t.description,
+    category: t.category,
+    website: t.website ?? null,
+    color: t.color ?? null,
+    logo,
+    ...(logo && t.fullColorLogo ? { fullColor: true } : {}),
+  });
 }
 await writeFile("src/data/templates.json", `${JSON.stringify(out, null, 1)}\n`);
 console.log(`${out.length} templates, ${out.filter((t) => t.logo).length} with a logo.`);

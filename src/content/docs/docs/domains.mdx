@@ -20,6 +20,28 @@ You pick the **Reverse proxy** for each server on its **Proxy** page.
 
 You can switch any time. Serve keeps the settings of each proxy, so you can switch back without losing them.
 
+### Traefik dashboard and metrics
+
+With Traefik, the **Proxy** page has two more switches:
+
+- **Traefik dashboard**: served on its own **Hostname**, like `traefik.example.com`, with a **User** and **Password**. `http://` redirects to `https://`.
+- **Prometheus metrics**: with the dashboard on, the metrics are at `https://<dashboard host>/metrics`, behind the dashboard's user and password. Without the dashboard, they stay inside the container.
+
+On a live server, point the hostname's DNS at the server, and Let's Encrypt issues the certificate. On your own computer, a name like `traefik.localhost` works without DNS, with a certificate warning. The proxy may use other ports there, like `8443`.
+
+A Prometheus scrape config for it:
+
+```yaml
+scrape_configs:
+  - job_name: traefik
+    scheme: https
+    basic_auth:
+      username: admin
+      password: your-password
+    static_configs:
+      - targets: ["traefik.example.com"]
+```
+
 ### Custom proxy files
 
 You can add your own configuration files to a server's proxy. Open the server's **Proxy** page. The **Dynamic configurations** card lists the files the proxy loads. Files marked **Managed** are made by Serve. Under **Custom files**, choose **Add**.
@@ -29,6 +51,8 @@ You can add your own configuration files to a server's proxy. Open the server's 
 | nginx | `.conf` | Inside the `http` block, before the sites. Add `server` blocks, maps or rate limit zones. |
 | Caddy | `.caddy` | At the end of the Caddyfile. |
 | Traefik | `.yaml` or `.yml` | Through Traefik's file provider. |
+
+Files open in a code editor, where Tab indents. The same editor is used for shared nginx directives and Caddy's extra global options.
 
 **Test and apply** writes the file, checks it with the proxy and reloads. If the proxy rejects the file, nothing changes. On other servers a change takes about 8 seconds.
 

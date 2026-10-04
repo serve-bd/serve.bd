@@ -321,7 +321,7 @@ const faq = [
             href={`/templates/?q=${encodeURIComponent(t.name)}`}
             class="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:border-line-strong hover:bg-surface-2"
           >
-            <TemplateLogo name={t.name} logo={t.logo} color={t.color} className="size-9" />
+            <TemplateLogo name={t.name} logo={t.logo} color={t.color} fullColor={t.fullColor} className="size-9" />
             <span class="min-w-0">
               <span class="block truncate text-sm font-medium text-fg">{t.name}</span>
               <span class="block truncate text-[12px] text-muted">{t.category}</span>

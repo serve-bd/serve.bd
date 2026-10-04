@@ -10,11 +10,11 @@ Tags are labels on services, shared across the projects of an organization. Use 
 - On the **Tags** page in the sidebar, choose **New tag**. Give it a **Name** and a **Color**. Names use letters, numbers, dots, dashes and underscores.
 - To tag a service, open **Settings → General → Tags**. Type a tag and press Enter.
 
-Changing tags needs the **Manage services** permission.
+Only members with access to every project can create, rename, recolor or delete tags, and see or rotate a tag's deploy hook. Members limited to some projects can still tag the services they can reach. Tagging a service needs the **Manage services** permission.
 
 ## Deploy all
 
-On the **Tags** page, **Deploy all** deploys every service with the tag. It needs the **Deploy** permission.
+On the **Tags** page, **Deploy all** deploys every service with the tag that you can reach. It needs the **Deploy** permission.
 
 Project rules still apply to each service. A [deploy freeze](/docs/deployments#deploy-freezes) skips its deploy, and a project that asks for [approval](/docs/deployments#deploy-approvals) holds it until someone approves.
 
@@ -31,6 +31,16 @@ Or send the token in the `x-deploy-token` header:
 ```bash
 curl -X POST "https://serve.example.com/api/deploy-hooks/tags/<id>" \
   -H "x-deploy-token: <secret>"
+```
+
+The hook answers with the deploys it started. If any service was skipped, for example by a freeze, a full deploy queue, or because it has no source, `ok` is `false` and the service is listed in `skipped` with the reason. Skipped services never appear in `deployments`.
+
+```json
+{
+  "ok": false,
+  "deployments": [{ "serviceId": "...", "deploymentId": "..." }],
+  "skipped": [{ "service": "worker", "reason": "no source" }]
+}
 ```
 
 ## API

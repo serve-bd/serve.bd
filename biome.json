@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/dist", "!**/.astro", "!src/data/templates.json", "!bun.lock", "!**/*.astro", "!**/*.mdx", "!src/data/openapi.json"]
+    "includes": ["**", "!**/dist", "!**/.astro", "!src/data/templates.json", "!public/templates", "!bun.lock", "!**/*.astro", "!**/*.mdx", "!src/data/openapi.json"]
   },
   "formatter": {
     "enabled": true,

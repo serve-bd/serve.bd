@@ -61,7 +61,7 @@ export function TemplateCatalog({ templates, categories, requestUrl }: { templat
         <ul className="grid grid-cols-1 gap-3 py-6 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((t) => (
             <li key={t.id} className="group flex gap-3.5 rounded-xl border border-line bg-surface p-4 transition-colors hover:border-line-strong">
-              <TemplateLogo name={t.name} logo={t.logo} color={t.color} />
+              <TemplateLogo name={t.name} logo={t.logo} color={t.color} fullColor={t.fullColor} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate text-[15px] font-medium text-fg">{t.name}</span>

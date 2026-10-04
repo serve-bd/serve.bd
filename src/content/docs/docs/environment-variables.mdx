@@ -25,7 +25,7 @@ NODE_ENV=production
 
 Each row on the **Variables** page has a menu (**…**) with two options:
 
-- **Literal value**: the value is kept exactly as written. Text like `${{...}}` in it is never filled in, never looked up in a secret manager, and never drawn as a link. Use it for values that contain that text on purpose.
+- **Literal value**: the value is kept exactly as written. Text like `${{...}}` in it is never filled in, never looked up in a secret manager, and never drawn as a link. Use it for values that contain that text on purpose. References like `${{replica.index}}` stay as written too. Pull request previews still get working database URLs when the app's value is literal.
 - **Multiline value**: a large text box, for keys and certificates. Values with line breaks get it on their own.
 
 In the [API](/docs/api), set `literal: true` or `multiline: true` on the variable.

@@ -6,7 +6,8 @@
   "category": "Security",
   "website": "https://docs.2fauth.app",
   "color": "#1F6FB2",
-  "logo": null
+  "logo": "/templates/2fauth.svg",
+  "fullColor": true
  },
  {
   "id": "9router",
@@ -15,7 +16,8 @@
   "category": "AI",
   "website": "https://9router.com",
   "color": "#111827",
-  "logo": null
+  "logo": "/templates/9router.svg",
+  "fullColor": true
  },
  {
   "id": "activepieces",
@@ -24,7 +26,8 @@
   "category": "Automation",
   "website": "https://www.activepieces.com",
   "color": "#6E41E2",
-  "logo": null
+  "logo": "/templates/activepieces.svg",
+  "fullColor": true
  },
  {
   "id": "actual",
@@ -78,7 +81,8 @@
   "category": "Productivity",
   "website": "https://alexandrie-hub.fr",
   "color": "#6366F1",
-  "logo": null
+  "logo": "/templates/alexandrie.svg",
+  "fullColor": true
  },
  {
   "id": "ampache",
@@ -87,7 +91,8 @@
   "category": "Media",
   "website": "https://ampache.org",
   "color": "#FF6600",
-  "logo": null
+  "logo": "/templates/ampache.svg",
+  "fullColor": true
  },
  {
   "id": "answer",
@@ -105,7 +110,8 @@
   "category": "AI",
   "website": "https://anythingllm.com",
   "color": "#0E0F0F",
-  "logo": null
+  "logo": "/templates/anythingllm.svg",
+  "fullColor": true
  },
  {
   "id": "appflowy",
@@ -114,7 +120,8 @@
   "category": "Productivity",
   "website": "https://appflowy.com",
   "color": "#8427E0",
-  "logo": null
+  "logo": "/templates/appflowy.svg",
+  "fullColor": true
  },
  {
   "id": "apprise",
@@ -123,7 +130,8 @@
   "category": "Communication",
   "website": "https://github.com/caronc/apprise-api",
   "color": "#3F51B5",
-  "logo": null
+  "logo": "/templates/apprise.svg",
+  "fullColor": true
  },
  {
   "id": "appsmith",
@@ -150,7 +158,8 @@
   "category": "AI",
   "website": "https://argilla.io",
   "color": "#FF675F",
-  "logo": null
+  "logo": "/templates/argilla.svg",
+  "fullColor": true
  },
  {
   "id": "audiobookshelf",
@@ -186,7 +195,8 @@
   "category": "Databases",
   "website": "https://autobase.tech",
   "color": "#2F6BF5",
-  "logo": null
+  "logo": "/templates/autobase.svg",
+  "fullColor": true
  },
  {
   "id": "automatisch",
@@ -195,7 +205,8 @@
   "category": "Automation",
   "website": "https://automatisch.io",
   "color": "#6E3AD8",
-  "logo": null
+  "logo": "/templates/automatisch.svg",
+  "fullColor": true
  },
  {
   "id": "azimutt",
@@ -204,7 +215,8 @@
   "category": "Developer tools",
   "website": "https://azimutt.app",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/azimutt.svg",
+  "fullColor": true
  },
  {
   "id": "babybuddy",
@@ -213,7 +225,8 @@
   "category": "Productivity",
   "website": "https://docs.baby-buddy.net",
   "color": "#35B5E5",
-  "logo": null
+  "logo": "/templates/babybuddy.svg",
+  "fullColor": true
  },
  {
   "id": "baikal",
@@ -222,7 +235,8 @@
   "category": "Productivity",
   "website": "https://sabre.io/baikal",
   "color": "#3B82F6",
-  "logo": null
+  "logo": "/templates/baikal.svg",
+  "fullColor": true
  },
  {
   "id": "baserow",
@@ -240,7 +254,8 @@
   "category": "Media",
   "website": "https://www.bazarr.media",
   "color": "#3E4E5E",
-  "logo": null
+  "logo": "/templates/bazarr.svg",
+  "fullColor": true
  },
  {
   "id": "bento-pdf",
@@ -249,7 +264,8 @@
   "category": "Productivity",
   "website": "https://bentopdf.com",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/bento-pdf.svg",
+  "fullColor": true
  },
  {
   "id": "beszel",
@@ -258,7 +274,8 @@
   "category": "Monitoring",
   "website": "https://beszel.dev",
   "color": "#18181B",
-  "logo": null
+  "logo": "/templates/beszel.svg",
+  "fullColor": true
  },
  {
   "id": "big-agi",
@@ -267,7 +284,8 @@
   "category": "AI",
   "website": "https://big-agi.com",
   "color": "#0B6BCB",
-  "logo": null
+  "logo": "/templates/big-agi.svg",
+  "fullColor": true
  },
  {
   "id": "blinko",
@@ -276,7 +294,8 @@
   "category": "Productivity",
   "website": "https://blinko.space",
   "color": "#2D2D2D",
-  "logo": null
+  "logo": "/templates/blinko.svg",
+  "fullColor": true
  },
  {
   "id": "bluesky-pds",
@@ -294,7 +313,8 @@
   "category": "Media",
   "website": "https://github.com/booklore-app/booklore",
   "color": "#6D5DFC",
-  "logo": null
+  "logo": "/templates/booklore.svg",
+  "fullColor": true
  },
  {
   "id": "bookstack",
@@ -312,7 +332,8 @@
   "category": "Developer tools",
   "website": "https://www.browserless.io",
   "color": "#E11D48",
-  "logo": null
+  "logo": "/templates/browserless.svg",
+  "fullColor": true
  },
  {
   "id": "budge",
@@ -339,7 +360,8 @@
   "category": "Monitoring",
   "website": "https://www.bugsink.com",
   "color": "#1E293B",
-  "logo": null
+  "logo": "/templates/bugsink.svg",
+  "fullColor": true
  },
  {
   "id": "bulwark",
@@ -348,7 +370,8 @@
   "category": "Communication",
   "website": "https://bulwarkmail.org",
   "color": "#1D4ED8",
-  "logo": null
+  "logo": "/templates/bulwark.svg",
+  "fullColor": true
  },
  {
   "id": "buzz",
@@ -357,7 +380,8 @@
   "category": "Communication",
   "website": "https://github.com/block/buzz",
   "color": "#F5B700",
-  "logo": null
+  "logo": "/templates/buzz.svg",
+  "fullColor": true
  },
  {
   "id": "cadvisor",
@@ -366,7 +390,8 @@
   "category": "Monitoring",
   "website": "https://github.com/google/cadvisor",
   "color": "#4285F4",
-  "logo": null
+  "logo": "/templates/cadvisor.svg",
+  "fullColor": true
  },
  {
   "id": "cal-com",
@@ -384,7 +409,8 @@
   "category": "Media",
   "website": "https://calibre-ebook.com",
   "color": "#8B5A2B",
-  "logo": null
+  "logo": "/templates/calibre.svg",
+  "fullColor": true
  },
  {
   "id": "calibre-web",
@@ -402,7 +428,8 @@
   "category": "Media",
   "website": "https://cap.so",
   "color": "#1C64F2",
-  "logo": null
+  "logo": "/templates/cap.svg",
+  "fullColor": true
  },
  {
   "id": "cap-captcha",
@@ -411,7 +438,8 @@
   "category": "Security",
   "website": "https://capjs.js.org",
   "color": "#0F172A",
-  "logo": null
+  "logo": "/templates/cap-captcha.svg",
+  "fullColor": true
  },
  {
   "id": "castopod",
@@ -420,7 +448,8 @@
   "category": "Media",
   "website": "https://castopod.org",
   "color": "#009486",
-  "logo": null
+  "logo": "/templates/castopod.svg",
+  "fullColor": true
  },
  {
   "id": "changedetection",
@@ -447,7 +476,8 @@
   "category": "Monitoring",
   "website": "https://checkmate.so",
   "color": "#13715B",
-  "logo": null
+  "logo": "/templates/checkmate.svg",
+  "fullColor": true
  },
  {
   "id": "checkmk",
@@ -465,7 +495,8 @@
   "category": "Storage",
   "website": "https://chibisafe.app",
   "color": "#E11D48",
-  "logo": null
+  "logo": "/templates/chibisafe.svg",
+  "fullColor": true
  },
  {
   "id": "chromadb",
@@ -474,7 +505,8 @@
   "category": "Databases",
   "website": "https://www.trychroma.com",
   "color": "#E8590C",
-  "logo": null
+  "logo": "/templates/chromadb.svg",
+  "fullColor": true
  },
  {
   "id": "classicpress",
@@ -483,7 +515,8 @@
   "category": "CMS",
   "website": "https://www.classicpress.net",
   "color": "#057F99",
-  "logo": null
+  "logo": "/templates/classicpress.svg",
+  "fullColor": true
  },
  {
   "id": "classicpress-mysql",
@@ -492,7 +525,8 @@
   "category": "CMS",
   "website": "https://www.classicpress.net",
   "color": "#057F99",
-  "logo": null
+  "logo": "/templates/classicpress-mysql.svg",
+  "fullColor": true
  },
  {
   "id": "classicpress-standalone",
@@ -501,7 +535,8 @@
   "category": "CMS",
   "website": "https://www.classicpress.net",
   "color": "#057F99",
-  "logo": null
+  "logo": "/templates/classicpress-standalone.svg",
+  "fullColor": true
  },
  {
   "id": "clickhouse",
@@ -528,7 +563,8 @@
   "category": "Storage",
   "website": "https://cloudreve.org",
   "color": "#2D7FF9",
-  "logo": null
+  "logo": "/templates/cloudreve.svg",
+  "fullColor": true
  },
  {
   "id": "cockpit",
@@ -537,7 +573,8 @@
   "category": "CMS",
   "website": "https://getcockpit.com",
   "color": "#2D2D2D",
-  "logo": null
+  "logo": "/templates/cockpit.svg",
+  "fullColor": true
  },
  {
   "id": "code-server",
@@ -582,7 +619,8 @@
   "category": "Communication",
   "website": "https://continuwuity.org",
   "color": "#0DBD8B",
-  "logo": null
+  "logo": "/templates/continuwuity.svg",
+  "fullColor": true
  },
  {
   "id": "convertx",
@@ -591,7 +629,8 @@
   "category": "Productivity",
   "website": "https://github.com/C4illin/ConvertX",
   "color": "#7C3AED",
-  "logo": null
+  "logo": "/templates/convertx.svg",
+  "fullColor": true
  },
  {
   "id": "convex",
@@ -609,7 +648,8 @@
   "category": "Storage",
   "website": "https://github.com/9001/copyparty",
   "color": "#E77B23",
-  "logo": null
+  "logo": "/templates/copyparty.svg",
+  "fullColor": true
  },
  {
   "id": "couchdb",
@@ -627,7 +667,8 @@
   "category": "Automation",
   "website": "https://github.com/jhuckaby/Cronicle",
   "color": "#3F7ED5",
-  "logo": null
+  "logo": "/templates/cronicle.svg",
+  "fullColor": true
  },
  {
   "id": "cryptgeon",
@@ -636,7 +677,8 @@
   "category": "Security",
   "website": "https://github.com/cupcakearmy/cryptgeon",
   "color": "#1F2937",
-  "logo": null
+  "logo": "/templates/cryptgeon.svg",
+  "fullColor": true
  },
  {
   "id": "cryptpad",
@@ -654,7 +696,8 @@
   "category": "Security",
   "website": "https://gchq.github.io/CyberChef/",
   "color": "#4D8EC3",
-  "logo": null
+  "logo": "/templates/cyberchef.svg",
+  "fullColor": true
  },
  {
   "id": "dashy",
@@ -663,7 +706,8 @@
   "category": "Productivity",
   "website": "https://dashy.to",
   "color": "#5B21B6",
-  "logo": null
+  "logo": "/templates/dashy.svg",
+  "fullColor": true
  },
  {
   "id": "databasus",
@@ -672,7 +716,8 @@
   "category": "Databases",
   "website": "https://databasus.com",
   "color": "#155DFC",
-  "logo": null
+  "logo": "/templates/databasus.svg",
+  "fullColor": true
  },
  {
   "id": "dbgate",
@@ -681,7 +726,8 @@
   "category": "Databases",
   "website": "https://dbgate.org",
   "color": "#1B6EC2",
-  "logo": null
+  "logo": "/templates/dbgate.svg",
+  "fullColor": true
  },
  {
   "id": "deno-kv",
@@ -735,7 +781,8 @@
   "category": "Developer tools",
   "website": "https://dockge.kuma.pet",
   "color": "#74C2FF",
-  "logo": null
+  "logo": "/templates/dockge.svg",
+  "fullColor": true
  },
  {
   "id": "docling",
@@ -744,7 +791,8 @@
   "category": "AI",
   "website": "https://github.com/docling-project/docling-serve",
   "color": "#1F2937",
-  "logo": null
+  "logo": "/templates/docling.svg",
+  "fullColor": true
  },
  {
   "id": "docmost",
@@ -753,7 +801,8 @@
   "category": "CMS",
   "website": "https://docmost.com",
   "color": "#111827",
-  "logo": null
+  "logo": "/templates/docmost.svg",
+  "fullColor": true
  },
  {
   "id": "documenso",
@@ -762,7 +811,8 @@
   "category": "Productivity",
   "website": "https://documenso.com",
   "color": "#A2E771",
-  "logo": null
+  "logo": "/templates/documenso.svg",
+  "fullColor": true
  },
  {
   "id": "docuseal",
@@ -771,7 +821,8 @@
   "category": "Productivity",
   "website": "https://www.docuseal.com",
   "color": "#1F2937",
-  "logo": null
+  "logo": "/templates/docuseal.svg",
+  "fullColor": true
  },
  {
   "id": "dokuwiki",
@@ -780,7 +831,8 @@
   "category": "CMS",
   "website": "https://www.dokuwiki.org",
   "color": "#2E7D32",
-  "logo": null
+  "logo": "/templates/dokuwiki.svg",
+  "fullColor": true
  },
  {
   "id": "dolibarr",
@@ -798,7 +850,8 @@
   "category": "Productivity",
   "website": "https://donetick.com",
   "color": "#06B6D4",
-  "logo": null
+  "logo": "/templates/donetick.svg",
+  "fullColor": true
  },
  {
   "id": "dozzle",
@@ -807,7 +860,8 @@
   "category": "Developer tools",
   "website": "https://dozzle.dev",
   "color": "#0F766E",
-  "logo": null
+  "logo": "/templates/dozzle.svg",
+  "fullColor": true
  },
  {
   "id": "drawio",
@@ -879,7 +933,8 @@
   "category": "Productivity",
   "website": "https://easyappointments.org",
   "color": "#35A768",
-  "logo": null
+  "logo": "/templates/easy-appointments.svg",
+  "fullColor": true
  },
  {
   "id": "elasticsearch",
@@ -915,7 +970,8 @@
   "category": "Developer tools",
   "website": "https://www.emqx.com",
   "color": "#5D4ED7",
-  "logo": null
+  "logo": "/templates/emqx.svg",
+  "fullColor": true
  },
  {
   "id": "engram",
@@ -924,7 +980,8 @@
   "category": "AI",
   "website": "https://github.com/Gentleman-Programming/engram",
   "color": "#7C3AED",
-  "logo": null
+  "logo": "/templates/engram.svg",
+  "fullColor": true
  },
  {
   "id": "ente-photos",
@@ -960,7 +1017,8 @@
   "category": "Productivity",
   "website": "https://www.espocrm.com",
   "color": "#2C5F8A",
-  "logo": null
+  "logo": "/templates/espocrm.svg",
+  "fullColor": true
  },
  {
   "id": "etherpad",
@@ -969,7 +1027,8 @@
   "category": "Productivity",
   "website": "https://etherpad.org",
   "color": "#44B492",
-  "logo": null
+  "logo": "/templates/etherpad.svg",
+  "fullColor": true
  },
  {
   "id": "evolution-api",
@@ -978,7 +1037,8 @@
   "category": "Communication",
   "website": "https://doc.evolution-api.com",
   "color": "#25D366",
-  "logo": null
+  "logo": "/templates/evolution-api.svg",
+  "fullColor": true
  },
  {
   "id": "excalidraw",
@@ -996,7 +1056,8 @@
   "category": "AI",
   "website": "https://executor.sh",
   "color": "#18181B",
-  "logo": null
+  "logo": "/templates/executor.svg",
+  "fullColor": true
  },
  {
   "id": "ezbookkeeping",
@@ -1005,7 +1066,8 @@
   "category": "Productivity",
   "website": "https://ezbookkeeping.mayswind.net",
   "color": "#C67E48",
-  "logo": null
+  "logo": "/templates/ezbookkeeping.svg",
+  "fullColor": true
  },
  {
   "id": "faraday",
@@ -1014,7 +1076,8 @@
   "category": "Security",
   "website": "https://faradaysec.com",
   "color": "#1E3A8A",
-  "logo": null
+  "logo": "/templates/faraday.svg",
+  "fullColor": true
  },
  {
   "id": "fider",
@@ -1023,7 +1086,8 @@
   "category": "Productivity",
   "website": "https://fider.io",
   "color": "#2B2D42",
-  "logo": null
+  "logo": "/templates/fider.svg",
+  "fullColor": true
  },
  {
   "id": "filebrowser",
@@ -1032,7 +1096,8 @@
   "category": "Storage",
   "website": "https://filebrowser.org",
   "color": "#40C4FF",
-  "logo": null
+  "logo": "/templates/filebrowser.svg",
+  "fullColor": true
  },
  {
   "id": "fileflows",
@@ -1041,7 +1106,8 @@
   "category": "Media",
   "website": "https://fileflows.com",
   "color": "#1E88E5",
-  "logo": null
+  "logo": "/templates/fileflows.svg",
+  "fullColor": true
  },
  {
   "id": "filestash",
@@ -1050,7 +1116,8 @@
   "category": "Storage",
   "website": "https://www.filestash.app",
   "color": "#466372",
-  "logo": null
+  "logo": "/templates/filestash.svg",
+  "fullColor": true
  },
  {
   "id": "firefly-iii",
@@ -1077,7 +1144,8 @@
   "category": "Productivity",
   "website": "https://docs.fittrackee.org",
   "color": "#2A6F97",
-  "logo": null
+  "logo": "/templates/fittrackee.svg",
+  "fullColor": true
  },
  {
   "id": "fizzy",
@@ -1086,7 +1154,8 @@
   "category": "Productivity",
   "website": "https://www.fizzy.do",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/fizzy.svg",
+  "fullColor": true
  },
  {
   "id": "flaresolverr",
@@ -1095,7 +1164,8 @@
   "category": "Media",
   "website": "https://github.com/FlareSolverr/FlareSolverr",
   "color": "#6D28D9",
-  "logo": null
+  "logo": "/templates/flaresolverr.svg",
+  "fullColor": true
  },
  {
   "id": "flarum",
@@ -1104,7 +1174,8 @@
   "category": "Communication",
   "website": "https://flarum.org",
   "color": "#E7672E",
-  "logo": null
+  "logo": "/templates/flarum.svg",
+  "fullColor": true
  },
  {
   "id": "flipt",
@@ -1113,7 +1184,8 @@
   "category": "Developer tools",
   "website": "https://www.flipt.io",
   "color": "#7E22CE",
-  "logo": null
+  "logo": "/templates/flipt.svg",
+  "fullColor": true
  },
  {
   "id": "flowise",
@@ -1122,7 +1194,8 @@
   "category": "AI",
   "website": "https://flowiseai.com",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/flowise.svg",
+  "fullColor": true
  },
  {
   "id": "forgejo",
@@ -1176,7 +1249,8 @@
   "category": "Communication",
   "website": "https://freescout.net",
   "color": "#3B82F6",
-  "logo": null
+  "logo": "/templates/freescout.svg",
+  "fullColor": true
  },
  {
   "id": "freshrss",
@@ -1194,7 +1268,8 @@
   "category": "Storage",
   "website": "https://garagehq.deuxfleurs.fr",
   "color": "#FF9329",
-  "logo": null
+  "logo": "/templates/garage.svg",
+  "fullColor": true
  },
  {
   "id": "gatus",
@@ -1203,7 +1278,8 @@
   "category": "Monitoring",
   "website": "https://gatus.io",
   "color": "#0E7490",
-  "logo": null
+  "logo": "/templates/gatus.svg",
+  "fullColor": true
  },
  {
   "id": "ghost",
@@ -1266,7 +1342,8 @@
   "category": "Developer tools",
   "website": "https://www.harness.io/open-source",
   "color": "#0278D5",
-  "logo": null
+  "logo": "/templates/gitness.svg",
+  "fullColor": true
  },
  {
   "id": "glance",
@@ -1284,7 +1361,8 @@
   "category": "Monitoring",
   "website": "https://nicolargo.github.io/glances/",
   "color": "#6CC24A",
-  "logo": null
+  "logo": "/templates/glances.svg",
+  "fullColor": true
  },
  {
   "id": "glitchtip",
@@ -1293,7 +1371,8 @@
   "category": "Monitoring",
   "website": "https://glitchtip.com",
   "color": "#E5383B",
-  "logo": null
+  "logo": "/templates/glitchtip.svg",
+  "fullColor": true
  },
  {
   "id": "glpi",
@@ -1302,7 +1381,8 @@
   "category": "Productivity",
   "website": "https://glpi-project.org",
   "color": "#1B2F62",
-  "logo": null
+  "logo": "/templates/glpi.svg",
+  "fullColor": true
  },
  {
   "id": "go2rtc",
@@ -1311,7 +1391,8 @@
   "category": "Media",
   "website": "https://github.com/AlexxIT/go2rtc",
   "color": "#0EA5E9",
-  "logo": null
+  "logo": "/templates/go2rtc.svg",
+  "fullColor": true
  },
  {
   "id": "goatcounter",
@@ -1320,7 +1401,8 @@
   "category": "Analytics",
   "website": "https://www.goatcounter.com",
   "color": "#9A3412",
-  "logo": null
+  "logo": "/templates/goatcounter.svg",
+  "fullColor": true
  },
  {
   "id": "gotenberg",
@@ -1329,7 +1411,8 @@
   "category": "Developer tools",
   "website": "https://gotenberg.dev",
   "color": "#00A9A5",
-  "logo": null
+  "logo": "/templates/gotenberg.svg",
+  "fullColor": true
  },
  {
   "id": "gotify",
@@ -1338,7 +1421,8 @@
   "category": "Communication",
   "website": "https://gotify.net",
   "color": "#1E88E5",
-  "logo": null
+  "logo": "/templates/gotify.svg",
+  "fullColor": true
  },
  {
   "id": "gowa",
@@ -1347,7 +1431,8 @@
   "category": "Communication",
   "website": "https://github.com/aldinokemal/go-whatsapp-web-multidevice",
   "color": "#25D366",
-  "logo": null
+  "logo": "/templates/gowa.svg",
+  "fullColor": true
  },
  {
   "id": "grafana",
@@ -1365,7 +1450,8 @@
   "category": "Productivity",
   "website": "https://www.grampsweb.org",
   "color": "#6D4C41",
-  "logo": null
+  "logo": "/templates/gramps-web.svg",
+  "fullColor": true
  },
  {
   "id": "grav",
@@ -1392,7 +1478,8 @@
   "category": "Media",
   "website": "https://github.com/grimmory-tools/grimmory",
   "color": "#7C3AED",
-  "logo": null
+  "logo": "/templates/grimmory.svg",
+  "fullColor": true
  },
  {
   "id": "grocy",
@@ -1419,7 +1506,8 @@
   "category": "Media",
   "website": "https://handbrake.fr",
   "color": "#D9532C",
-  "logo": null
+  "logo": "/templates/handbrake.svg",
+  "fullColor": true
  },
  {
   "id": "hatchet",
@@ -1428,7 +1516,8 @@
   "category": "Automation",
   "website": "https://hatchet.run",
   "color": "#0A1029",
-  "logo": null
+  "logo": "/templates/hatchet.svg",
+  "fullColor": true
  },
  {
   "id": "headscale",
@@ -1437,7 +1526,8 @@
   "category": "Security",
   "website": "https://headscale.net",
   "color": "#3B82F6",
-  "logo": null
+  "logo": "/templates/headscale.svg",
+  "fullColor": true
  },
  {
   "id": "healthchecks",
@@ -1446,7 +1536,8 @@
   "category": "Monitoring",
   "website": "https://healthchecks.io",
   "color": "#2C3E50",
-  "logo": null
+  "logo": "/templates/healthchecks.svg",
+  "fullColor": true
  },
  {
   "id": "hedgedoc",
@@ -1464,7 +1555,8 @@
   "category": "Productivity",
   "website": "https://heimdall.site",
   "color": "#2B6CB0",
-  "logo": null
+  "logo": "/templates/heimdall.svg",
+  "fullColor": true
  },
  {
   "id": "hermes-agent",
@@ -1473,7 +1565,8 @@
   "category": "AI",
   "website": "https://github.com/NousResearch/hermes-agent",
   "color": "#1E1B4B",
-  "logo": null
+  "logo": "/templates/hermes-agent.svg",
+  "fullColor": true
  },
  {
   "id": "heyform",
@@ -1482,7 +1575,8 @@
   "category": "Productivity",
   "website": "https://heyform.net",
   "color": "#1F2937",
-  "logo": null
+  "logo": "/templates/heyform.svg",
+  "fullColor": true
  },
  {
   "id": "homarr",
@@ -1509,7 +1603,8 @@
   "category": "Productivity",
   "website": "https://homebox.software",
   "color": "#5B7F3A",
-  "logo": null
+  "logo": "/templates/homebox.svg",
+  "fullColor": true
  },
  {
   "id": "homepage",
@@ -1527,7 +1622,8 @@
   "category": "Productivity",
   "website": "https://github.com/bastienwirtz/homer",
   "color": "#3367D6",
-  "logo": null
+  "logo": "/templates/homer.svg",
+  "fullColor": true
  },
  {
   "id": "hoppscotch",
@@ -1545,7 +1641,8 @@
   "category": "Productivity",
   "website": "https://hortusfox.github.io",
   "color": "#3B8F4F",
-  "logo": null
+  "logo": "/templates/hortusfox.svg",
+  "fullColor": true
  },
  {
   "id": "httpbin",
@@ -1563,7 +1660,8 @@
   "category": "Automation",
   "website": "https://github.com/huginn/huginn",
   "color": "#2F4858",
-  "logo": null
+  "logo": "/templates/huginn.svg",
+  "fullColor": true
  },
  {
   "id": "imgcompress",
@@ -1572,7 +1670,8 @@
   "category": "Media",
   "website": "https://imgcompress.karimzouine.com",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/imgcompress.svg",
+  "fullColor": true
  },
  {
   "id": "immich",
@@ -1590,7 +1689,8 @@
   "category": "Security",
   "website": "https://infisical.com",
   "color": "#18181B",
-  "logo": null
+  "logo": "/templates/infisical.svg",
+  "fullColor": true
  },
  {
   "id": "influxdb",
@@ -1608,7 +1708,8 @@
   "category": "Automation",
   "website": "https://www.inngest.com",
   "color": "#000000",
-  "logo": null
+  "logo": "/templates/inngest.svg",
+  "fullColor": true
  },
  {
   "id": "invidious",
@@ -1635,7 +1736,8 @@
   "category": "Productivity",
   "website": "https://invoiceplane.com",
   "color": "#429AE1",
-  "logo": null
+  "logo": "/templates/invoiceplane.svg",
+  "fullColor": true
  },
  {
   "id": "invoiceshelf",
@@ -1644,7 +1746,8 @@
   "category": "Productivity",
   "website": "https://invoiceshelf.com",
   "color": "#5851D8",
-  "logo": null
+  "logo": "/templates/invoiceshelf.svg",
+  "fullColor": true
  },
  {
   "id": "it-tools",
@@ -1653,7 +1756,8 @@
   "category": "Productivity",
   "website": "https://it-tools.tech",
   "color": "#18A058",
-  "logo": null
+  "logo": "/templates/it-tools.svg",
+  "fullColor": true
  },
  {
   "id": "jackett",
@@ -1662,7 +1766,8 @@
   "category": "Media",
   "website": "https://github.com/Jackett/Jackett",
   "color": "#2C3E50",
-  "logo": null
+  "logo": "/templates/jackett.svg",
+  "fullColor": true
  },
  {
   "id": "jaeger",
@@ -1680,7 +1785,8 @@
   "category": "Media",
   "website": "https://jdownloader.org",
   "color": "#F0A500",
-  "logo": null
+  "logo": "/templates/jdownloader2.svg",
+  "fullColor": true
  },
  {
   "id": "jellyfin",
@@ -1761,7 +1867,8 @@
   "category": "Productivity",
   "website": "https://kanboard.org",
   "color": "#D52D2D",
-  "logo": null
+  "logo": "/templates/kanboard.svg",
+  "fullColor": true
  },
  {
   "id": "kapowarr",
@@ -1770,7 +1877,8 @@
   "category": "Media",
   "website": "https://casvt.github.io/Kapowarr/",
   "color": "#F59E0B",
-  "logo": null
+  "logo": "/templates/kapowarr.svg",
+  "fullColor": true
  },
  {
   "id": "karakeep",
@@ -1788,7 +1896,8 @@
   "category": "Media",
   "website": "https://www.kavitareader.com",
   "color": "#4AC694",
-  "logo": null
+  "logo": "/templates/kavita.svg",
+  "fullColor": true
  },
  {
   "id": "kestra",
@@ -1797,7 +1906,8 @@
   "category": "Automation",
   "website": "https://kestra.io",
   "color": "#7C3AED",
-  "logo": null
+  "logo": "/templates/kestra.svg",
+  "fullColor": true
  },
  {
   "id": "keycloak",
@@ -1824,7 +1934,8 @@
   "category": "AI",
   "website": "https://khoj.dev",
   "color": "#F07A36",
-  "logo": null
+  "logo": "/templates/khoj.svg",
+  "fullColor": true
  },
  {
   "id": "kibana",
@@ -1842,7 +1953,8 @@
   "category": "Productivity",
   "website": "https://www.kimai.org",
   "color": "#1F5C99",
-  "logo": null
+  "logo": "/templates/kimai.svg",
+  "fullColor": true
  },
  {
   "id": "kitchenowl",
@@ -1851,7 +1963,8 @@
   "category": "Productivity",
   "website": "https://kitchenowl.org",
   "color": "#009688",
-  "logo": null
+  "logo": "/templates/kitchenowl.svg",
+  "fullColor": true
  },
  {
   "id": "kiwix-serve",
@@ -1869,7 +1982,8 @@
   "category": "Media",
   "website": "https://koel.dev",
   "color": "#F97316",
-  "logo": null
+  "logo": "/templates/koel.svg",
+  "fullColor": true
  },
  {
   "id": "komga",
@@ -1878,7 +1992,8 @@
   "category": "Media",
   "website": "https://komga.org",
   "color": "#005ED3",
-  "logo": null
+  "logo": "/templates/komga.svg",
+  "fullColor": true
  },
  {
   "id": "komodo",
@@ -1887,7 +2002,8 @@
   "category": "Developer tools",
   "website": "https://komo.do",
   "color": "#14B8A6",
-  "logo": null
+  "logo": "/templates/komodo.svg",
+  "fullColor": true
  },
  {
   "id": "kopia",
@@ -1896,7 +2012,8 @@
   "category": "Storage",
   "website": "https://kopia.io",
   "color": "#1F6FEB",
-  "logo": null
+  "logo": "/templates/kopia.svg",
+  "fullColor": true
  },
  {
   "id": "krayin",
@@ -1905,7 +2022,8 @@
   "category": "Productivity",
   "website": "https://krayincrm.com",
   "color": "#0041FF",
-  "logo": null
+  "logo": "/templates/krayin.svg",
+  "fullColor": true
  },
  {
   "id": "kroki",
@@ -1914,7 +2032,8 @@
   "category": "Developer tools",
   "website": "https://kroki.io",
   "color": "#2F4858",
-  "logo": null
+  "logo": "/templates/kroki.svg",
+  "fullColor": true
  },
  {
   "id": "kutt",
@@ -1923,7 +2042,8 @@
   "category": "Productivity",
   "website": "https://kutt.it",
   "color": "#2196F3",
-  "logo": null
+  "logo": "/templates/kutt.svg",
+  "fullColor": true
  },
  {
   "id": "kuzzle",
@@ -1932,7 +2052,8 @@
   "category": "Developer tools",
   "website": "https://kuzzle.io",
   "color": "#002835",
-  "logo": null
+  "logo": "/templates/kuzzle.svg",
+  "fullColor": true
  },
  {
   "id": "labelstudio",
@@ -1941,7 +2062,8 @@
   "category": "AI",
   "website": "https://labelstud.io",
   "color": "#FF7557",
-  "logo": null
+  "logo": "/templates/labelstudio.svg",
+  "fullColor": true
  },
  {
   "id": "langflow",
@@ -1959,7 +2081,8 @@
   "category": "AI",
   "website": "https://langfuse.com",
   "color": "#E11312",
-  "logo": null
+  "logo": "/templates/langfuse.svg",
+  "fullColor": true
  },
  {
   "id": "leantime",
@@ -1968,7 +2091,8 @@
   "category": "Productivity",
   "website": "https://leantime.io",
   "color": "#006D9F",
-  "logo": null
+  "logo": "/templates/leantime.svg",
+  "fullColor": true
  },
  {
   "id": "lemmy",
@@ -1986,7 +2110,8 @@
   "category": "AI",
   "website": "https://www.librechat.ai",
   "color": "#0F766E",
-  "logo": null
+  "logo": "/templates/librechat.svg",
+  "fullColor": true
  },
  {
   "id": "librenms",
@@ -1995,7 +2120,8 @@
   "category": "Monitoring",
   "website": "https://www.librenms.org",
   "color": "#E57E1C",
-  "logo": null
+  "logo": "/templates/librenms.svg",
+  "fullColor": true
  },
  {
   "id": "libreoffice",
@@ -2013,7 +2139,8 @@
   "category": "Monitoring",
   "website": "https://librespeed.org",
   "color": "#2E7D32",
-  "logo": null
+  "logo": "/templates/librespeed.svg",
+  "fullColor": true
  },
  {
   "id": "libretranslate",
@@ -2031,7 +2158,8 @@
   "category": "Media",
   "website": "https://lidarr.audio",
   "color": "#009252",
-  "logo": null
+  "logo": "/templates/lidarr.svg",
+  "fullColor": true
  },
  {
   "id": "limesurvey",
@@ -2049,7 +2177,8 @@
   "category": "Productivity",
   "website": "https://www.linkace.org",
   "color": "#2E8BC0",
-  "logo": null
+  "logo": "/templates/linkace.svg",
+  "fullColor": true
  },
  {
   "id": "linkding",
@@ -2058,7 +2187,8 @@
   "category": "Productivity",
   "website": "https://linkding.link",
   "color": "#5856E0",
-  "logo": null
+  "logo": "/templates/linkding.svg",
+  "fullColor": true
  },
  {
   "id": "linkstack",
@@ -2067,7 +2197,8 @@
   "category": "Productivity",
   "website": "https://linkstack.org",
   "color": "#3D60F5",
-  "logo": null
+  "logo": "/templates/linkstack.svg",
+  "fullColor": true
  },
  {
   "id": "linkwarden",
@@ -2076,7 +2207,8 @@
   "category": "Productivity",
   "website": "https://linkwarden.app",
   "color": "#0EA5E9",
-  "logo": null
+  "logo": "/templates/linkwarden.svg",
+  "fullColor": true
  },
  {
   "id": "listmonk",
@@ -2094,7 +2226,8 @@
   "category": "AI",
   "website": "https://www.litellm.ai",
   "color": "#1E3A8A",
-  "logo": null
+  "logo": "/templates/litellm.svg",
+  "fullColor": true
  },
  {
   "id": "lldap",
@@ -2103,7 +2236,8 @@
   "category": "Security",
   "website": "https://github.com/lldap/lldap",
   "color": "#2C6CB4",
-  "logo": null
+  "logo": "/templates/lldap.svg",
+  "fullColor": true
  },
  {
   "id": "lobe-chat",
@@ -2112,7 +2246,8 @@
   "category": "AI",
   "website": "https://lobehub.com",
   "color": "#000000",
-  "logo": null
+  "logo": "/templates/lobe-chat.svg",
+  "fullColor": true
  },
  {
   "id": "localai",
@@ -2121,7 +2256,8 @@
   "category": "AI",
   "website": "https://localai.io",
   "color": "#3B82F6",
-  "logo": null
+  "logo": "/templates/localai.svg",
+  "fullColor": true
  },
  {
   "id": "logto",
@@ -2130,7 +2266,8 @@
   "category": "Security",
   "website": "https://logto.io",
   "color": "#5D34F2",
-  "logo": null
+  "logo": "/templates/logto.svg",
+  "fullColor": true
  },
  {
   "id": "loki",
@@ -2139,7 +2276,8 @@
   "category": "Monitoring",
   "website": "https://grafana.com/oss/loki/",
   "color": "#F46800",
-  "logo": null
+  "logo": "/templates/loki.svg",
+  "fullColor": true
  },
  {
   "id": "lowcoder",
@@ -2148,7 +2286,8 @@
   "category": "Developer tools",
   "website": "https://lowcoder.cloud",
   "color": "#222222",
-  "logo": null
+  "logo": "/templates/lowcoder.svg",
+  "fullColor": true
  },
  {
   "id": "lubelogger",
@@ -2157,7 +2296,8 @@
   "category": "Productivity",
   "website": "https://lubelogger.com",
   "color": "#1F2937",
-  "logo": null
+  "logo": "/templates/lubelogger.svg",
+  "fullColor": true
  },
  {
   "id": "lychee",
@@ -2166,7 +2306,8 @@
   "category": "Media",
   "website": "https://lycheeorg.dev",
   "color": "#E8384F",
-  "logo": null
+  "logo": "/templates/lychee.svg",
+  "fullColor": true
  },
  {
   "id": "mage-ai",
@@ -2175,7 +2316,8 @@
   "category": "Automation",
   "website": "https://www.mage.ai",
   "color": "#6B50D7",
-  "logo": null
+  "logo": "/templates/mage-ai.svg",
+  "fullColor": true
  },
  {
   "id": "mailpit",
@@ -2184,7 +2326,8 @@
   "category": "Developer tools",
   "website": "https://mailpit.axllent.org",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/mailpit.svg",
+  "fullColor": true
  },
  {
   "id": "mailroom",
@@ -2202,7 +2345,8 @@
   "category": "Media",
   "website": "https://maintainerr.info",
   "color": "#EAB308",
-  "logo": null
+  "logo": "/templates/maintainerr.svg",
+  "fullColor": true
  },
  {
   "id": "marimo",
@@ -2211,7 +2355,8 @@
   "category": "Developer tools",
   "website": "https://marimo.io",
   "color": "#1C7361",
-  "logo": null
+  "logo": "/templates/marimo.svg",
+  "fullColor": true
  },
  {
   "id": "martin",
@@ -2283,7 +2428,8 @@
   "category": "CMS",
   "website": "https://www.mediawiki.org",
   "color": "#3366CC",
-  "logo": null
+  "logo": "/templates/mediawiki.svg",
+  "fullColor": true
  },
  {
   "id": "meilisearch",
@@ -2301,7 +2447,8 @@
   "category": "Productivity",
   "website": "https://usememos.com",
   "color": "#16A34A",
-  "logo": null
+  "logo": "/templates/memos.svg",
+  "fullColor": true
  },
  {
   "id": "metabase",
@@ -2328,7 +2475,8 @@
   "category": "AI",
   "website": "https://github.com/metatool-ai/metamcp",
   "color": "#111827",
-  "logo": null
+  "logo": "/templates/metamcp.svg",
+  "fullColor": true
  },
  {
   "id": "metube",
@@ -2337,7 +2485,8 @@
   "category": "Media",
   "website": "https://github.com/alexta69/metube",
   "color": "#E53935",
-  "logo": null
+  "logo": "/templates/metube.svg",
+  "fullColor": true
  },
  {
   "id": "microbin",
@@ -2346,7 +2495,8 @@
   "category": "Productivity",
   "website": "https://microbin.eu",
   "color": "#4E7BB8",
-  "logo": null
+  "logo": "/templates/microbin.svg",
+  "fullColor": true
  },
  {
   "id": "mindsdb",
@@ -2355,7 +2505,8 @@
   "category": "AI",
   "website": "https://mindsdb.com",
   "color": "#00B06D",
-  "logo": null
+  "logo": "/templates/mindsdb.svg",
+  "fullColor": true
  },
  {
   "id": "miniflux",
@@ -2364,7 +2515,8 @@
   "category": "Productivity",
   "website": "https://miniflux.app",
   "color": "#33373D",
-  "logo": null
+  "logo": "/templates/miniflux.svg",
+  "fullColor": true
  },
  {
   "id": "minio",
@@ -2391,7 +2543,8 @@
   "category": "Communication",
   "website": "https://mixpost.app",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/mixpost.svg",
+  "fullColor": true
  },
  {
   "id": "mongo-express",
@@ -2472,7 +2625,8 @@
   "category": "Media",
   "website": "https://www.navidrome.org",
   "color": "#0084FF",
-  "logo": null
+  "logo": "/templates/navidrome.svg",
+  "fullColor": true
  },
  {
   "id": "neo4j",
@@ -2508,7 +2662,8 @@
   "category": "AI",
   "website": "https://github.com/QuantumNous/new-api",
   "color": "#1E293B",
-  "logo": null
+  "logo": "/templates/new-api.svg",
+  "fullColor": true
  },
  {
   "id": "nextchat",
@@ -2517,7 +2672,8 @@
   "category": "AI",
   "website": "https://github.com/ChatGPTNextWeb/NextChat",
   "color": "#1D93AB",
-  "logo": null
+  "logo": "/templates/nextchat.svg",
+  "fullColor": true
  },
  {
   "id": "nextcloud",
@@ -2562,7 +2718,8 @@
   "category": "CMS",
   "website": "https://nitropage.org",
   "color": "#0F172A",
-  "logo": null
+  "logo": "/templates/nitropage.svg",
+  "fullColor": true
  },
  {
   "id": "nitropage-sqlite",
@@ -2571,7 +2728,8 @@
   "category": "CMS",
   "website": "https://nitropage.org",
   "color": "#0F172A",
-  "logo": null
+  "logo": "/templates/nitropage-sqlite.svg",
+  "fullColor": true
  },
  {
   "id": "nocobase",
@@ -2580,7 +2738,8 @@
   "category": "Productivity",
   "website": "https://www.nocobase.com",
   "color": "#1677FF",
-  "logo": null
+  "logo": "/templates/nocobase.svg",
+  "fullColor": true
  },
  {
   "id": "nocodb",
@@ -2589,7 +2748,8 @@
   "category": "Productivity",
   "website": "https://nocodb.com",
   "color": "#7C3AED",
-  "logo": null
+  "logo": "/templates/nocodb.svg",
+  "fullColor": true
  },
  {
   "id": "nocodb-sqlite",
@@ -2598,7 +2758,8 @@
   "category": "Productivity",
   "website": "https://nocodb.com",
   "color": "#7C3AED",
-  "logo": null
+  "logo": "/templates/nocodb-sqlite.svg",
+  "fullColor": true
  },
  {
   "id": "node-red",
@@ -2634,7 +2795,8 @@
   "category": "Monitoring",
   "website": "https://www.observium.org",
   "color": "#1F5F99",
-  "logo": null
+  "logo": "/templates/observium.svg",
+  "fullColor": true
  },
  {
   "id": "obsidian",
@@ -2679,7 +2841,8 @@
   "category": "Productivity",
   "website": "https://github.com/iib0011/omni-tools",
   "color": "#1C64F2",
-  "logo": null
+  "logo": "/templates/omni-tools.svg",
+  "fullColor": true
  },
  {
   "id": "once-campfire",
@@ -2688,7 +2851,8 @@
   "category": "Communication",
   "website": "https://github.com/basecamp/once-campfire",
   "color": "#1D2D35",
-  "logo": null
+  "logo": "/templates/once-campfire.svg",
+  "fullColor": true
  },
  {
   "id": "onedev",
@@ -2697,7 +2861,8 @@
   "category": "Developer tools",
   "website": "https://onedev.io",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/onedev.svg",
+  "fullColor": true
  },
  {
   "id": "onetimesecret",
@@ -2706,7 +2871,8 @@
   "category": "Security",
   "website": "https://onetimesecret.com",
   "color": "#DC4A22",
-  "logo": null
+  "logo": "/templates/onetimesecret.svg",
+  "fullColor": true
  },
  {
   "id": "onlyoffice",
@@ -2724,7 +2890,8 @@
   "category": "Productivity",
   "website": "https://openarchiver.com",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/open-archiver.svg",
+  "fullColor": true
  },
  {
   "id": "open-webui",
@@ -2751,7 +2918,8 @@
   "category": "Developer tools",
   "website": "https://opengist.io",
   "color": "#E9762B",
-  "logo": null
+  "logo": "/templates/opengist.svg",
+  "fullColor": true
  },
  {
   "id": "openobserve",
@@ -2760,7 +2928,8 @@
   "category": "Monitoring",
   "website": "https://openobserve.ai",
   "color": "#3F7994",
-  "logo": null
+  "logo": "/templates/openobserve.svg",
+  "fullColor": true
  },
  {
   "id": "openpanel",
@@ -2769,7 +2938,8 @@
   "category": "Analytics",
   "website": "https://openpanel.dev",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/openpanel.svg",
+  "fullColor": true
  },
  {
   "id": "openproject",
@@ -2796,7 +2966,8 @@
   "category": "Productivity",
   "website": "https://www.opensignlabs.com",
   "color": "#47A3AD",
-  "logo": null
+  "logo": "/templates/opensign.svg",
+  "fullColor": true
  },
  {
   "id": "openwa",
@@ -2805,7 +2976,8 @@
   "category": "Communication",
   "website": "https://github.com/rmyndharis/OpenWA",
   "color": "#25D366",
-  "logo": null
+  "logo": "/templates/openwa.svg",
+  "fullColor": true
  },
  {
   "id": "openwa-postgres",
@@ -2814,7 +2986,8 @@
   "category": "Communication",
   "website": "https://github.com/rmyndharis/OpenWA",
   "color": "#25D366",
-  "logo": null
+  "logo": "/templates/openwa-postgres.svg",
+  "fullColor": true
  },
  {
   "id": "opnform",
@@ -2823,7 +2996,8 @@
   "category": "Productivity",
   "website": "https://opnform.com",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/opnform.svg",
+  "fullColor": true
  },
  {
   "id": "orangehrm",
@@ -2832,7 +3006,8 @@
   "category": "Productivity",
   "website": "https://www.orangehrm.com",
   "color": "#F28C38",
-  "logo": null
+  "logo": "/templates/orangehrm.svg",
+  "fullColor": true
  },
  {
   "id": "organizr",
@@ -2841,7 +3016,8 @@
   "category": "Productivity",
   "website": "https://organizr.app",
   "color": "#2D9CDB",
-  "logo": null
+  "logo": "/templates/organizr.svg",
+  "fullColor": true
  },
  {
   "id": "outline",
@@ -2859,7 +3035,8 @@
   "category": "Media",
   "website": "https://owncast.online",
   "color": "#7871FF",
-  "logo": null
+  "logo": "/templates/owncast.svg",
+  "fullColor": true
  },
  {
   "id": "owncloud",
@@ -2877,7 +3054,8 @@
   "category": "Storage",
   "website": "https://pairdrop.net",
   "color": "#4285F4",
-  "logo": null
+  "logo": "/templates/pairdrop.svg",
+  "fullColor": true
  },
  {
   "id": "palworld",
@@ -2886,7 +3064,8 @@
   "category": "Media",
   "website": "https://github.com/thijsvanloef/palworld-server-docker",
   "color": "#1E88E5",
-  "logo": null
+  "logo": "/templates/palworld.svg",
+  "fullColor": true
  },
  {
   "id": "paperless-ngx",
@@ -2913,7 +3092,8 @@
   "category": "Productivity",
   "website": "https://paymenter.org",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/paymenter.svg",
+  "fullColor": true
  },
  {
   "id": "peertube",
@@ -2940,7 +3120,8 @@
   "category": "Productivity",
   "website": "https://peppermint.sh",
   "color": "#10B981",
-  "logo": null
+  "logo": "/templates/peppermint.svg",
+  "fullColor": true
  },
  {
   "id": "pgadmin",
@@ -2958,7 +3139,8 @@
   "category": "Databases",
   "website": "https://github.com/eduardolat/pgbackweb",
   "color": "#336791",
-  "logo": null
+  "logo": "/templates/pgbackweb.svg",
+  "fullColor": true
  },
  {
   "id": "pgweb",
@@ -2976,7 +3158,8 @@
   "category": "Media",
   "website": "https://www.photoprism.app",
   "color": "#5E35B1",
-  "logo": null
+  "logo": "/templates/photoprism.svg",
+  "fullColor": true
  },
  {
   "id": "photoview",
@@ -2985,7 +3168,8 @@
   "category": "Media",
   "website": "https://photoview.github.io",
   "color": "#2E7DD7",
-  "logo": null
+  "logo": "/templates/photoview.svg",
+  "fullColor": true
  },
  {
   "id": "phpmyadmin",
@@ -3012,7 +3196,8 @@
   "category": "Storage",
   "website": "https://pico.rocks",
   "color": "#1F6F8B",
-  "logo": null
+  "logo": "/templates/picoshare.svg",
+  "fullColor": true
  },
  {
   "id": "pigallery2",
@@ -3021,7 +3206,8 @@
   "category": "Media",
   "website": "https://bpatrik.github.io/pigallery2",
   "color": "#F57C00",
-  "logo": null
+  "logo": "/templates/pigallery2.svg",
+  "fullColor": true
  },
  {
   "id": "pinchflat",
@@ -3030,7 +3216,8 @@
   "category": "Media",
   "website": "https://github.com/kieraneglin/pinchflat",
   "color": "#EF4444",
-  "logo": null
+  "logo": "/templates/pinchflat.svg",
+  "fullColor": true
  },
  {
   "id": "pingvinshare",
@@ -3039,7 +3226,8 @@
   "category": "Storage",
   "website": "https://github.com/stonith404/pingvin-share",
   "color": "#46509E",
-  "logo": null
+  "logo": "/templates/pingvinshare.svg",
+  "fullColor": true
  },
  {
   "id": "pingvinshare-with-clamav",
@@ -3048,7 +3236,8 @@
   "category": "Storage",
   "website": "https://github.com/stonith404/pingvin-share",
   "color": "#46509E",
-  "logo": null
+  "logo": "/templates/pingvinshare-with-clamav.svg",
+  "fullColor": true
  },
  {
   "id": "piwigo",
@@ -3084,7 +3273,8 @@
   "category": "Productivity",
   "website": "https://planka.app",
   "color": "#2C5282",
-  "logo": null
+  "logo": "/templates/planka.svg",
+  "fullColor": true
  },
  {
   "id": "plausible",
@@ -3111,7 +3301,8 @@
   "category": "Communication",
   "website": "https://www.useplunk.com",
   "color": "#18181B",
-  "logo": null
+  "logo": "/templates/plunk.svg",
+  "fullColor": true
  },
  {
   "id": "pocket-id",
@@ -3120,7 +3311,8 @@
   "category": "Security",
   "website": "https://pocket-id.org",
   "color": "#18181B",
-  "logo": null
+  "logo": "/templates/pocket-id.svg",
+  "fullColor": true
  },
  {
   "id": "pocketbase",
@@ -3138,7 +3330,8 @@
   "category": "Databases",
   "website": "https://portabase.io",
   "color": "#1E293B",
-  "logo": null
+  "logo": "/templates/portabase.svg",
+  "fullColor": true
  },
  {
   "id": "portainer",
@@ -3156,7 +3349,8 @@
   "category": "Productivity",
   "website": "https://postiz.com",
   "color": "#612AD5",
-  "logo": null
+  "logo": "/templates/postiz.svg",
+  "fullColor": true
  },
  {
   "id": "prefect",
@@ -3174,7 +3368,8 @@
   "category": "Security",
   "website": "https://privatebin.info",
   "color": "#1D4E89",
-  "logo": null
+  "logo": "/templates/privatebin.svg",
+  "fullColor": true
  },
  {
   "id": "prometheus",
@@ -3192,7 +3387,8 @@
   "category": "Media",
   "website": "https://prowlarr.com",
   "color": "#E66000",
-  "logo": null
+  "logo": "/templates/prowlarr.svg",
+  "fullColor": true
  },
  {
   "id": "proxyscotch",
@@ -3210,7 +3406,8 @@
   "category": "Storage",
   "website": "https://github.com/psi-4ward/psitransfer",
   "color": "#2E7D32",
-  "logo": null
+  "logo": "/templates/psitransfer.svg",
+  "fullColor": true
  },
  {
   "id": "pterodactyl-panel",
@@ -3228,7 +3425,8 @@
   "category": "Storage",
   "website": "https://pydio.com",
   "color": "#134E6F",
-  "logo": null
+  "logo": "/templates/pydio-cells.svg",
+  "fullColor": true
  },
  {
   "id": "qbittorrent",
@@ -3255,7 +3453,8 @@
   "category": "Databases",
   "website": "https://questdb.com",
   "color": "#D14671",
-  "logo": null
+  "logo": "/templates/questdb.svg",
+  "fullColor": true
  },
  {
   "id": "rabbitmq",
@@ -3282,7 +3481,8 @@
   "category": "Productivity",
   "website": "https://radicale.org",
   "color": "#A40000",
-  "logo": null
+  "logo": "/templates/radicale.svg",
+  "fullColor": true
  },
  {
   "id": "rallly",
@@ -3291,7 +3491,8 @@
   "category": "Productivity",
   "website": "https://rallly.co",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/rallly.svg",
+  "fullColor": true
  },
  {
   "id": "reactive-resume",
@@ -3309,7 +3510,8 @@
   "category": "Productivity",
   "website": "https://readeck.org",
   "color": "#0D8A9E",
-  "logo": null
+  "logo": "/templates/readeck.svg",
+  "fullColor": true
  },
  {
   "id": "redash",
@@ -3345,7 +3547,8 @@
   "category": "Media",
   "website": "https://github.com/redlib-org/redlib",
   "color": "#D54455",
-  "logo": null
+  "logo": "/templates/redlib.svg",
+  "fullColor": true
  },
  {
   "id": "redmine",
@@ -3363,7 +3566,8 @@
   "category": "Developer tools",
   "website": "https://www.redpanda.com",
   "color": "#E2401B",
-  "logo": null
+  "logo": "/templates/redpanda.svg",
+  "fullColor": true
  },
  {
   "id": "registry-browser",
@@ -3381,7 +3585,8 @@
   "category": "Developer tools",
   "website": "https://rivet.dev",
   "color": "#FF4F00",
-  "logo": null
+  "logo": "/templates/rivet-engine.svg",
+  "fullColor": true
  },
  {
   "id": "rocketchat",
@@ -3399,7 +3604,8 @@
   "category": "Media",
   "website": "https://romm.app",
   "color": "#553E98",
-  "logo": null
+  "logo": "/templates/romm.svg",
+  "fullColor": true
  },
  {
   "id": "roundcube",
@@ -3435,7 +3641,8 @@
   "category": "Analytics",
   "website": "https://rybbit.com",
   "color": "#10B981",
-  "logo": null
+  "logo": "/templates/rybbit.svg",
+  "fullColor": true
  },
  {
   "id": "ryot",
@@ -3444,7 +3651,8 @@
   "category": "Media",
   "website": "https://ryot.io",
   "color": "#5C7CFA",
-  "logo": null
+  "logo": "/templates/ryot.svg",
+  "fullColor": true
  },
  {
   "id": "sabnzbd",
@@ -3453,7 +3661,8 @@
   "category": "Media",
   "website": "https://sabnzbd.org",
   "color": "#F5C400",
-  "logo": null
+  "logo": "/templates/sabnzbd.svg",
+  "fullColor": true
  },
  {
   "id": "satisfactory",
@@ -3462,7 +3671,8 @@
   "category": "Media",
   "website": "https://github.com/wolveix/satisfactory-server",
   "color": "#E59345",
-  "logo": null
+  "logo": "/templates/satisfactory.svg",
+  "fullColor": true
  },
  {
   "id": "seafile",
@@ -3489,7 +3699,8 @@
   "category": "Storage",
   "website": "https://github.com/seaweedfs/seaweedfs",
   "color": "#2B6CB0",
-  "logo": null
+  "logo": "/templates/seaweedfs.svg",
+  "fullColor": true
  },
  {
   "id": "seerr",
@@ -3498,7 +3709,8 @@
   "category": "Media",
   "website": "https://seerr.dev",
   "color": "#6D28D9",
-  "logo": null
+  "logo": "/templates/seerr.svg",
+  "fullColor": true
  },
  {
   "id": "semaphore",
@@ -3507,7 +3719,8 @@
   "category": "Automation",
   "website": "https://semaphoreui.com",
   "color": "#1E88E5",
-  "logo": null
+  "logo": "/templates/semaphore.svg",
+  "fullColor": true
  },
  {
   "id": "send",
@@ -3516,7 +3729,8 @@
   "category": "Storage",
   "website": "https://github.com/timvisee/send",
   "color": "#0060DF",
-  "logo": null
+  "logo": "/templates/send.svg",
+  "fullColor": true
  },
  {
   "id": "sequin",
@@ -3525,7 +3739,8 @@
   "category": "Databases",
   "website": "https://sequinstream.com",
   "color": "#2E2E2E",
-  "logo": null
+  "logo": "/templates/sequin.svg",
+  "fullColor": true
  },
  {
   "id": "sessy",
@@ -3534,7 +3749,8 @@
   "category": "Monitoring",
   "website": "https://github.com/marckohlbrugge/sessy",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/sessy.svg",
+  "fullColor": true
  },
  {
   "id": "sftpgo",
@@ -3543,7 +3759,8 @@
   "category": "Storage",
   "website": "https://sftpgo.com",
   "color": "#2B6CB0",
-  "logo": null
+  "logo": "/templates/sftpgo.svg",
+  "fullColor": true
  },
  {
   "id": "shaarli",
@@ -3552,7 +3769,8 @@
   "category": "Productivity",
   "website": "https://shaarli.readthedocs.io",
   "color": "#1B926C",
-  "logo": null
+  "logo": "/templates/shaarli.svg",
+  "fullColor": true
  },
  {
   "id": "shiori",
@@ -3561,7 +3779,8 @@
   "category": "Productivity",
   "website": "https://github.com/go-shiori/shiori",
   "color": "#E04E39",
-  "logo": null
+  "logo": "/templates/shiori.svg",
+  "fullColor": true
  },
  {
   "id": "shlink",
@@ -3570,7 +3789,8 @@
   "category": "Productivity",
   "website": "https://shlink.io",
   "color": "#4696E5",
-  "logo": null
+  "logo": "/templates/shlink.svg",
+  "fullColor": true
  },
  {
   "id": "shlink-web-client",
@@ -3579,7 +3799,8 @@
   "category": "Productivity",
   "website": "https://shlink.io",
   "color": "#4696E5",
-  "logo": null
+  "logo": "/templates/shlink-web-client.svg",
+  "fullColor": true
  },
  {
   "id": "silverbullet",
@@ -3588,7 +3809,8 @@
   "category": "Productivity",
   "website": "https://silverbullet.md",
   "color": "#2D4B7A",
-  "logo": null
+  "logo": "/templates/silverbullet.svg",
+  "fullColor": true
  },
  {
   "id": "siyuan",
@@ -3606,7 +3828,8 @@
   "category": "Productivity",
   "website": "https://github.com/yourselfhosted/slash",
   "color": "#0F172A",
-  "logo": null
+  "logo": "/templates/slash.svg",
+  "fullColor": true
  },
  {
   "id": "slskd",
@@ -3615,7 +3838,8 @@
   "category": "Media",
   "website": "https://slskd.org",
   "color": "#1F8B4C",
-  "logo": null
+  "logo": "/templates/slskd.svg",
+  "fullColor": true
  },
  {
   "id": "smokeping",
@@ -3624,7 +3848,8 @@
   "category": "Monitoring",
   "website": "https://oss.oetiker.ch/smokeping/",
   "color": "#2E7D32",
-  "logo": null
+  "logo": "/templates/smokeping.svg",
+  "fullColor": true
  },
  {
   "id": "snipe-it",
@@ -3633,7 +3858,8 @@
   "category": "Productivity",
   "website": "https://snipeitapp.com",
   "color": "#1E6FB8",
-  "logo": null
+  "logo": "/templates/snipe-it.svg",
+  "fullColor": true
  },
  {
   "id": "soju",
@@ -3651,7 +3877,8 @@
   "category": "Developer tools",
   "website": "https://soketi.app",
   "color": "#FF7A59",
-  "logo": null
+  "logo": "/templates/soketi.svg",
+  "fullColor": true
  },
  {
   "id": "sonarqube",
@@ -3678,7 +3905,8 @@
   "category": "Productivity",
   "website": "https://github.com/CodeWithCJ/SparkyFitness",
   "color": "#16A34A",
-  "logo": null
+  "logo": "/templates/sparkyfitness.svg",
+  "fullColor": true
  },
  {
   "id": "speedtest-tracker",
@@ -3687,7 +3915,8 @@
   "category": "Monitoring",
   "website": "https://speedtest-tracker.dev",
   "color": "#F59E0B",
-  "logo": null
+  "logo": "/templates/speedtest-tracker.svg",
+  "fullColor": true
  },
  {
   "id": "spliit",
@@ -3696,7 +3925,8 @@
   "category": "Productivity",
   "website": "https://spliit.app",
   "color": "#14B8A6",
-  "logo": null
+  "logo": "/templates/spliit.svg",
+  "fullColor": true
  },
  {
   "id": "sqlpad",
@@ -3705,7 +3935,8 @@
   "category": "Databases",
   "website": "https://getsqlpad.com",
   "color": "#2C3E50",
-  "logo": null
+  "logo": "/templates/sqlpad.svg",
+  "fullColor": true
  },
  {
   "id": "stalwart",
@@ -3714,7 +3945,8 @@
   "category": "Communication",
   "website": "https://stalw.art",
   "color": "#DB2D54",
-  "logo": null
+  "logo": "/templates/stalwart.svg",
+  "fullColor": true
  },
  {
   "id": "stash",
@@ -3723,7 +3955,8 @@
   "category": "Media",
   "website": "https://stashapp.cc",
   "color": "#137CBD",
-  "logo": null
+  "logo": "/templates/stash.svg",
+  "fullColor": true
  },
  {
   "id": "statusnook",
@@ -3732,7 +3965,8 @@
   "category": "Monitoring",
   "website": "https://statusnook.com",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/statusnook.svg",
+  "fullColor": true
  },
  {
   "id": "stirling-pdf",
@@ -3741,7 +3975,8 @@
   "category": "Productivity",
   "website": "https://www.stirlingpdf.com",
   "color": "#B91C1C",
-  "logo": null
+  "logo": "/templates/stirling-pdf.svg",
+  "fullColor": true
  },
  {
   "id": "strapi",
@@ -3768,7 +4003,8 @@
   "category": "Security",
   "website": "https://supertokens.com",
   "color": "#FF9933",
-  "logo": null
+  "logo": "/templates/supertokens.svg",
+  "fullColor": true
  },
  {
   "id": "supertokens-mysql",
@@ -3777,7 +4013,8 @@
   "category": "Security",
   "website": "https://supertokens.com",
   "color": "#FF9933",
-  "logo": null
+  "logo": "/templates/supertokens-mysql.svg",
+  "fullColor": true
  },
  {
   "id": "sure",
@@ -3786,7 +4023,8 @@
   "category": "Productivity",
   "website": "https://github.com/we-promise/sure",
   "color": "#141414",
-  "logo": null
+  "logo": "/templates/sure.svg",
+  "fullColor": true
  },
  {
   "id": "surrealdb",
@@ -3804,7 +4042,8 @@
   "category": "Media",
   "website": "https://github.com/Suwayomi/Suwayomi-Server",
   "color": "#2196F3",
-  "logo": null
+  "logo": "/templates/suwayomi.svg",
+  "fullColor": true
  },
  {
   "id": "swagger-ui",
@@ -3822,7 +4061,8 @@
   "category": "Analytics",
   "website": "https://swetrix.com",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/swetrix.svg",
+  "fullColor": true
  },
  {
   "id": "synapse",
@@ -3858,7 +4098,8 @@
   "category": "Productivity",
   "website": "https://tandoor.dev",
   "color": "#2F5D50",
-  "logo": null
+  "logo": "/templates/tandoor.svg",
+  "fullColor": true
  },
  {
   "id": "tautulli",
@@ -3867,7 +4108,8 @@
   "category": "Media",
   "website": "https://tautulli.com",
   "color": "#E5A00D",
-  "logo": null
+  "logo": "/templates/tautulli.svg",
+  "fullColor": true
  },
  {
   "id": "tdarr",
@@ -3876,7 +4118,8 @@
   "category": "Media",
   "website": "https://tdarr.io",
   "color": "#3F51B5",
-  "logo": null
+  "logo": "/templates/tdarr.svg",
+  "fullColor": true
  },
  {
   "id": "teable",
@@ -3885,7 +4128,8 @@
   "category": "Productivity",
   "website": "https://teable.io",
   "color": "#18181B",
-  "logo": null
+  "logo": "/templates/teable.svg",
+  "fullColor": true
  },
  {
   "id": "tinyauth",
@@ -3894,7 +4138,8 @@
   "category": "Security",
   "website": "https://tinyauth.app",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/tinyauth.svg",
+  "fullColor": true
  },
  {
   "id": "tolgee",
@@ -3903,7 +4148,8 @@
   "category": "Developer tools",
   "website": "https://tolgee.io",
   "color": "#EC407A",
-  "logo": null
+  "logo": "/templates/tolgee.svg",
+  "fullColor": true
  },
  {
   "id": "tooljet",
@@ -3912,7 +4158,8 @@
   "category": "Developer tools",
   "website": "https://www.tooljet.com",
   "color": "#3E63DD",
-  "logo": null
+  "logo": "/templates/tooljet.svg",
+  "fullColor": true
  },
  {
   "id": "traccar",
@@ -3930,7 +4177,8 @@
   "category": "Developer tools",
   "website": "https://trailbase.io",
   "color": "#0073AA",
-  "logo": null
+  "logo": "/templates/trailbase.svg",
+  "fullColor": true
  },
  {
   "id": "transmission",
@@ -3957,7 +4205,8 @@
   "category": "Media",
   "website": "https://www.tubearchivist.com",
   "color": "#1E9EA6",
-  "logo": null
+  "logo": "/templates/tubearchivist.svg",
+  "fullColor": true
  },
  {
   "id": "tududi",
@@ -3966,7 +4215,8 @@
   "category": "Productivity",
   "website": "https://tududi.com",
   "color": "#2563EB",
-  "logo": null
+  "logo": "/templates/tududi.svg",
+  "fullColor": true
  },
  {
   "id": "twenty",
@@ -3984,7 +4234,8 @@
   "category": "Communication",
   "website": "https://typebot.com",
   "color": "#0042DA",
-  "logo": null
+  "logo": "/templates/typebot.svg",
+  "fullColor": true
  },
  {
   "id": "typesense",
@@ -3993,7 +4244,8 @@
   "category": "Developer tools",
   "website": "https://typesense.org",
   "color": "#D52C5E",
-  "logo": null
+  "logo": "/templates/typesense.svg",
+  "fullColor": true
  },
  {
   "id": "umami",
@@ -4011,7 +4263,8 @@
   "category": "Developer tools",
   "website": "https://www.getunleash.io",
   "color": "#1A4049",
-  "logo": null
+  "logo": "/templates/unleash.svg",
+  "fullColor": true
  },
  {
   "id": "unstructured",
@@ -4020,7 +4273,8 @@
   "category": "AI",
   "website": "https://unstructured.io",
   "color": "#1C1C2E",
-  "logo": null
+  "logo": "/templates/unstructured.svg",
+  "fullColor": true
  },
  {
   "id": "uptime-kuma",
@@ -4038,7 +4292,8 @@
   "category": "Monitoring",
   "website": "https://uptrace.dev",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/uptrace.svg",
+  "fullColor": true
  },
  {
   "id": "usesend",
@@ -4047,7 +4302,8 @@
   "category": "Communication",
   "website": "https://usesend.com",
   "color": "#000000",
-  "logo": null
+  "logo": "/templates/usesend.svg",
+  "fullColor": true
  },
  {
   "id": "vault",
@@ -4092,7 +4348,8 @@
   "category": "Productivity",
   "website": "https://vert.sh",
   "color": "#F2ABEE",
-  "logo": null
+  "logo": "/templates/vert.svg",
+  "fullColor": true
  },
  {
   "id": "victoriametrics",
@@ -4119,7 +4376,8 @@
   "category": "CMS",
   "website": "https://www.vvveb.com",
   "color": "#1F8EF1",
-  "logo": null
+  "logo": "/templates/vvveb.svg",
+  "fullColor": true
  },
  {
   "id": "vvveb-mariadb",
@@ -4128,7 +4386,8 @@
   "category": "CMS",
   "website": "https://www.vvveb.com",
   "color": "#1F8EF1",
-  "logo": null
+  "logo": "/templates/vvveb-mariadb.svg",
+  "fullColor": true
  },
  {
   "id": "vvveb-mysql",
@@ -4137,7 +4396,8 @@
   "category": "CMS",
   "website": "https://www.vvveb.com",
   "color": "#1F8EF1",
-  "logo": null
+  "logo": "/templates/vvveb-mysql.svg",
+  "fullColor": true
  },
  {
   "id": "wakapi",
@@ -4146,7 +4406,8 @@
   "category": "Analytics",
   "website": "https://wakapi.dev",
   "color": "#2F855A",
-  "logo": null
+  "logo": "/templates/wakapi.svg",
+  "fullColor": true
  },
  {
   "id": "wallabag",
@@ -4164,7 +4425,8 @@
   "category": "Productivity",
   "website": "https://wallosapp.com",
   "color": "#1D4ED8",
-  "logo": null
+  "logo": "/templates/wallos.svg",
+  "fullColor": true
  },
  {
   "id": "weaviate",
@@ -4173,7 +4435,8 @@
   "category": "Databases",
   "website": "https://weaviate.io",
   "color": "#0B6B3A",
-  "logo": null
+  "logo": "/templates/weaviate.svg",
+  "fullColor": true
  },
  {
   "id": "web-check",
@@ -4182,7 +4445,8 @@
   "category": "Security",
   "website": "https://web-check.xyz",
   "color": "#9FEF00",
-  "logo": null
+  "logo": "/templates/web-check.svg",
+  "fullColor": true
  },
  {
   "id": "weblate",
@@ -4200,7 +4464,8 @@
   "category": "Productivity",
   "website": "https://wekan.fi",
   "color": "#00796B",
-  "logo": null
+  "logo": "/templates/wekan.svg",
+  "fullColor": true
  },
  {
   "id": "wg-easy",
@@ -4209,7 +4474,8 @@
   "category": "Security",
   "website": "https://wg-easy.github.io/wg-easy/latest/",
   "color": "#88171A",
-  "logo": null
+  "logo": "/templates/wg-easy.svg",
+  "fullColor": true
  },
  {
   "id": "wger",
@@ -4218,7 +4484,8 @@
   "category": "Productivity",
   "website": "https://wger.de",
   "color": "#2A4C7D",
-  "logo": null
+  "logo": "/templates/wger.svg",
+  "fullColor": true
  },
  {
   "id": "whisper-asr",
@@ -4239,15 +4506,6 @@
   "logo": "/templates/whoami.svg"
  },
  {
-  "id": "whoogle",
-  "name": "Whoogle",
-  "description": "Private Google search proxy without ads, tracking, JavaScript or AMP links.",
-  "category": "Productivity",
-  "website": "https://github.com/benbusby/whoogle-search",
-  "color": "#4285F4",
-  "logo": null
- },
- {
   "id": "wikijs",
   "name": "Wiki.js",
   "description": "Modern, powerful wiki with a Markdown and visual editor.",
@@ -4263,7 +4521,8 @@
   "category": "Automation",
   "website": "https://www.windmill.dev",
   "color": "#3B82F6",
-  "logo": null
+  "logo": "/templates/windmill.svg",
+  "fullColor": true
  },
  {
   "id": "windows",
@@ -4317,7 +4576,8 @@
   "category": "CMS",
   "website": "https://writefreely.org",
   "color": "#2D2D2D",
-  "logo": null
+  "logo": "/templates/writefreely.svg",
+  "fullColor": true
  },
  {
   "id": "wud",
@@ -4326,7 +4586,8 @@
   "category": "Developer tools",
   "website": "https://getwud.github.io/wud/",
   "color": "#2496ED",
-  "logo": null
+  "logo": "/templates/wud.svg",
+  "fullColor": true
  },
  {
   "id": "xwiki",
@@ -4335,7 +4596,8 @@
   "category": "Productivity",
   "website": "https://www.xwiki.org",
   "color": "#F57C00",
-  "logo": null
+  "logo": "/templates/xwiki.svg",
+  "fullColor": true
  },
  {
   "id": "yamtrack",
@@ -4344,7 +4606,8 @@
   "category": "Media",
   "website": "https://github.com/FuzzyGrim/Yamtrack",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/yamtrack.svg",
+  "fullColor": true
  },
  {
   "id": "yamtrack-postgres",
@@ -4353,7 +4616,8 @@
   "category": "Media",
   "website": "https://github.com/FuzzyGrim/Yamtrack",
   "color": "#4F46E5",
-  "logo": null
+  "logo": "/templates/yamtrack-postgres.svg",
+  "fullColor": true
  },
  {
   "id": "yopass",
@@ -4362,7 +4626,8 @@
   "category": "Security",
   "website": "https://yopass.se",
   "color": "#1976D2",
-  "logo": null
+  "logo": "/templates/yopass.svg",
+  "fullColor": true
  },
  {
   "id": "yourls",
@@ -4371,7 +4636,8 @@
   "category": "Productivity",
   "website": "https://yourls.org",
   "color": "#1F5C99",
-  "logo": null
+  "logo": "/templates/yourls.svg",
+  "fullColor": true
  },
  {
   "id": "zabbix",
@@ -4380,7 +4646,8 @@
   "category": "Monitoring",
   "website": "https://www.zabbix.com",
   "color": "#D40000",
-  "logo": null
+  "logo": "/templates/zabbix.svg",
+  "fullColor": true
  },
  {
   "id": "zero",
@@ -4389,7 +4656,8 @@
   "category": "Developer tools",
   "website": "https://zero.rocicorp.dev",
   "color": "#0D0D0D",
-  "logo": null
+  "logo": "/templates/zero.svg",
+  "fullColor": true
  },
  {
   "id": "zipkin",
@@ -4398,7 +4666,8 @@
   "category": "Monitoring",
   "website": "https://zipkin.io",
   "color": "#FE7139",
-  "logo": null
+  "logo": "/templates/zipkin.svg",
+  "fullColor": true
  },
  {
   "id": "zipline",
@@ -4407,7 +4676,8 @@
   "category": "Storage",
   "website": "https://zipline.diced.sh",
   "color": "#1C7ED6",
-  "logo": null
+  "logo": "/templates/zipline.svg",
+  "fullColor": true
  },
  {
   "id": "zitadel",
@@ -4416,6 +4686,7 @@
   "category": "Security",
   "website": "https://zitadel.com",
   "color": "#E0335A",
-  "logo": null
+  "logo": "/templates/zitadel.svg",
+  "fullColor": true
  }
 ]

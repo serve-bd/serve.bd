@@ -57,9 +57,9 @@ Set limits under **Settings → Resources**:
 
 - **CPU limit** in cores.
 - **CPU cores**: run only on these cores, like `0-3` or `0,2`. Empty means any core.
-- **CPU weight**: the app's share of CPU time when the server is busy. `1024` is normal, `2048` is twice as much.
+- **CPU weight**: the app's share of CPU time when the server is busy. `1024` is normal, `2048` is twice as much. Only Root admins can set more than `1024`.
 - **Memory limit** in MB, and **Memory reservation**.
-- **Swap** in MB: disk used as extra memory, on top of the memory limit. It needs a memory limit. `0` means no swap.
+- **Swap** in MB: disk used as extra memory, on top of the memory limit. It needs a memory limit. `0` means no swap. Only Root admins can turn swap on.
 - **Swappiness**: 0 to 100, how readily memory moves to swap. Use `0` for databases. Servers with cgroup v2, which is most new Linux, ignore it, and the deploy log notes that.
 - **Shared memory**.
 - **Resource limits (ulimits)**.
@@ -99,6 +99,8 @@ Open **Manage → Clone…** on a service to make a copy. Pick a **Name**, a **P
 The copy gets the same settings, variables, tags and scheduled tasks, and a generated domain if the original had one. Its tasks start turned off. Nothing is deployed until you deploy it.
 
 These stay with the original: custom domains, host ports, backup schedules and database domains. Volumes start empty. For a database, tick **Copy the data too** to copy its data. That needs the **Database backups** permission.
+
+For members who are not Root admins, the copy also leaves out the host options: bind mounts, privileged mode, added capabilities, security options, GPUs, devices, swap, and a CPU weight above 1024. After the copy, Serve lists what it left out. The same applies when you copy an environment.
 
 In the [API](/docs/api): `POST /services/{id}/clone`, with `copyData: true` to copy a database's data.
 
