@@ -27,7 +27,7 @@ import "../../styles/site.css";
     <style>
       .link {
         position: relative;
-        width: 7rem;
+        width: 5rem;
         height: 2px;
         background: repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 12px);
       }
@@ -70,13 +70,13 @@ import "../../styles/site.css";
       }
       .tile {
         display: flex;
-        width: 4rem;
-        height: 4rem;
+        width: 3rem;
+        height: 3rem;
         flex: none;
         align-items: center;
         justify-content: center;
         border: 1px solid var(--line);
-        border-radius: 1.1rem;
+        border-radius: 0.85rem;
         background: var(--surface);
         box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
       }
@@ -92,34 +92,50 @@ import "../../styles/site.css";
     </style>
   </head>
   <body class="min-h-screen">
-    <main id="page" data-state="working" class="flex min-h-screen flex-col items-center justify-center px-4 py-16 text-center">
-      <div class="flex items-center gap-4" aria-hidden="true">
-        <span class="tile">
-          <img src="/img/logo-light.svg" alt="" width="36" height="36" class="logo-light" />
-          <img src="/img/logo-dark.svg" alt="" width="36" height="36" class="logo-dark" />
-        </span>
-        <span class="link"></span>
-        <span class="tile">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f38020" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
-          </svg>
-        </span>
-      </div>
-      <p class="mt-8 font-mono text-[12px] tracking-wide text-faint uppercase">Serve <span class="px-1">×</span> Cloudflare</p>
-      <h1 id="title" class="mt-3 text-2xl font-semibold text-fg sm:text-3xl">Connecting Cloudflare</h1>
-      <p id="text" class="mt-3 max-w-sm text-[15px] leading-relaxed text-muted">One moment.</p>
-      <noscript><p class="mt-3 max-w-sm text-[15px] text-muted">This page needs JavaScript to return you to your dashboard.</p></noscript>
-      <div id="confirm" class="mt-8 hidden w-full max-w-sm flex-col items-center gap-5">
-        <div class="w-full rounded-xl border border-line bg-surface px-4 py-3">
-          <p class="text-[12px] text-faint">Serve dashboard</p>
-          <p id="host" class="mt-0.5 font-mono text-[15px] break-all text-fg"></p>
+    <main id="page" data-state="working" class="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+      <div class="w-full max-w-[400px] rounded-2xl border border-line bg-surface p-7 shadow-sm sm:p-8">
+        <div class="flex items-center justify-center gap-3" aria-hidden="true">
+          <span class="tile">
+            <img src="/img/logo-light.svg" alt="" width="28" height="28" class="logo-light" />
+            <img src="/img/logo-dark.svg" alt="" width="28" height="28" class="logo-dark" />
+          </span>
+          <span class="link"></span>
+          <span class="tile">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f38020" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+            </svg>
+          </span>
         </div>
-        <div class="flex w-full gap-2">
-          <button id="cancel" type="button" class="h-10 flex-1 rounded-lg border border-line-strong bg-surface text-sm text-fg hover:bg-hover">Cancel</button>
-          <button id="continue" type="button" class="h-10 flex-1 rounded-lg bg-accent text-sm font-medium text-white hover:brightness-110">Continue</button>
+        <div class="mt-6 text-center">
+          <h1 id="title" class="text-lg font-semibold text-balance text-fg">Connecting Cloudflare</h1>
+          <p id="text" class="mt-1.5 text-[13.5px] leading-relaxed text-pretty text-muted">One moment.</p>
+          <noscript><p class="mt-1.5 text-[13.5px] text-muted">This page needs JavaScript to return you to your dashboard.</p></noscript>
+        </div>
+        <div id="confirm" class="mt-6 hidden flex-col gap-4">
+          <div class="rounded-xl border border-line bg-bg px-3.5 py-3">
+            <p class="text-[11.5px] font-medium tracking-wide text-faint uppercase">Your Serve dashboard</p>
+            <p id="host" class="mt-1 font-mono text-[14px] break-all text-fg"></p>
+          </div>
+          <div>
+            <p class="text-[12.5px] text-muted">Only this dashboard will be able to:</p>
+            <ul class="mt-1.5 flex flex-col gap-1 text-[13px] text-fg-2">
+              <li class="flex gap-2"><span class="text-ok">✓</span> Read your domains and manage their DNS records</li>
+              <li class="flex gap-2"><span class="text-ok">✓</span> Change SSL settings and issue certificates</li>
+              <li class="flex gap-2"><span class="text-ok">✓</span> Create and run Cloudflare Tunnels</li>
+            </ul>
+          </div>
+          <p class="text-[12.5px] leading-relaxed text-muted">Not your address? Cancel. Anyone can make a link like this one that points to their own server.</p>
+          <div class="flex gap-2">
+            <button id="cancel" type="button" class="h-9 flex-1 rounded-lg border border-line-strong text-[13px] text-fg transition-colors hover:bg-hover">Cancel</button>
+            <button id="continue" type="button" class="h-9 flex-1 rounded-lg bg-accent text-[13px] font-medium text-white transition hover:brightness-110">Continue to Cloudflare</button>
+          </div>
         </div>
       </div>
-      <a id="help" href="/docs/cloudflare/" class="mt-8 hidden text-[13px] text-accent underline-offset-4 hover:underline">How connecting Cloudflare works</a>
+      <p class="mt-5 flex items-center gap-3 text-[12px] text-faint">
+        <span>Serve × Cloudflare</span>
+        <span aria-hidden="true">·</span>
+        <a id="help" href="/docs/cloudflare/" class="hover:text-fg-2">How this works</a>
+      </p>
     </main>
 
     <script is:inline>
@@ -137,7 +153,6 @@ import "../../styles/site.css";
           page.dataset.state = state;
           document.getElementById("title").textContent = title;
           document.getElementById("text").textContent = text;
-          document.getElementById("help").classList.toggle("hidden", state === "working" || state === "confirm");
           document.getElementById("confirm").classList.toggle("hidden", state !== "confirm");
           document.getElementById("confirm").classList.toggle("flex", state === "confirm");
         };
@@ -196,7 +211,11 @@ import "../../styles/site.css";
           const trustKey = `${PREFIX}trusted:${back.origin}`;
           if (store.getItem(trustKey)) return go();
           document.getElementById("host").textContent = back.host;
-          show("Connect Cloudflare to this dashboard?", "Only continue if this is the address of your own Serve dashboard. It gets access to your Cloudflare account.", "confirm");
+          show(
+            "Connect Cloudflare to your dashboard?",
+            "Access goes straight to your own Serve dashboard. This page only passes you along: serve.bd never gets or keeps any access to your Cloudflare account.",
+            "confirm",
+          );
           document.getElementById("continue").addEventListener("click", () => {
             store.setItem(trustKey, JSON.stringify({ exp: Date.now() + 365 * 86400_000 }));
             go();
