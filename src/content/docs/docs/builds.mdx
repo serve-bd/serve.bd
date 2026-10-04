@@ -58,6 +58,32 @@ If detection picks the wrong thing, set the commands yourself or add a Dockerfil
 | Git submodules | Checks out submodules before building |
 | Watch paths | Only deploy on push when these paths change |
 
+## Git LFS
+
+If the repository's `.gitattributes` uses Git LFS, Serve fetches the LFS files before it builds. Only services of the Root organization fetch them. Other organizations get the small pointer files instead, for safety. If `git-lfs` is missing, the deploy log warns.
+
+## Commit variables
+
+Apps get these variables at runtime:
+
+| Variable | Value |
+| --- | --- |
+| `SOURCE_COMMIT` | The commit that was built |
+| `SERVE_GIT_COMMIT` | The same commit |
+| `SERVE_GIT_BRANCH` | The branch |
+
+A Dockerfile gets `SOURCE_COMMIT` as a build argument when it declares it:
+
+```dockerfile
+ARG SOURCE_COMMIT
+```
+
+Builds that don't declare it keep their cache when the commit changes.
+
+## Reusing a built image
+
+If a deploy is for a commit that was already built, with the same build settings, build variables, platform and Serve version, Serve reuses that image and skips the build. The deploy log says so. The image must still be on the build server. To build anyway, choose **Deploy without cache** under **Settings → Build**, or turn on **Always build without cache**.
+
 ## Build server and registry
 
 By default an app builds on the server that runs it. Builds need memory, so you may want to build somewhere else. Open **Settings → Servers & registry** and pick a **Build server**.

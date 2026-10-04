@@ -28,6 +28,13 @@ The **Pre-deploy command** runs once in a container from the new image, with its
 npm run migrate
 ```
 
+### Post-deploy command
+
+The **Post-deploy command**, also under **Settings → Deploy**, runs once in the new version's first container, after the new version is live. It runs on the service's own server. Use it for work that needs the new version running, like warming a cache.
+
+- If it fails or times out, the deploy log shows a warning. The new version keeps running.
+- Rollbacks skip it.
+
 ## Health check
 
 New containers must pass the health check before they get traffic. Set it under **Settings → Health check**.
@@ -107,6 +114,16 @@ If the dashboard is set to HTTP only but its domain also answers on HTTPS, for e
 
 Rotating the secret breaks existing webhooks and deploy hooks until you update them.
 
+### Skip a deploy
+
+A push does not deploy when its last commit message contains one of these markers, in any case:
+
+```text
+[skip ci]  [ci skip]  [no ci]  [skip cd]  [cd skip]  [skip deploy]  [deploy skip]
+```
+
+The deployments list records the push as skipped, for example "The commit message has [skip ci]". The same markers in a pull request title skip its preview. This works with GitHub, GitLab, Gitea and Bitbucket.
+
 ## Deploy hooks
 
 A **Deploy hook** is a URL that deploys the latest commit when called. Use it from CI or any script. Find it under **Settings → Webhooks**. It accepts GET or POST.
@@ -135,6 +152,24 @@ For more control, use the [API](/docs/api).
 ## Pull request previews
 
 Serve can deploy each pull request as its own preview app. Turn on **Deploy pull requests** under **Settings → Previews**. Pull request events arrive through the same webhook as pushes. Pull requests from forks are never deployed.
+
+### Open pull requests
+
+The **Previews** tab lists the repository's **Open pull requests**. Previews start on their own for new pull requests. From this list, you can deploy previews for pull requests opened before previews were on, or deploy one again. Pull requests from forks are listed, but never deployed.
+
+This works with GitHub, GitLab, Gitea and Bitbucket. Public repositories on github.com and gitlab.com work without a connected account.
+
+In the [API](/docs/api): `GET /services/{id}/pull-requests` lists them, and `POST /services/{id}/pull-requests/{number}/preview` deploys one. Both need the `services.deploy` permission.
+
+### Previews for Docker image apps
+
+An app that runs a Docker image can have previews too. Your CI pushes a tag of the image, and Serve runs it next to the app, at its own address.
+
+1. Turn on **Allow previews** under **Settings → Previews**.
+2. On the **Previews** tab, choose **New preview**.
+3. Enter a **Pull request** number and an **Image tag**, or a `sha256:` digest.
+
+The same number again deploys the new tag to that preview. The URL template, preview variables and preview databases work as they do for apps from git. In the API: `POST /services/{id}/previews` with `{ "pr": 42, "tag": "pr-42" }`.
 
 ### Preview URLs
 

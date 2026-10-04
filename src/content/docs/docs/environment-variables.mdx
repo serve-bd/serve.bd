@@ -21,13 +21,23 @@ DATABASE_URL=postgres://user:pass@db:5432/app
 NODE_ENV=production
 ```
 
+## Literal and multiline values
+
+Each row on the **Variables** page has a menu (**…**) with two options:
+
+- **Literal value**: the value is kept exactly as written. Text like `${{...}}` in it is never filled in, never looked up in a secret manager, and never drawn as a link. Use it for values that contain that text on purpose.
+- **Multiline value**: a large text box, for keys and certificates. Values with line breaks get it on their own.
+
+In the [API](/docs/api), set `literal: true` or `multiline: true` on the variable.
+
 ## Shared variables
 
-You can define variables once and use them in many services. There are three levels:
+You can define variables once and use them in many services. There are four levels:
 
 - **Environment variables**: shared by services in one project environment, like production or staging.
 - **Project variables**: shared by every environment in a project.
 - **Organization variables**: shared by every project in the organization.
+- **Server variables**: values per server. See [Server variables](#server-variables).
 
 Set environment variables in the project's settings under **Shared variables**. Project and organization variables live on the **Shared variables** page under **Organization**. A service uses a shared variable by reference, added on the service's **Variables** page:
 
@@ -47,6 +57,20 @@ An app then pulls it in with:
 DATABASE_URL=${{environment.DATABASE_URL}}
 ```
 
+### Server variables
+
+Server variables hold values that depend on the server, like a region name or a path on the disk. Set them under **Organization → Shared variables → Servers**. Only organization admins can change them.
+
+They belong to a server and an organization together. A server shared by several organizations gives each one its own values. Reference them like this:
+
+```text
+REGION=${{server.REGION}}
+```
+
+A service uses the values of its own server. Apps that also run on extra servers use the values of their main server. **Redeploy affected services** works here too, as on the other levels.
+
+If a service is named `server`, `${{server.KEY}}` still reaches that service for keys the server has no variable for.
+
 ## References
 
 A variable's value can reference other values. Serve resolves them when the service deploys.
@@ -58,6 +82,7 @@ A variable's value can reference other values. Serve resolves them when the serv
 | `${{environment.KEY}}` | An environment variable. `${{shared.KEY}}` also works |
 | `${{project.KEY}}` | A project variable |
 | `${{org.KEY}}` | An organization variable. `${{team.KEY}}` also works |
+| `${{server.KEY}}` | A variable of the service's server |
 | `${{replica.index}}` | The replica's index |
 | `${{replica.number}}` | The replica's number |
 | `${{replica.count}}` | How many replicas run |
@@ -104,6 +129,13 @@ Serve sets these in every app container.
 | `SERVE_SERVICE_NAME` | The service name |
 | `SERVE_REPLICA_INDEX` | This replica's index |
 | `SERVE_REPLICA_COUNT` | How many replicas run |
+| `SOURCE_COMMIT` | The commit that was built, for apps from git |
+| `SERVE_GIT_COMMIT` | The same commit |
+| `SERVE_GIT_BRANCH` | The branch |
+
+## Compose files that ask for a value
+
+A Compose file can mark a variable as required with `${VAR:?message}`. If the value is empty, Serve stops the deploy before it starts, with the file's message, like "The compose file needs a value for ADMIN_EMAIL". The **Variables** page warns about it before you deploy. A variable that is not set at all was already caught.
 
 ## Secret managers
 

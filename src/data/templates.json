@@ -2790,6 +2790,15 @@
   "logo": null
  },
  {
+  "id": "strapi",
+  "name": "Strapi",
+  "description": "Open-source headless CMS with a REST and GraphQL API and an admin panel.",
+  "category": "CMS",
+  "website": "https://strapi.io",
+  "color": "#4945FF",
+  "logo": "/templates/strapi.svg"
+ },
+ {
   "id": "superset",
   "name": "Apache Superset",
   "description": "Data exploration and dashboards on top of your SQL databases, with Postgres and Redis.",
@@ -3082,7 +3091,7 @@
   "name": "wg-easy",
   "description": "WireGuard VPN server with a web UI to manage clients.",
   "category": "Security",
-  "website": "https://wg-easy.github.io/wg-easy/",
+  "website": "https://wg-easy.github.io/wg-easy/latest/",
   "color": "#88171A",
   "logo": null
  },

@@ -15,7 +15,7 @@ A server you add may already run containers that Serve did not start. Serve can 
 
 Only admins of the Root organization can do this.
 
-Serve reads the container: its image, variables, entrypoint and command, volumes, host ports, and the names it answers to on its Docker networks. The new service gets the same settings.
+Serve reads the container: its image, variables, entrypoint and command, volumes, host ports, and the names it answers to on its Docker networks. It also keeps its dropped capabilities, security options, CPU cores and weight, and swap. The new service gets the same settings.
 
 ## Run as
 

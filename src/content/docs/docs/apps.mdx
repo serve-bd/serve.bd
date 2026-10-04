@@ -56,7 +56,11 @@ Each port maps a host port to a container port, as `host:container`. You choose 
 Set limits under **Settings → Resources**:
 
 - **CPU limit** in cores.
+- **CPU cores**: run only on these cores, like `0-3` or `0,2`. Empty means any core.
+- **CPU weight**: the app's share of CPU time when the server is busy. `1024` is normal, `2048` is twice as much.
 - **Memory limit** in MB, and **Memory reservation**.
+- **Swap** in MB: disk used as extra memory, on top of the memory limit. It needs a memory limit. `0` means no swap.
+- **Swappiness**: 0 to 100, how readily memory moves to swap. Use `0` for databases. Servers with cgroup v2, which is most new Linux, ignore it, and the deploy log notes that.
 - **Shared memory**.
 - **Resource limits (ulimits)**.
 
@@ -67,9 +71,9 @@ Under **Settings → Runtime** you set:
 - **Replicas**: how many containers run the app.
 - **Restart policy**: `always`, `unless-stopped`, `on-failure` or `no`.
 - **Stop after crashes**: Serve stops restarting a container after this many crashes. The default is 10.
+- **Scheduled restart**: restart the app on a cron schedule.
 
 When a container keeps restarting, the service shows a warning. A successful deploy clears it at once. If the new version restarts too, the warning comes back.
-- **Scheduled restart**: restart the app on a cron schedule.
 
 ## Advanced settings
 
@@ -81,10 +85,12 @@ When a container keeps restarting, the service shows a warning. A successful dep
 - **Log file size** and **Log files kept**.
 - **DNS servers**, **DNS search domains**, **DNS options**.
 - **Kernel parameters (sysctls)** and **Linux capabilities**.
+- **No new privileges**: processes can't gain rights after they start, for example through setuid programs. Safe for most apps.
+- **Drop capabilities**: rights taken away from Docker's defaults. `ALL` drops every one, which can break apps like nginx. Add back only what the app needs.
 - **Platform**: `linux/amd64`, `arm64` or `arm/v7`.
 - **Pull policy**.
 
-**Privileged**, **GPUs** and **Devices** are only available to the Root organization.
+**Privileged**, **GPUs**, **Devices** and **Security options** are only available to the Root organization. **Security options** takes one per line, like `apparmor=my-profile`, `seccomp=unconfined`, `label=disable` or `systempaths=unconfined`.
 
 ## Scheduled tasks
 
@@ -110,11 +116,11 @@ Under **Settings → Maintenance** you can put an app behind a 503 page. You set
 | Source | Repository, branch, image or Dockerfile |
 | Previews | Pull request previews |
 | Build | Builder and build fields |
-| Deploy | Strategy, pre-deploy command, deploy on push |
+| Deploy | Strategy, pre-deploy and post-deploy commands, approvals |
 | Health check | When a new container counts as healthy |
 | Runtime | Replicas, restart policy, scheduled restart |
 | Persistent storage | Volumes, bind mounts, file mounts |
-| Resources | CPU and memory limits |
+| Resources | CPU, memory and swap |
 | Advanced | Container-level options |
 | Webhooks | Git webhook URL and deploy hook |
 | Maintenance | Maintenance mode |
