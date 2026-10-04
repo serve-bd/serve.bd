@@ -1,0 +1,101 @@
+---
+import Site from "@/layouts/Site.astro";
+---
+
+<Site title="Connect Cloudflare" description="Returns you to your Serve dashboard after you sign in with Cloudflare.">
+  <div class="mx-auto flex max-w-md flex-col items-center justify-center px-4 py-32 text-center">
+    <p class="flex items-center gap-2 font-mono text-[13px] text-muted"><span class="led" style="--led: var(--warn)"></span> Cloudflare</p>
+    <h1 id="title" class="mt-4 text-3xl font-semibold text-fg">Connecting Cloudflare</h1>
+    <p id="text" class="mt-3 text-muted">Taking you to your Serve dashboard.</p>
+    <noscript><p class="mt-3 text-muted">This page needs JavaScript to return you to your dashboard.</p></noscript>
+  </div>
+</Site>
+
+<script is:inline>
+  // Cloudflare can only return to registered addresses, and every Serve instance has its own.
+  // So Serve sends the browser here first: this page remembers where to return, in this
+  // browser only, then goes on to Cloudflare. When Cloudflare comes back here, the browser is
+  // sent on to that same dashboard. A sign-in this browser did not start goes nowhere.
+  (() => {
+    const RELAY = "https://serve.bd/connect/cloudflare";
+    const PREFIX = "serve-cf:";
+    const TTL = 30 * 60 * 1000;
+    const q = new URLSearchParams(location.search);
+    const show = (title, text) => {
+      document.getElementById("title").textContent = title;
+      document.getElementById("text").textContent = text;
+    };
+    const store = (() => {
+      for (const name of ["localStorage", "sessionStorage"]) {
+        try {
+          const s = window[name];
+          s.setItem(`${PREFIX}test`, "1");
+          s.removeItem(`${PREFIX}test`);
+          return s;
+        } catch {}
+      }
+      return null;
+    })();
+    if (!store) return show("Cannot connect here", "This browser blocks site storage, which this step needs. Allow it for serve.bd, or paste an API token in Serve instead.");
+    // Forget sign-ins that never came back.
+    for (let i = store.length - 1; i >= 0; i--) {
+      const key = store.key(i);
+      if (!key?.startsWith(PREFIX)) continue;
+      try {
+        if (JSON.parse(store.getItem(key)).exp < Date.now()) store.removeItem(key);
+      } catch {
+        store.removeItem(key);
+      }
+    }
+
+    // 1. From a Serve dashboard, on the way to Cloudflare.
+    if (q.has("auth") && q.has("return")) {
+      let auth;
+      let back;
+      try {
+        auth = new URL(q.get("auth"));
+        back = new URL(q.get("return"));
+      } catch {
+        return show("Link not valid", "Start again from the Cloudflare page in Serve.");
+      }
+      const state = auth.searchParams.get("state");
+      const ok =
+        auth.origin === "https://dash.cloudflare.com" &&
+        auth.pathname === "/oauth2/auth" &&
+        auth.searchParams.get("redirect_uri") === RELAY &&
+        state &&
+        /^https?:$/.test(back.protocol) &&
+        back.pathname.endsWith("/api/cloudflare/oauth/callback") &&
+        !back.search &&
+        !back.username &&
+        !back.password;
+      if (!ok) return show("Link not valid", "Start again from the Cloudflare page in Serve.");
+      store.setItem(PREFIX + state, JSON.stringify({ back: back.toString(), exp: Date.now() + TTL }));
+      show("Connecting Cloudflare", "Taking you to Cloudflare.");
+      return location.replace(auth.toString());
+    }
+
+    // 2. Back from Cloudflare, on the way to the dashboard that started it.
+    const state = q.get("state");
+    if (state && (q.has("code") || q.has("error"))) {
+      const saved = store.getItem(PREFIX + state);
+      store.removeItem(PREFIX + state);
+      let back;
+      try {
+        back = JSON.parse(saved)?.back;
+      } catch {}
+      if (!back)
+        return show("Start from your dashboard", "This browser did not start this sign-in, or it took longer than 30 minutes. Start again from the Cloudflare page in Serve.");
+      const url = new URL(back);
+      for (const key of ["code", "state", "error", "error_description"]) if (q.has(key)) url.searchParams.set(key, q.get(key));
+      try {
+        // The code stays out of this page's history.
+        history.replaceState(null, "", location.pathname);
+      } catch {}
+      show("Connecting Cloudflare", `Taking you back to ${url.host}.`);
+      return location.replace(url.toString());
+    }
+
+    show("Connect Cloudflare", "Open the Cloudflare page in your Serve dashboard and choose Sign in with Cloudflare.");
+  })();
+</script>

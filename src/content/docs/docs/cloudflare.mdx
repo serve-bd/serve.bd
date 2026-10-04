@@ -9,7 +9,21 @@ Connect a Cloudflare account to manage DNS records, SSL modes and certificates f
 
 ## Connect an account
 
-Go to **Integrations → Cloudflare** and choose **Connect Cloudflare**. Paste an **API token** from your Cloudflare dashboard. Serve encrypts the token and only uses it for your zones.
+Go to **Integrations → Cloudflare** and choose **Connect Cloudflare**. There are two ways to connect.
+
+### Sign in with Cloudflare
+
+Choose **Sign in with Cloudflare**, log in to Cloudflare, pick the account with your domains and allow access. You return to Serve with the account connected.
+
+- Cloudflare returns you through a page on `serve.bd`, which sends your browser back to the dashboard you started from. So a dashboard on a private address works too. The page never sees a usable token.
+- The sign-in has to start and end in the same browser, within 30 minutes.
+- Serve renews the access by itself. If you remove Serve's access in Cloudflare (**My Profile → Manage OAuth authorizations**), the account shows an error with a **Reconnect** button.
+- Traefik's Cloudflare DNS challenge needs an API token, because Traefik keeps its token for months.
+- An administrator of a Cloudflare account can block outside apps. Then paste an API token instead.
+
+### Paste an API token
+
+Paste an **API token** from your Cloudflare dashboard. Serve encrypts the token and only uses it for your zones.
 
 Give the token these permissions:
 
