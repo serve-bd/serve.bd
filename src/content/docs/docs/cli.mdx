@@ -92,6 +92,14 @@ The first time, `serve deploy` offers two choices:
 - **Create an app** for the folder, like `serve init`. The app's source is shown as **Deployed from the CLI**.
 - **Link an existing app**, like `serve link`.
 
+When it creates an app, the CLI also asks how to build it. It suggests a builder from the folder's files:
+
+- **Dockerfile** when the folder has a `Dockerfile`.
+- **Automatic** when it has a project file, like `package.json` or `go.mod`.
+- **Static site** when it only has an `index.html`. The CLI then asks for the folder with the site's files.
+
+Without a terminal, the suggestion is used. To choose yourself, pass `--builder` to `serve init`, with `auto`, `dockerfile`, `nixpacks`, `railpack`, `buildpacks` or `static`. `--publish-dir`, `--build-command` and `--start-command` set the other build fields. See [Builds](/docs/builds).
+
 The link is saved in `.serve/project.json`, and `.serve/` is added to `.gitignore`. `serve unlink` removes the link.
 
 Then the CLI packs the folder, uploads it, and streams the build log until the deployment ends. It builds like a git checkout: with the Dockerfile, or with the builder you set. See [Builds](/docs/builds). Press Ctrl+C during the build to cancel the deployment or stop watching it.
@@ -133,6 +141,15 @@ A failed upload is tried twice more, but a deploy is never sent twice. If the an
 
 You can also upload a folder to an app that deploys from git. The upload is a one-off: the next push deploys the git source again. The CLI warns you, and asks once per folder.
 
+### Change the builder
+
+`serve builder` shows how the linked app is built. On a terminal, it then lets you pick another builder.
+
+- `serve builder railpack` changes the builder.
+- `--publish-dir`, `--build-command` and `--start-command` change those fields. Without a builder name, the builder stays.
+
+The change applies from the next deploy.
+
 ### Redeploy and roll back
 
 Serve keeps the last 5 uploads of each service. `serve redeploy` uses them again, so it needs no new upload. `serve rollback` runs an earlier image again.
@@ -144,7 +161,8 @@ Serve keeps the last 5 uploads of each service. `serve redeploy` uses them again
 | `serve login [url]`, `logout`, `whoami` | Log in, log out and revoke the token, show the login |
 | `serve login --local` | Use this server's own Serve again |
 | `serve context ls\|use\|rm` | List and switch logins |
-| `serve init` | Create an app deployed from this folder, and link it. `--port` is 1 to 65535 |
+| `serve init` | Create an app deployed from this folder, and link it. `--port` is 1 to 65535. `--builder` picks the builder |
+| `serve builder [name]` | Show or change how the app is built |
 | `serve link`, `unlink` | Link this folder to a service, or remove the link |
 | `serve deploy [path]` | Upload, build and deploy the folder |
 | `serve status` | The service, its URL, the running deployment and replicas |

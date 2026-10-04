@@ -18,6 +18,10 @@ The **Builder** field picks how Serve builds the image.
 | Cloud Native Buildpacks | Builds with a buildpacks builder image |
 | Static site | Builds the files and serves them with nginx |
 
+### Nixpacks
+
+When a Node.js project names no Node version, Serve builds it with Node 22. A project names a version in `engines.node` in `package.json`, in `.nvmrc`, `.node-version` or `.tool-versions`, or with a `NIXPACKS_NODE_VERSION` build variable.
+
 ### Cloud Native Buildpacks
 
 Serve fills in a default **Builder image**. Paketo builders also work. A builder image from another publisher needs an admin of the Root organization.
