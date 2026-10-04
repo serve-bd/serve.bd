@@ -39,9 +39,11 @@ Depending on the engine, you can set:
 
 ### TLS
 
-Under **TLS**, turn on **Enable TLS** to encrypt connections. Serve creates a private certificate authority for the database. The **Mode** is **Prefer** (TLS when the client supports it) or **Require** (only TLS connections). For Redis, the database then only accepts `rediss://` connections. TLS changes apply on restart.
+Under **TLS**, turn on **Enable TLS** to encrypt connections. Serve creates a private certificate authority for the database. The **Mode** is **Prefer** (TLS when the client supports it) or **Require** (only TLS connections from outside, through the public port). Inside the private network, plain connections work in both modes. For Redis, the database then only accepts `rediss://` connections. TLS changes apply on restart.
 
-For PostgreSQL in **Prefer** mode, the private connection URL has no `sslmode`. PostgreSQL clients use TLS when it is offered anyway. Some clients, like node-postgres and Prisma, read `sslmode=prefer` as "check the certificate", and the certificate names the database's domain, not its private hostname. In **Require** mode, the URL has `sslmode=require`. node-postgres then needs `&uselibpqcompat=true` added to the URL.
+For PostgreSQL, the private connection URL has no `sslmode`, in both modes. Some clients, like node-postgres and Prisma, read `sslmode` as "check the certificate", and the certificate names the database's domain, not its private hostname, so they would fail.
+
+The public URL uses `sslmode=require`. node-postgres reads that as `verify-full`, so it needs the domain's certificate to be trusted, or `&uselibpqcompat=true` added to the URL.
 
 ## Connecting
 
