@@ -2,7 +2,7 @@ import { groups as apiGroups } from "./openapi";
 
 /** Docs sidebar groups and their pages, by slug under src/content/docs/docs ("" is the docs home). */
 export const sidebar: [string, string[]][] = [
-  ["Getting started", ["", "installation", "first-deploy", "concepts"]],
+  ["Getting started", ["", "installation", "first-deploy", "cli", "concepts"]],
   ["Apps", ["apps", "builds", "environment-variables", "storage", "deployments", "tags"]],
   ["Data", ["databases", "data", "backups", "templates"]],
   ["Networking", ["domains", "cloudflare"]],

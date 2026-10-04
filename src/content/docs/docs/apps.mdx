@@ -41,6 +41,10 @@ You can paste a Dockerfile directly into Serve. This works for small images buil
 
 If your image needs local files, put the Dockerfile in a Git repository instead.
 
+### A folder from the CLI
+
+The [Serve CLI](/docs/cli) deploys a folder from your computer, with no git repository. `serve init` creates an app whose source is shown as **Deployed from the CLI**, and `serve deploy` uploads the folder and builds it.
+
 ### Compose stack
 
 Choose **Add a Compose stack**. Paste a `docker-compose.yml` inline, or point **Compose file path** to a file in a repository. Compose stacks also get **Compose file** and **Network** settings pages.

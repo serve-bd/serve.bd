@@ -65,7 +65,7 @@ Each server has these pages:
 | Builds & deploys | Concurrent builds, images kept, and limits for deployments. |
 | Metrics | CPU, memory, disk and load over time. |
 | Services | The containers running on the server. |
-| Resources | Disk usage of the data directory and Docker, and the containers on the server. CPU use is a share of the whole server, so the containers add up to 100% at most. |
+| Resources | Disk usage of the data directory and Docker, and the containers on the server. CPU use is a share of the whole server, so the containers add up to 100% at most. Cloudflare Tunnel containers show the organization they belong to, or `deleted` for one left over from a removed tunnel. |
 | Alerts | **Resource alerts** for CPU, memory and disk. |
 | Docker cleanup | Clean up Docker now, and see past cleanups. |
 | OS updates | Package updates for the server's operating system. |
@@ -112,7 +112,7 @@ A server can already run containers that Serve did not start. On the **Resources
 
 ## Cleanup
 
-Docker images and build cache fill disks over time. A server's **Docker cleanup** page lets you clean up Docker now and lists past cleanups and what they freed.
+Docker images and build cache fill disks over time. A server's **Docker cleanup** page lets you clean up Docker now and lists past cleanups and what they freed. The page opens at once. Docker's disk use for images, build cache, volumes and containers fills in after. Each kind is counted on its own, so a slow one says **Took too long to count** instead of hiding the rest.
 
 The schedule for every server is set under **Settings → Advanced → Automatic cleanup** by an instance admin:
 

@@ -1,0 +1,175 @@
+---
+title: "Serve CLI"
+description: "Deploy a folder and manage services from your terminal, with the serve command."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+The `serve` command deploys a folder to your Serve dashboard and manages its services from the terminal. The folder needs no git repository.
+
+## Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/serve-bd/serve/main/install-cli.sh | sh
+```
+
+It installs to `/usr/local/bin` when it can write there, and to `~/.local/bin` otherwise. To install a given release, set `SERVE_CLI_VERSION`, like `SERVE_CLI_VERSION=v0.3.2`.
+
+Each [GitHub release](https://github.com/serve-bd/serve/releases) also has downloads for Linux, macOS and Windows, named `serve_<version>_<os>_<arch>`. On Windows, download the `.zip` for your machine and put `serve.exe` in your `PATH`.
+
+With Go 1.26 or newer, you can also build it yourself:
+
+```bash
+go install github.com/serve-bd/serve/cli/cmd/serve@latest
+```
+
+`serve version` shows the version, and says when a newer one is out.
+
+## Log in
+
+```bash
+serve login https://serve.example.com
+```
+
+The CLI shows a code and opens the dashboard in your browser. Check that the code matches, pick the organization and approve. A token named "CLI on &lt;computer&gt;" then appears on the **Keys & tokens** page, where you can revoke it.
+
+- Without a browser, pass `--no-browser` and open the link on any device.
+- To use a token you made yourself on **Keys & tokens**, run `serve login <url> --token <token>`.
+- `serve whoami` shows the login, and `serve logout` logs out and revokes the token.
+
+### Several logins
+
+Each login is a context:
+
+- `serve context ls` lists them.
+- `serve context use <name>` switches to one.
+- `serve context rm <name>` removes one.
+- `--context <name>` picks one for a single command.
+
+A folder linked to a dashboard uses the context for that dashboard.
+
+### In CI
+
+Set `SERVE_URL` and `SERVE_TOKEN` instead of logging in. The CLI never asks a question without a terminal. Where it needs a choice, the error names the flag to pass.
+
+### Self-signed certificates
+
+For a dashboard with a self-signed certificate, pass `--insecure`, or set `SERVE_INSECURE=1`. `HTTPS_PROXY` is honored.
+
+### On the server that runs Serve
+
+On that server, you don't need to log in. Run the CLI as root, like `sudo serve status`, and it signs in by itself as the `local` context. Serve keeps a "Server CLI" token for it in `/data/serve/cli.json`, which only root can read.
+
+- `serve login <url>` signs in to another instance, and makes it the current context.
+- `serve logout`, while `local` is in use, stops the automatic sign-in. The server's file is not changed.
+- `serve login --local` or `serve context use local` switches back.
+
+## Deploy a folder
+
+```bash
+cd my-app
+serve deploy
+```
+
+The first time, `serve deploy` offers two choices:
+
+- **Create an app** for the folder, like `serve init`. The app's source is shown as **Deployed from the CLI**.
+- **Link an existing app**, like `serve link`.
+
+The link is saved in `.serve/project.json`, and `.serve/` is added to `.gitignore`. `serve unlink` removes the link.
+
+Then the CLI packs the folder, uploads it, and streams the build log until the deployment ends. It builds like a git checkout: with the Dockerfile, or with the builder you set. See [Builds](/docs/builds). Press Ctrl+C during the build to cancel the deployment or stop watching it.
+
+In a git checkout, the deployment also shows the commit, branch and message, and notes "+ local changes" when there are some.
+
+### What is uploaded
+
+These are left out:
+
+- Files that `.gitignore` names, with nested `.gitignore` files, `.git/info/exclude` and your global git ignore file.
+- Files that `.dockerignore` names.
+- Always: `.git`, `.serve`, `node_modules` and `.env` files. Pass `--include-env` to keep the `.env` files.
+- Links that point outside the folder, and files that can't be read. The CLI warns about them.
+
+A `.serveignore` file, in the same format, replaces the `.gitignore` files. Use it to send build output that git ignores. The deploy says which files it used.
+
+A home folder, the root folder, or a folder with more than 5,000 files and no project file is not uploaded until you say yes. Without a terminal, pass `--yes`.
+
+### Deploy flags
+
+| Flag | What it does |
+| --- | --- |
+| `--message` | A message for the deployment |
+| `--no-cache` | Build without the cache |
+| `--no-wait` | Start the deployment, print its id and return |
+| `--yes` | Answer yes to the questions |
+| `--git` | Deploy the app's own git source instead of the folder |
+| `--root <path>` | Upload a wider folder, for a service that builds from a base directory inside it |
+| `--service <name>` | Deploy to this service instead of the linked one |
+| `--env <name>` | Deploy to the service of the same name in another environment |
+| `--include-env` | Also upload `.env` files |
+
+In a monorepo, deploy a subfolder with `serve deploy apps/web`, or use `--root .` when the service's root directory is inside the folder.
+
+A failed upload is tried twice more.
+
+### Apps that deploy from git
+
+You can also upload a folder to an app that deploys from git. The upload is a one-off: the next push deploys the git source again. The CLI warns you, and asks once per folder.
+
+### Redeploy and roll back
+
+Serve keeps the last 5 uploads of each service. `serve redeploy` uses them again, so it needs no new upload. `serve rollback` runs an earlier image again.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `serve login [url]`, `logout`, `whoami` | Log in, log out and revoke the token, show the login |
+| `serve login --local` | Use this server's own Serve again |
+| `serve context ls\|use\|rm` | List and switch logins |
+| `serve init` | Create an app deployed from this folder, and link it |
+| `serve link`, `unlink` | Link this folder to a service, or remove the link |
+| `serve deploy [path]` | Upload, build and deploy the folder |
+| `serve status` | The service, its URL, the running deployment and replicas |
+| `serve open [--dashboard]` | Open the service's address, or its page in the dashboard |
+| `serve logs [-f] [--tail N]` | The service's logs. `--build [id]` shows a build log |
+| `serve deployments` | The deployments, newest first |
+| `serve redeploy [id]`, `rollback [id]` | Deploy a source again, or run an earlier image again |
+| `serve cancel [id]`, `force-start [id]` | Cancel a deployment, or [start a queued one now](/docs/servers#force-start) |
+| `serve start\|stop\|restart` | Control the service |
+| `serve env ls\|get\|set\|unset\|pull\|push` | Environment variables. Values are hidden unless you pass `--reveal` |
+| `serve domains ls\|add\|rm` | The service's domains |
+| `serve db url [--public]` | A database's connection string |
+| `serve projects`, `services`, `servers` | Browse what you have |
+| `serve version` | The version, and whether a newer one is out |
+| `serve completion bash\|zsh\|fish\|powershell` | A shell completion script |
+
+Commands that work on a service use the linked one, or the one you name with `--service <name or id>`.
+
+`serve env pull` writes the variables to a `.env` file, and `serve env push` sets the variables of a `.env` file. Other variables stay as they are. Use `-` for standard output or input.
+
+### For scripts
+
+Read commands take `--json`. The exit code tells what happened:
+
+| Code | Means |
+| --- | --- |
+| `0` | Done |
+| `1` | An error |
+| `2` | A usage error, like a wrong flag |
+| `3` | The deployment failed or was cancelled |
+
+## API
+
+The CLI uses the [API](/docs/api). These parts were added for it:
+
+- `POST /services/{id}/deploy/upload` takes a raw `.tar.gz` of the folder. Query parameters: `message`, `commit`, `branch`, `dirty` and `noCache`.
+- The `upload` source type, when you create or update an app.
+- `offset` on `GET /deployments/{id}/logs`, to read a build log from where you stopped.
+- `since` on `GET /services/{id}/logs`.
+
+<CardGrid>
+<LinkCard href="/docs/deployments" title="Deployments" description="Strategies, health checks and rollbacks." />
+<LinkCard href="/docs/api" title="API" description="Tokens, permissions and endpoints." />
+</CardGrid>
