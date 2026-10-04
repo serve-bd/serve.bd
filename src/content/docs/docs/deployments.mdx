@@ -124,6 +124,39 @@ A push does not deploy when its last commit message contains one of these marker
 
 The deployments list records the push as skipped, for example "The commit message has [skip ci]". The same markers in a pull request title skip its preview. This works with GitHub, GitLab, Gitea and Bitbucket.
 
+## Commit statuses
+
+Serve reports each deployment on the commit it deploys. Your Git host shows it as a check next to the commit and on its pull request, with a link to the deployment in the dashboard.
+
+| Deployment | What the check says |
+| --- | --- |
+| Waiting for approval, or queued | Pending: "Waiting for approval", "Waiting to build" |
+| Building, deploying | Pending or running: "Building", "Deploying" |
+| Deployed | Success: "Deployed" |
+| Failed | Failed, with the first line of the error |
+| Cancelled or rejected | Cancelled (an error on GitHub and Gitea) |
+| Skipped for a newer commit | Cancelled: "Skipped, a newer commit deployed" |
+
+The check is named after the service, like `Serve / web`. Services in an environment other than production add its name, like `Serve / web (staging)`, and pull request previews add `(preview)`. Several services built from one repository each get their own check, so you can make one of them required in your branch protection rules.
+
+This works with GitHub (a token or the GitHub App, also GitHub Enterprise), GitLab, Gitea, Forgejo and Bitbucket. It needs a Git connection: a public repository without one, or a deploy key, reports nothing. Rollbacks and folders deployed from the CLI report nothing either. The link to the deployment is left out while the dashboard has no public address.
+
+Turn it off for a service with **Report deployments on commits** under **Settings → Source**. Its previews follow the same switch.
+
+### Permissions
+
+The connection needs to be allowed to write commit statuses:
+
+- **GitHub App:** the **Commit statuses** permission. Apps made before Serve asked for it need it accepted once: GitHub shows the request on the app's installation page.
+- **GitHub token:** the `repo:status` scope (or `repo`), or **Commit statuses: read and write** for a fine-grained token.
+- **GitLab:** the `api` scope, and at least the Developer role on the project.
+- **Gitea and Forgejo:** the `write:repository` scope.
+- **Bitbucket:** write access to the repository.
+
+When the Git host refuses, Serve stops asking for 30 minutes for that connection, so it does not try again on every deploy. The reason shows under the switch in **Settings → Source** and once in the deployment's log. Accepting the GitHub App permission, or connecting the account again, lets the next deployment report at once.
+
+Reports are sent in the background. A slow or offline Git host never holds up or fails a deployment: Serve tries a report up to three times when the host does not answer, and a late report never replaces a newer state.
+
 ## Deploy hooks
 
 A **Deploy hook** is a URL that deploys the latest commit when called. Use it from CI or any script. Find it under **Settings → Webhooks**. It accepts GET or POST.
