@@ -223,6 +223,72 @@ curl "$SERVE_URL/services/$SERVICE_ID/logs?tail=200" -H "Authorization: Bearer $
 
 `tail` is the number of lines per container, from 10 to 5000.
 
+### Approve a deployment
+
+In an environment that needs approval, a deployment waits with the status `waiting`. A token with `deploys.approve` lets it go, or rejects it:
+
+```bash
+curl -X POST "$SERVE_URL/deployments/$DEPLOYMENT_ID/approve" -H "Authorization: Bearer $SERVE_TOKEN"
+
+curl -X POST "$SERVE_URL/deployments/$DEPLOYMENT_ID/reject" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "reason": "Wait for the migration on Monday" }'
+```
+
+Both answer the deployment. The `reason` is optional, up to 500 characters, and shown with the deployment. Approval answers `409` when the deployment no longer waits, or while deploys are frozen.
+
+### Run a command in a container
+
+```bash
+curl -X POST "$SERVE_URL/services/$SERVICE_ID/exec" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "command": "ls -la /app" }'
+```
+
+This needs `console.access`. The command runs with `sh -c` and the output streams back as plain text, standard output and errors together. The last line is a NUL character followed by the exit code. A command stops after 15 minutes. `target` picks a compose service or container, and `replica` a replica by its number. `GET /services/{id}/exec` lists the containers you can pick.
+
+### Make a token from a script
+
+```bash
+curl -X POST "$SERVE_URL/tokens" \
+  -H "Authorization: Bearer $SERVE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Preview CI", "scopes": ["projects.view", "services.deploy"], "expiresInDays": 30 }'
+```
+
+Any token can make a token for the same person, with the same rules as **Keys & tokens**: never more permissions or projects than the token that asks. A token that expires only makes tokens that expire no later. The answer is `201`, and holds the new secret once.
+
+## Console and more
+
+### Shells
+
+`POST /services/{id}/terminal` opens a shell in a container, and `POST /servers/{id}/terminal` a root shell on a server. Both take `cols` and `rows` (80 by 24 when left out), and `command` to run one command with a terminal instead. They answer `201` with the session's `id`. Then:
+
+- `GET .../terminal/{sessionId}` is a Server-Sent Events stream. Each `data` event holds base64 output, with its number as the event id. An `exit` event, `{"code": n}`, ends it. `since`, or the `Last-Event-ID` header, replays what you missed.
+- `POST .../terminal/{sessionId}` takes `{"type": "input", "data": "ls\r"}` or `{"type": "resize", "cols": 120, "rows": 40}`, and answers `204`. These don't count against the rate limit.
+- `DELETE .../terminal/{sessionId}` closes the shell. A shell nobody listens to closes after a minute.
+
+Both need `console.access`. A shell on a server also needs `admin`, from an admin who manages the server. A service with host access, like bind mounts or privileged mode, needs an admin of the Root organization.
+
+### Servers and networking
+
+- **Tailscale:** `GET /tailscale/tailnets`, and `GET`, `DELETE`, `POST .../join-command` and `POST .../connect` under `/servers/{id}/tailscale`. These are instance routes, for admins of the Root organization. See [Tailscale](/docs/tailscale).
+- **Private networks:** `GET` and `POST /private-networks`, `PATCH` and `DELETE /private-networks/{id}`, and `PUT /private-networks/{id}/members` with `{ "serverId", "member" }`. They need `admin`. A server must have joined the private network from its page first. See [Private networks](/docs/private-networks).
+- **Cloudflare Tunnels:** `GET` and `POST /cloudflare/accounts/{accountId}/tunnels`, and `DELETE .../tunnels/{tunnelId}`. `GET /cloudflare/accounts/{accountId}/zones/{zoneId}/dns` lists a zone's records. They need `integrations.manage`.
+- `GET /servers/{id}` also returns `setupLog`, `alerts` and `proxySwitch`, but only to an `admin` token whose owner is an admin who manages that server. A server shared from another organization stays read only.
+- `DELETE /servers/{id}` takes `services=stop` or `services=keep`, and `removeData`, `removeProxy`, `removeTunnels` and `removeTailnetDevice`. A server with services needs `services`.
+
+### Log drains and other changes
+
+- **Log drains:** `GET` and `POST /log-drains`, `PUT` and `DELETE /log-drains/{id}`, and `POST /log-drains/{id}/test`. They need `integrations.manage`. Header values and passwords are never returned. See [Log drains](/docs/log-drains).
+- `GET /notification-channels/types` lists the kinds of notification channels with their fields, and the events.
+- `GET /services/{id}/monitor` returns the uptime check in the shape `PUT` takes, with its status.
+- `GET /templates` also lists your organization's own templates, with `custom: true` and the id `custom:<id>`.
+- `POST /services/{id}/webhook-secret` answers the new `deployHookUrl` too. The secret is hidden without `variables.view-secrets`.
+- `PATCH /tasks/{id}` without `enabled` keeps a paused task paused.
+
 ## Older endpoints
 
 Scripts written for earlier versions keep working:
@@ -252,4 +318,5 @@ Every endpoint, with its permissions, fields and a curl example. The same descri
   <LinkCard href="/docs/api/deployments/" title="Deployments" description="Deploy, follow, cancel and roll back." />
   <LinkCard href="/docs/api/variables/" title="Variables" description="Service, environment, project and organization variables." />
   <LinkCard href="/docs/api/databases/" title="Databases" description="Connection details, settings, domains and branches." />
+  <LinkCard href="/docs/api/console/" title="Console" description="Run commands and open shells in containers and on servers." />
 </CardGrid>

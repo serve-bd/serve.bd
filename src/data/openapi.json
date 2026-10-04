@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.1.16",
+  "version": "0.3.6",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -69,12 +69,24 @@
    "description": "Container logs."
   },
   {
+   "name": "Console",
+   "description": "Commands and shells in containers and on servers."
+  },
+  {
    "name": "Monitoring",
    "description": "Uptime checks."
   },
   {
+   "name": "Metrics",
+   "description": "Resource, request and deployment metrics in the Prometheus text format."
+  },
+  {
    "name": "Servers",
-   "description": "Servers, their proxy and SSH keys."
+   "description": "Servers, their proxy, SSH keys and private networks."
+  },
+  {
+   "name": "Tailscale",
+   "description": "Servers in a Tailscale tailnet (Root admins)."
   },
   {
    "name": "Certificates",
@@ -82,7 +94,7 @@
   },
   {
    "name": "Integrations",
-   "description": "Registries, S3, notifications, secret managers, Cloudflare and Git."
+   "description": "Registries, S3, notifications, log drains, secret managers, Cloudflare and Git."
   },
   {
    "name": "Templates",
@@ -794,12 +806,98 @@
      "Token"
     ],
     "summary": "List API tokens",
-    "description": "Your own tokens; every token of the organization with members.manage. New tokens are made in the dashboard (Keys & tokens).",
+    "description": "Your own tokens; every token of the organization with members.manage.",
     "operationId": "getTokens",
     "x-permissions": [],
     "parameters": [],
     "responses": {
      "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Token"
+    ],
+    "summary": "Create an API token",
+    "description": "A token for the same person, as in Keys & tokens: scopes are permissions (or admin), never more than this token has; projectIds limits it to projects (a token limited to projects only makes tokens for those). expiresInDays: 1 to 3650, or null for none. A token that expires itself only makes tokens that expire no later. The secret (token) is in the answer once.",
+    "operationId": "postTokens",
+    "x-permissions": [],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "scopes": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "projectIds": {
+          "anyOf": [
+           {
+            "type": "array",
+            "items": {
+             "type": "string"
+            }
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "expiresInDays": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        },
+        "required": [
+         "name",
+         "scopes"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
       "description": "Success",
       "content": {
        "application/json": {
@@ -2034,7 +2132,7 @@
      "Deployments"
     ],
     "summary": "Full build and deploy log",
-    "description": "Needs: logs.view (View logs).",
+    "description": "With offset (from the previous answer), only the text after it: poll with the offset you got to follow a deployment. An offset past the end (the log was shortened) starts again from the beginning.\n\nNeeds: logs.view (View logs).",
     "operationId": "getDeploymentsByDeploymentIdLogs",
     "x-permissions": [
      "logs.view"
@@ -2046,6 +2144,16 @@
       "required": true,
       "schema": {
        "type": "string"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 9007199254740991
       }
      }
     ],
@@ -2096,6 +2204,171 @@
       }
      }
     ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/deployments/{deploymentId}/force-start": {
+   "post": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Force start a queued deployment",
+    "description": "Starts it now, past its build server's limit of concurrent builds. A deployment of the same service that is running still goes first.\n\nNeeds: services.deploy (Deploy).",
+    "operationId": "postDeploymentsByDeploymentIdForceStart",
+    "x-permissions": [
+     "services.deploy"
+    ],
+    "parameters": [
+     {
+      "name": "deploymentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/deployments/{deploymentId}/approve": {
+   "post": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Approve a deployment that waits for approval",
+    "description": "It is queued and builds as usual. A deploy freeze still holds it back (409 with when the freeze ends).\n\nNeeds: deploys.approve (Approve deploys).",
+    "operationId": "postDeploymentsByDeploymentIdApprove",
+    "x-permissions": [
+     "deploys.approve"
+    ],
+    "parameters": [
+     {
+      "name": "deploymentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/deployments/{deploymentId}/reject": {
+   "post": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Reject a deployment that waits for approval",
+    "description": "It is cancelled. reason (optional, up to 500 characters) is shown with it.\n\nNeeds: deploys.approve (Approve deploys).",
+    "operationId": "postDeploymentsByDeploymentIdReject",
+    "x-permissions": [
+     "deploys.approve"
+    ],
+    "parameters": [
+     {
+      "name": "deploymentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "reason": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 500
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        }
+       }
+      }
+     }
+    },
     "responses": {
      "200": {
       "description": "Success",
@@ -2347,7 +2620,8 @@
               "enum": [
                "git",
                "image",
-               "dockerfile"
+               "dockerfile",
+               "upload"
               ]
              }
             },
@@ -2355,10 +2629,10 @@
              "type"
             ],
             "additionalProperties": {},
-            "description": "Where the code comes from: {type:\"git\", repository, branch, credentialId?}, {type:\"image\", image, registryId?} or {type:\"dockerfile\", dockerfile}."
+            "description": "Where the code comes from: {type:\"git\", repository, branch, credentialId?}, {type:\"image\", image, registryId?}, {type:\"dockerfile\", content} or {type:\"upload\"} (deployed from the CLI: POST /services/{serviceId}/deploy/upload)."
            },
            "build": {
-            "description": "builder (auto, dockerfile, nixpacks, static), dockerfilePath, context, buildCommand, startCommand, ...",
+            "description": "builder (auto, dockerfile, nixpacks, railpack, buildpacks, static), buildpacksBuilder, dockerfilePath, context, buildCommand, startCommand, ...",
             "type": "object",
             "properties": {},
             "additionalProperties": {}
@@ -2387,6 +2661,14 @@
               },
               "runtime": {
                "default": true,
+               "type": "boolean"
+              },
+              "literal": {
+               "default": false,
+               "type": "boolean"
+              },
+              "multiline": {
+               "default": false,
                "type": "boolean"
               }
              },
@@ -2638,7 +2920,7 @@
      "Services"
     ],
     "summary": "Change a service",
-    "description": "Change settings: name, hostname, autoDeploy, previewsEnabled, previewDomain, source, build, runtime (port, replicas, healthcheck, resources, volumes, ports, restart policy, ...), as the service's settings pages send them. Only the given fields change.\n\nNeeds: services.manage (Manage services).",
+    "description": "Change settings: name, hostname, autoDeploy, previewsEnabled, previewDomain, source, build, runtime (port, replicas, healthcheck, resources, volumes, ports, restart policy, ...), as the service's settings pages send them. Only the given fields change. A git source takes commitStatuses: false to stop reporting deployments on commits (on by default).\n\nNeeds: services.manage (Manage services).",
     "operationId": "patchServicesByServiceId",
     "x-permissions": [
      "services.manage"
@@ -2786,6 +3068,108 @@
       }
      }
     },
+    "responses": {
+     "202": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/deploy/upload": {
+   "post": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Deploy uploaded files",
+    "description": "The body is the project folder as a .tar.gz (Content-Type: application/gzip), streamed to disk. This is what `serve deploy` sends. Serve unpacks it where a repository would be cloned and builds it like a checkout: the Dockerfile, the detected builder and the build settings all apply. For apps with source {type:\"upload\"}, and as a one-off deploy of local files for apps built from Git or a Dockerfile. Not for image apps, compose stacks or databases. Query: message, commit, branch (shown with the deployment), dirty=1 (the folder had changes that were not committed), noCache=1. Redeploying the deployment builds the same files again; the files of the last 5 uploads are kept.\n\nNeeds: services.deploy (Deploy).",
+    "operationId": "postServicesByServiceIdDeployUpload",
+    "x-permissions": [
+     "services.deploy"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "message",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 5000
+      }
+     },
+     {
+      "name": "commit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "pattern": "^[0-9a-f]{4,64}$"
+      }
+     },
+     {
+      "name": "branch",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 255
+      }
+     },
+     {
+      "name": "dirty",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "noCache",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     }
+    ],
     "responses": {
      "202": {
       "description": "Success",
@@ -3084,7 +3468,7 @@
      "Services"
     ],
     "summary": "Make a new deploy webhook secret",
-    "description": "The old secret stops working. The answer holds the new deploy hook URL secret.\n\nNeeds: services.manage (Manage services).",
+    "description": "The old secret stops working. The answer holds the new secret (webhookSecret) and the deploy hook URL with it (deployHookUrl); without variables.view-secrets, as in the dashboard, the secret is hidden.\n\nNeeds: services.manage (Manage services).",
     "operationId": "postServicesByServiceIdWebhookSecret",
     "x-permissions": [
      "services.manage"
@@ -3193,6 +3577,582 @@
       }
      }
     ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/tags": {
+   "get": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "List tags",
+    "description": "The organization's tags, with the ids of the services that carry each one.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getTags",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Create a tag",
+    "description": "Needs: services.manage (Manage services).",
+    "operationId": "postTags",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "color": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "name"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/tags/{tagId}": {
+   "patch": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Rename or recolor a tag",
+    "description": "Needs: services.manage (Manage services).",
+    "operationId": "patchTagsByTagId",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "tagId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "color": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Delete a tag",
+    "description": "The tag goes from every service; the services stay.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "deleteTagsByTagId",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "tagId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/tags/{tagId}/deploy": {
+   "post": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Deploy every service of a tag",
+    "description": "Each deploy follows its project's rules: a freeze skips it, an approval holds it.\n\nNeeds: services.deploy (Deploy).",
+    "operationId": "postTagsByTagIdDeploy",
+    "x-permissions": [
+     "services.deploy"
+    ],
+    "parameters": [
+     {
+      "name": "tagId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/tags": {
+   "put": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Set the tags of a service",
+    "description": "By name; names without a tag yet become new tags.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "putServicesByServiceIdTags",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "tags": {
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         }
+        },
+        "required": [
+         "tags"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/clone": {
+   "post": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Clone a service",
+    "description": "Copies the service into an environment of the organization, on one of its servers: settings, variables, scheduled tasks (turned off) and a generated domain. Nothing is deployed. copyData: true also copies a database's data (needs databases.backups).\n\nNeeds: services.manage (Manage services).",
+    "operationId": "postServicesByServiceIdClone",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "environmentId": {
+          "type": "string"
+         },
+         "serverId": {
+          "type": "string"
+         },
+         "name": {
+          "type": "string"
+         },
+         "copyData": {
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "environmentId",
+         "serverId"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/pull-requests": {
+   "get": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "List the repository's open pull requests",
+    "description": "Read from the git provider, with the preview each one has (previewId). Needs preview deployments on.\n\nNeeds: services.deploy (Deploy).",
+    "operationId": "getServicesByServiceIdPullRequests",
+    "x-permissions": [
+     "services.deploy"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/pull-requests/{number}/preview": {
+   "post": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Deploy the preview of an open pull request",
+    "description": "For pull requests opened before previews were on, or to deploy one again. Pull requests from forks are refused.\n\nNeeds: services.deploy (Deploy).",
+    "operationId": "postServicesByServiceIdPullRequestsByNumberPreview",
+    "x-permissions": [
+     "services.deploy"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "number",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/previews": {
+   "post": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Deploy a preview of an image app",
+    "description": "Runs another tag (or a sha256 digest) of the app's image as the preview numbered pr. The same number again deploys the new tag to that preview.\n\nNeeds: services.deploy (Deploy).",
+    "operationId": "postServicesByServiceIdPreviews",
+    "x-permissions": [
+     "services.deploy"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "pr": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+         },
+         "tag": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+         }
+        },
+        "required": [
+         "pr",
+         "tag"
+        ]
+       }
+      }
+     }
+    },
     "responses": {
      "200": {
       "description": "Success",
@@ -3380,6 +4340,14 @@
             },
             "runtime": {
              "default": true,
+             "type": "boolean"
+            },
+            "literal": {
+             "default": false,
+             "type": "boolean"
+            },
+            "multiline": {
+             "default": false,
              "type": "boolean"
             }
            },
@@ -4363,7 +5331,7 @@
      "Backups"
     ],
     "summary": "Back up now",
-    "description": "target picks a compose service's backup (see the stack's backup settings). databases (a database service): the databases of the server to take; without it the service's choice (database.backupDatabases) or the main database.\n\nNeeds: databases.backups (Database backups).",
+    "description": "target picks a compose service's backup (see the stack's backup settings). databases (a database service): the databases of the server to take, or [\"*\"] for every one, new ones included; without it the service's choice (database.backupDatabases) or the main database.\n\nNeeds: databases.backups (Database backups).",
     "operationId": "postServicesByServiceIdBackups",
     "x-permissions": [
      "databases.backups"
@@ -4548,7 +5516,7 @@
      "Logs"
     ],
     "summary": "Recent container logs",
-    "description": "The last lines of each running container of the service (tail, 10-5000, default 200).\n\nNeeds: logs.view (View logs).",
+    "description": "The last lines of each running container of the service (tail, 10-5000, default 200). since (RFC 3339 or Unix seconds) gives only newer lines: poll with the time of the last line to follow the logs.\n\nNeeds: logs.view (View logs).",
     "operationId": "getServicesByServiceIdLogs",
     "x-permissions": [
      "logs.view"
@@ -4575,6 +5543,14 @@
      },
      {
       "name": "container",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "since",
       "in": "query",
       "required": false,
       "schema": {
@@ -4631,6 +5607,763 @@
     ],
     "responses": {
      "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/exec": {
+   "get": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Containers a command can run in",
+    "description": "The running containers of the service (of its current deployment for an app), by name and compose service.\n\nNeeds: console.access (Console).",
+    "operationId": "getServicesByServiceIdExec",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Run a command in a container",
+    "description": "Runs `sh -c command` in a running container of the service (the first one, or target: a compose service, container name or id; replica: its number) and streams the output as plain text, standard output and errors together. The last line is a NUL character followed by the exit code. It stops after 15 minutes. Services with host-level access need an admin of the Root organization, as in the dashboard.\n\nNeeds: console.access (Console).",
+    "operationId": "postServicesByServiceIdExec",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "command": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+         },
+         "target": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 200
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "replica": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        },
+        "required": [
+         "command"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "text/plain": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/terminal": {
+   "post": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Open a shell in a container",
+    "description": "An interactive shell with a TTY (bash when the image has it, else sh; a helper container for images without a shell). With command, that command runs with a TTY instead (with sh, and the database client defaults the shell has), and the session ends with it. Read its output from GET .../terminal/{id} and type with POST .../terminal/{id}.\n\nNeeds: console.access (Console).",
+    "operationId": "postServicesByServiceIdTerminal",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "command": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+         },
+         "target": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 200
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "replica": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "cols": {
+          "default": 80,
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 500
+         },
+         "rows": {
+          "default": 24,
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 200
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/terminal/{sessionId}": {
+   "get": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Output of an open shell",
+    "description": "Server-Sent Events: each \"data\" is base64 output with its number as the event id; an \"exit\" event ({\"code\": n}) ends it. since (or Last-Event-ID) replays output after that number, after a reconnect. A shell nobody listens to closes after a minute.\n\nNeeds: console.access (Console).",
+    "operationId": "getServicesByServiceIdTerminalBySessionId",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "sessionId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 9007199254740991
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "text/event-stream": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Type into an open shell, or resize it",
+    "description": "{\"type\": \"input\", \"data\": \"ls\\r\"} or {\"type\": \"resize\", \"cols\": 120, \"rows\": 40}. Answers 204. Not counted against the rate limit.\n\nNeeds: console.access (Console).",
+    "operationId": "postServicesByServiceIdTerminalBySessionId",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "sessionId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "oneOf": [
+         {
+          "type": "object",
+          "properties": {
+           "type": {
+            "type": "string",
+            "const": "input"
+           },
+           "data": {
+            "type": "string",
+            "maxLength": 65536
+           }
+          },
+          "required": [
+           "type",
+           "data"
+          ]
+         },
+         {
+          "type": "object",
+          "properties": {
+           "type": {
+            "type": "string",
+            "const": "resize"
+           },
+           "cols": {
+            "type": "number"
+           },
+           "rows": {
+            "type": "number"
+           }
+          },
+          "required": [
+           "type",
+           "cols",
+           "rows"
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "204": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Close an open shell",
+    "description": "Needs: console.access (Console).",
+    "operationId": "deleteServicesByServiceIdTerminalBySessionId",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "sessionId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/terminal": {
+   "post": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Open a shell on a server",
+    "description": "A root shell on the server itself (on the dashboard's own machine through the host, elsewhere over SSH as the server's user), like the server's Terminal page: for admins who manage the server. With command, that command runs with a TTY instead of the shell, and the session ends with its exit code.\n\nNeeds: admin (organization admin), console.access (Console).",
+    "operationId": "postServersByServerIdTerminal",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "command": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+         },
+         "cols": {
+          "default": 80,
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 500
+         },
+         "rows": {
+          "default": 24,
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 200
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/terminal/{sessionId}": {
+   "get": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Output of an open shell",
+    "description": "Server-Sent Events: each \"data\" is base64 output with its number as the event id; an \"exit\" event ({\"code\": n}) ends it. since (or Last-Event-ID) replays output after that number, after a reconnect. A shell nobody listens to closes after a minute.\n\nNeeds: admin (organization admin), console.access (Console).",
+    "operationId": "getServersByServerIdTerminalBySessionId",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "sessionId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 9007199254740991
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "text/event-stream": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Type into an open shell, or resize it",
+    "description": "{\"type\": \"input\", \"data\": \"ls\\r\"} or {\"type\": \"resize\", \"cols\": 120, \"rows\": 40}. Answers 204. Not counted against the rate limit.\n\nNeeds: admin (organization admin), console.access (Console).",
+    "operationId": "postServersByServerIdTerminalBySessionId",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "sessionId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "oneOf": [
+         {
+          "type": "object",
+          "properties": {
+           "type": {
+            "type": "string",
+            "const": "input"
+           },
+           "data": {
+            "type": "string",
+            "maxLength": 65536
+           }
+          },
+          "required": [
+           "type",
+           "data"
+          ]
+         },
+         {
+          "type": "object",
+          "properties": {
+           "type": {
+            "type": "string",
+            "const": "resize"
+           },
+           "cols": {
+            "type": "number"
+           },
+           "rows": {
+            "type": "number"
+           }
+          },
+          "required": [
+           "type",
+           "cols",
+           "rows"
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "204": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Console"
+    ],
+    "summary": "Close an open shell",
+    "description": "Needs: admin (organization admin), console.access (Console).",
+    "operationId": "deleteServersByServerIdTerminalBySessionId",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "sessionId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
       "description": "Success",
       "content": {
        "application/json": {
@@ -4819,7 +6552,7 @@
      "Databases"
     ],
     "summary": "Change the database password",
-    "description": "Without password a new one is generated. Services that use it get the new value on their next deploy.\n\nNeeds: services.manage (Manage services).",
+    "description": "Without password a new one is generated. Choosing the password needs variables.view-secrets too. Services that use it get the new value on their next deploy.\n\nNeeds: services.manage (Manage services).",
     "operationId": "postServicesByServiceIdDatabasePassword",
     "x-permissions": [
      "services.manage"
@@ -4989,6 +6722,187 @@
       }
      }
     },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/database/replicas": {
+   "get": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Read replicas and how they are doing",
+    "description": "PostgreSQL, MySQL, MariaDB, MongoDB, Redis and Valkey. Each replica: its number, server and state (copying, following, stopped, failed), how many seconds it is behind, and an error when it failed. Apps read from READ_DATABASE_URL (all replicas) or READ_DATABASE_URL_<n>.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getServicesByServiceIdDatabaseReplicas",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Set the read replicas",
+    "description": "The list becomes the replicas: keep one by sending its id, add one with only a serverId (the database's server, or one on a private network with it), and leave one out to remove it with its copy. MariaDB and MongoDB restart once, the first time, to be ready for replicas.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "putServicesByServiceIdDatabaseReplicas",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "replicas": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "id": {
+             "type": "string"
+            },
+            "serverId": {
+             "type": "string"
+            }
+           },
+           "required": [
+            "serverId"
+           ]
+          }
+         }
+        },
+        "required": [
+         "replicas"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/database/replicas/{replicaId}/promote": {
+   "post": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Make a read replica the database",
+    "description": "For when the database's server is lost: the database stops (if its server answers) and deploys on the replica's server with the replica's data. Changes the replica had not received are lost. The other replicas copy the new database again.\n\nNeeds: services.manage (Manage services), services.deploy (Deploy).",
+    "operationId": "postServicesByServiceIdDatabaseReplicasByReplicaIdPromote",
+    "x-permissions": [
+     "services.manage",
+     "services.deploy"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "replicaId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
     "responses": {
      "200": {
       "description": "Success",
@@ -5960,7 +7874,7 @@
      "Databases"
     ],
     "summary": "A page of rows of a table",
-    "description": "50 rows per page (page counts from 0), sorted by one column (else by the columns of order, like the primary key) and filtered by one condition (op: eq, ne, lt, le, gt, ge, contains, null, notnull). Values come back as text, null for NULL. total counts up to 10000 matching rows (totalCapped: more). For MongoDB, mongoFilter and mongoSort are Extended JSON and documents come back as Extended JSON text. Reads only.\n\nNeeds: projects.view (View projects), console.access (Console).",
+    "description": "50 rows per page (page counts from 0), sorted by one column (else by the columns of order, like the primary key) and filtered by one condition (op: eq, ne, lt, le, gt, ge, contains, null, notnull). Values come back as text, null for NULL. total counts up to 10000 matching rows (totalCapped: more). For MongoDB, mongoFilter and mongoSort are Extended JSON and documents come back as Extended JSON text, with versions (one per document) to send back when replacing one. Reads only.\n\nNeeds: projects.view (View projects), console.access (Console).",
     "operationId": "postServicesByServiceIdDataRows",
     "x-permissions": [
      "projects.view",
@@ -6111,11 +8025,12 @@
      "Databases"
     ],
     "summary": "Change one value of a row",
-    "description": "PostgreSQL, MySQL and MariaDB. The row is found by its whole primary key (key: each column with the value the row shows); value null sets NULL. Values of the primary key and binary values are changed with a query instead. Written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console).",
+    "description": "PostgreSQL, MySQL and MariaDB. The row is found by its whole primary key (key: each column with the value the row shows); value null sets NULL. original: the value the row showed in column; when it holds another one now, nothing is changed. Values of the primary key and binary values are changed with a query instead. Needs services.manage too. Written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console), services.manage (Manage services).",
     "operationId": "patchServicesByServiceIdDataRows",
     "x-permissions": [
      "projects.view",
-     "console.access"
+     "console.access",
+     "services.manage"
     ],
     "parameters": [
      {
@@ -6174,6 +8089,12 @@
            "string",
            "null"
           ]
+         },
+         "original": {
+          "type": [
+           "string",
+           "null"
+          ]
          }
         },
         "required": [
@@ -6219,11 +8140,12 @@
      "Databases"
     ],
     "summary": "Save changed, new and deleted rows of a table together",
-    "description": "PostgreSQL, MySQL and MariaDB, in one transaction: all of them or none. updates and deletes find each row by its whole primary key (key: each column with the value the row shows); values maps columns to new values (null sets NULL). inserts give the columns to set; the others get their defaults. When a row changed or went since it was shown, nothing is saved. At most 500 changes. Written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console).",
+    "description": "PostgreSQL, MySQL and MariaDB, in one transaction: all of them or none. updates and deletes find each row by its whole primary key (key: each column with the value the row shows); values maps columns to new values (null sets NULL). inserts give the columns to set; the others get their defaults. original (updates and deletes): the values the row showed, for some or all of its columns. When a row went, or holds other values than original, nothing is saved. At most 500 changes. Needs services.manage too. Written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console), services.manage (Manage services).",
     "operationId": "postServicesByServiceIdDataChanges",
     "x-permissions": [
      "projects.view",
-     "console.access"
+     "console.access",
+     "services.manage"
     ],
     "parameters": [
      {
@@ -6290,6 +8212,18 @@
                "null"
               ]
              }
+            },
+            "original": {
+             "type": "object",
+             "propertyNames": {
+              "type": "string"
+             },
+             "additionalProperties": {
+              "type": [
+               "string",
+               "null"
+              ]
+             }
             }
            },
            "required": [
@@ -6344,6 +8278,18 @@
                "value"
               ]
              }
+            },
+            "original": {
+             "type": "object",
+             "propertyNames": {
+              "type": "string"
+             },
+             "additionalProperties": {
+              "type": [
+               "string",
+               "null"
+              ]
+             }
             }
            },
            "required": [
@@ -6392,11 +8338,12 @@
      "Databases"
     ],
     "summary": "Replace a MongoDB document",
-    "description": "id: the _id of the document as Extended JSON (like {\"$oid\": \"…\"} or 42). document: the new document as Extended JSON; its _id, if given, must stay the same. Written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console).",
+    "description": "id: the _id of the document as Extended JSON (like {\"$oid\": \"…\"} or 42). document: the new document as Extended JSON; its _id, if given, must stay the same. version: the version of the document as the documents page gave it (versions, in the order of documents); when the document holds something else now, nothing is changed. Needs services.manage too. Written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console), services.manage (Manage services).",
     "operationId": "putServicesByServiceIdDataDocuments",
     "x-permissions": [
      "projects.view",
-     "console.access"
+     "console.access",
+     "services.manage"
     ],
     "parameters": [
      {
@@ -6426,6 +8373,9 @@
           "type": "string"
          },
          "document": {
+          "type": "string"
+         },
+         "version": {
           "type": "string"
          }
         },
@@ -6617,7 +8567,7 @@
      "Databases"
     ],
     "summary": "Run a query",
-    "description": "SQL for PostgreSQL, MySQL, MariaDB and ClickHouse; a command for Redis and Valkey (like GET \"my key\"); for MongoDB, an operation (find, aggregate, count, distinct, insert, update, delete) on collection with query as Extended JSON (find and count: a filter; aggregate: a pipeline; distinct: a filter, with field; insert: documents; update: { filter, update }; delete: a filter). readOnly (true unless set to false) runs it where it cannot change data: a read-only transaction of one statement, readonly=2 on ClickHouse, read commands on Redis. At most 1000 rows, 30 seconds. An error of the database comes back as error with status 200. Queries with readOnly false are written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console).",
+    "description": "SQL for PostgreSQL, MySQL, MariaDB and ClickHouse; a command for Redis and Valkey (like GET \"my key\"); for MongoDB, an operation (find, aggregate, count, distinct, insert, update, delete) on collection with query as Extended JSON (find and count: a filter; aggregate: a pipeline; distinct: a filter, with field; insert: documents; update: { filter, update }; delete: a filter). readOnly (true unless set to false) runs it where it cannot change data: a read-only transaction of one statement, readonly=2 on ClickHouse, read commands on Redis. At most 1000 rows, 30 seconds. An error of the database comes back as error with status 200. Queries with readOnly false need services.manage too, and are written to the activity log.\n\nNeeds: projects.view (View projects), console.access (Console).",
     "operationId": "postServicesByServiceIdDataQuery",
     "x-permissions": [
      "projects.view",
@@ -7039,6 +8989,51 @@
    }
   },
   "/services/{serviceId}/monitor": {
+   "get": {
+    "tags": [
+     "Monitoring"
+    ],
+    "summary": "The uptime check of a service",
+    "description": "monitor holds the fields PUT takes, so one can be changed and sent back; null when the service has no check. status and the last check come with it.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getServicesByServiceIdMonitor",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
    "put": {
     "tags": [
      "Monitoring"
@@ -7470,7 +9465,7 @@
      "Servers"
     ],
     "summary": "Remove a server",
-    "description": "Needs: admin (organization admin).",
+    "description": "A server with services needs services: stop (they are stopped and deleted; removeData=true also deletes their volumes) or keep (they keep running there and are only forgotten; Serve's proxy and the server's tunnels are removed unless removeProxy=false or removeTunnels=false). removeTailnetDevice=true also takes the machine out of its tailnet.\n\nNeeds: admin (organization admin).",
     "operationId": "deleteServersByServerId",
     "x-permissions": [
      "admin"
@@ -7482,6 +9477,66 @@
       "required": true,
       "schema": {
        "type": "string"
+      }
+     },
+     {
+      "name": "services",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "stop",
+        "keep"
+       ]
+      }
+     },
+     {
+      "name": "removeData",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "removeProxy",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "removeTunnels",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "removeTailnetDevice",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "true",
+        "false"
+       ]
       }
      }
     ],
@@ -9608,6 +11663,44 @@
     }
    }
   },
+  "/notification-channels/types": {
+   "get": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Kinds of notification channels, their fields and the events",
+    "description": "kinds: each kind with the config fields POST /notification-channels takes (secret ones are stored encrypted and never shown again). events: the event ids a channel can get, with their group and severity; defaultEvents are the ones a new channel gets. placeholders: what custom message text can use.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "getNotificationChannelsTypes",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
   "/notification-channels/{channelId}": {
    "put": {
     "tags": [
@@ -10135,6 +12228,77 @@
    }
   },
   "/cloudflare/accounts/{accountId}/zones/{zoneId}/dns": {
+   "get": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "List a zone's DNS records",
+    "description": "type and name narrow the list (name is the full record name, like app.example.com).\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "getCloudflareAccountsByAccountIdZonesByZoneIdDns",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "accountId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "zoneId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 10
+      }
+     },
+     {
+      "name": "name",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 253
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
    "put": {
     "tags": [
      "Integrations"
@@ -10487,7 +12651,7 @@
      "Templates"
     ],
     "summary": "List one-click templates",
-    "description": "Create one with POST /services, type compose and template set to its id.\n\nNeeds: projects.view (View projects).",
+    "description": "The organization's own templates (custom: true, id custom:<id>) and the built-in ones. Create one with POST /services, type compose and template set to its id.\n\nNeeds: projects.view (View projects).",
     "operationId": "getTemplates",
     "x-permissions": [
      "projects.view"
@@ -10619,7 +12783,7 @@
      "Templates"
     ],
     "summary": "Delete a custom template",
-    "description": "Needs: integrations.manage (Manage integrations).",
+    "description": "Its id with or without custom: in front.\n\nNeeds: integrations.manage (Manage integrations).",
     "operationId": "deleteTemplatesByTemplateId",
     "x-permissions": [
      "integrations.manage"
@@ -10904,6 +13068,1112 @@
      }
     }
    }
+  },
+  "/tailscale/tailnets": {
+   "get": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "List connected tailnets",
+    "description": "With the servers in each. Credentials are not shown. Root admins only: servers join the instance's tailnet.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "getTailscaleTailnets",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/tailscale": {
+   "get": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "A server's Tailscale state",
+    "description": "null when the server does not use a tailnet. Root admins only.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "getServersByServerIdTailscale",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "Stop using Tailscale for a server",
+    "description": "Serve reaches it as before (its address or tunnel). removeDevice=true also takes the machine out of the tailnet. Root admins only.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "deleteServersByServerIdTailscale",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "removeDevice",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "true",
+        "false"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/tailscale/join-command": {
+   "post": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "Make a command that puts the server in a tailnet",
+    "description": "Run the command on the server; until it ran, Serve reaches the server as before. tailnetId: the tailnet (optional when only one is connected). origin: the dashboard address the server calls (this instance's address by default). Root admins only.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "postServersByServerIdTailscaleJoinCommand",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "tailnetId": {
+          "type": "string"
+         },
+         "origin": {
+          "type": "string",
+          "format": "uri"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/tailscale/connect": {
+   "post": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "Put a server in a tailnet now",
+    "description": "Serve installs Tailscale and joins the server by itself (over SSH, or through the host for the dashboard's own machine). The server must be reachable. When it is in another tailnet already, the answer has moveNeeded: true: send force: true to move it. Root admins only.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "postServersByServerIdTailscaleConnect",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "tailnetId": {
+          "type": "string"
+         },
+         "force": {
+          "type": "boolean"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/cloudflare/accounts/{accountId}/tunnels": {
+   "get": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "List the tunnels of a Cloudflare account",
+    "description": "One tunnel per server, with the domains routed through it (those of projects the token can reach).\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "getCloudflareAccountsByAccountIdTunnels",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "accountId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Create a tunnel from a server",
+    "description": "Runs a connector on the server; domains of that server can then route through Cloudflare without open ports. Domains that used a tunnel on the server before come back (reconnected, failed).\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "postCloudflareAccountsByAccountIdTunnels",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "accountId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "serverId": {
+          "type": "string",
+          "minLength": 1
+         }
+        },
+        "required": [
+         "serverId"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/cloudflare/accounts/{accountId}/tunnels/{tunnelId}": {
+   "delete": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Remove a tunnel",
+    "description": "Its domains stop working until a tunnel runs on the server again (they reconnect by themselves then).\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "deleteCloudflareAccountsByAccountIdTunnelsByTunnelId",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "accountId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "tunnelId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/private-networks": {
+   "get": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "List private networks",
+    "description": "Networks between servers (WireGuard), with their servers, and the servers that can be put in them. In the Root organization every network; elsewhere the organization's own. A server is joined once it joined the private network from its own page.\n\nNeeds: admin (organization admin).",
+    "operationId": "getPrivateNetworks",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Create a private network",
+    "description": "serverIds: servers to put in it (they must have joined the private network).\n\nNeeds: admin (organization admin).",
+    "operationId": "postPrivateNetworks",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "serverIds": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         }
+        },
+        "required": [
+         "name"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/private-networks/{networkId}": {
+   "patch": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Rename a private network",
+    "description": "Needs: admin (organization admin).",
+    "operationId": "patchPrivateNetworksByNetworkId",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "networkId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "name"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Delete a private network",
+    "description": "Its servers stop reaching each other unless they share another network.\n\nNeeds: admin (organization admin).",
+    "operationId": "deletePrivateNetworksByNetworkId",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "networkId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/private-networks/{networkId}/members": {
+   "put": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Put a server in a private network, or take it out",
+    "description": "member: true puts it in (it must have joined the private network), false takes it out.\n\nNeeds: admin (organization admin).",
+    "operationId": "putPrivateNetworksByNetworkIdMembers",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "networkId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "serverId": {
+          "type": "string",
+          "minLength": 1
+         },
+         "member": {
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "serverId",
+         "member"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/log-drains": {
+   "get": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "List log drains",
+    "description": "Header values and passwords are not shown: headerName, username and hasSecret say what is set.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "getLogDrains",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Add a log drain",
+    "description": "kind: http (headerName and headerValue), loki or elasticsearch (username, password), splunk (password: the HEC token; index, sourcetype) or syslog (tcp://, tls:// or udp:// with a port). projectIds and serviceIds pick whose logs are sent; neither sends nothing. insecure accepts a self-signed certificate.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "postLogDrains",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "http",
+           "loki",
+           "elasticsearch",
+           "splunk",
+           "syslog"
+          ]
+         },
+         "url": {
+          "type": "string"
+         },
+         "headerName": {
+          "type": "string"
+         },
+         "headerValue": {
+          "type": "string"
+         },
+         "username": {
+          "type": "string"
+         },
+         "password": {
+          "type": "string"
+         },
+         "projectIds": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "serviceIds": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "index": {
+          "type": "string"
+         },
+         "sourcetype": {
+          "type": "string"
+         },
+         "insecure": {
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "name",
+         "kind",
+         "url"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/log-drains/{drainId}": {
+   "put": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Change a log drain",
+    "description": "Fields left out keep their value; an empty or left out headerValue or password keeps the stored one (as long as the URL stays the same). enabled turns it off or on. kind: http (headerName and headerValue), loki or elasticsearch (username, password), splunk (password: the HEC token; index, sourcetype) or syslog (tcp://, tls:// or udp:// with a port). projectIds and serviceIds pick whose logs are sent; neither sends nothing. insecure accepts a self-signed certificate.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "putLogDrainsByDrainId",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "drainId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "kind": {
+          "type": "string",
+          "enum": [
+           "http",
+           "loki",
+           "elasticsearch",
+           "splunk",
+           "syslog"
+          ]
+         },
+         "url": {
+          "type": "string"
+         },
+         "enabled": {
+          "type": "boolean"
+         },
+         "headerName": {
+          "type": "string"
+         },
+         "headerValue": {
+          "type": "string"
+         },
+         "username": {
+          "type": "string"
+         },
+         "password": {
+          "type": "string"
+         },
+         "projectIds": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "serviceIds": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "index": {
+          "type": "string"
+         },
+         "sourcetype": {
+          "type": "string"
+         },
+         "insecure": {
+          "type": "boolean"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Delete a log drain",
+    "description": "Needs: integrations.manage (Manage integrations).",
+    "operationId": "deleteLogDrainsByDrainId",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "drainId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/log-drains/{drainId}/test": {
+   "post": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Send a test line to a log drain",
+    "description": "One sample line, sent the way the log collector sends them. An error says what the destination answered.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "postLogDrainsByDrainIdTest",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "drainId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/metrics": {
+   "get": {
+    "tags": [
+     "Metrics"
+    ],
+    "summary": "Metrics for Prometheus",
+    "description": "The organization's services in the Prometheus text format (`text/plain; version=0.0.4`), for your own Prometheus or Grafana to scrape: CPU, memory, network, containers, restarts, status and deployments, from the samples Serve already stores.\n\nRequest and 5xx rates are included when the token also has logs.view. A token of the Root organization whose owner is a Root admin also gets the servers' own CPU, memory, disk and load.\n\nThe answer is cached for a few seconds, and a token may scrape 60 times a minute.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getMetrics",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "text/plain; version=0.0.4; charset=utf-8": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
   }
  },
  "components": {
@@ -10958,6 +14228,12 @@
     "label": "Deploy",
     "description": "Deploy, redeploy, roll back, start, stop and restart services.",
     "verb": "deploy services"
+   },
+   {
+    "id": "deploys.approve",
+    "label": "Approve deploys",
+    "description": "Approve or reject deploys that wait for approval. Their own deploys start right away.",
+    "verb": "approve deploys"
    },
    {
     "id": "services.manage",
