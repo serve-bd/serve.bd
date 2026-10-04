@@ -50,7 +50,8 @@ import "../../styles/site.css";
         background: var(--bad);
         box-shadow: 0 0 12px var(--bad);
       }
-      [data-state="idle"] .link::after {
+      [data-state="idle"] .link::after,
+      [data-state="confirm"] .link::after {
         animation: none;
         left: calc(50% - 4px);
         background: var(--line-strong);
@@ -108,6 +109,16 @@ import "../../styles/site.css";
       <h1 id="title" class="mt-3 text-2xl font-semibold text-fg sm:text-3xl">Connecting Cloudflare</h1>
       <p id="text" class="mt-3 max-w-sm text-[15px] leading-relaxed text-muted">One moment.</p>
       <noscript><p class="mt-3 max-w-sm text-[15px] text-muted">This page needs JavaScript to return you to your dashboard.</p></noscript>
+      <div id="confirm" class="mt-8 hidden w-full max-w-sm flex-col items-center gap-5">
+        <div class="w-full rounded-xl border border-line bg-surface px-4 py-3">
+          <p class="text-[12px] text-faint">Serve dashboard</p>
+          <p id="host" class="mt-0.5 font-mono text-[15px] break-all text-fg"></p>
+        </div>
+        <div class="flex w-full gap-2">
+          <button id="cancel" type="button" class="h-10 flex-1 rounded-lg border border-line-strong bg-surface text-sm text-fg hover:bg-hover">Cancel</button>
+          <button id="continue" type="button" class="h-10 flex-1 rounded-lg bg-accent text-sm font-medium text-white hover:brightness-110">Continue</button>
+        </div>
+      </div>
       <a id="help" href="/docs/cloudflare/" class="mt-8 hidden text-[13px] text-accent underline-offset-4 hover:underline">How connecting Cloudflare works</a>
     </main>
 
@@ -126,7 +137,9 @@ import "../../styles/site.css";
           page.dataset.state = state;
           document.getElementById("title").textContent = title;
           document.getElementById("text").textContent = text;
-          document.getElementById("help").classList.toggle("hidden", state === "working");
+          document.getElementById("help").classList.toggle("hidden", state === "working" || state === "confirm");
+          document.getElementById("confirm").classList.toggle("hidden", state !== "confirm");
+          document.getElementById("confirm").classList.toggle("flex", state === "confirm");
         };
         const store = (() => {
           for (const name of ["localStorage", "sessionStorage"]) {
@@ -174,8 +187,25 @@ import "../../styles/site.css";
             !back.password;
           if (!ok) return show("Link not valid", "Start again from the Cloudflare page in Serve.");
           store.setItem(PREFIX + state, JSON.stringify({ back: back.toString(), exp: Date.now() + TTL }));
-          show("Connecting Cloudflare", "Taking you to Cloudflare to sign in.", "working");
-          return location.replace(auth.toString());
+          const go = () => {
+            show("Connecting Cloudflare", "Taking you to Cloudflare to sign in.", "working");
+            location.replace(auth.toString());
+          };
+          // Anyone can make a link that returns a sign-in to their own server. So the first time
+          // in this browser, the person confirms the dashboard address before Cloudflare asks to allow access.
+          const trustKey = `${PREFIX}trusted:${back.origin}`;
+          if (store.getItem(trustKey)) return go();
+          document.getElementById("host").textContent = back.host;
+          show("Connect Cloudflare to this dashboard?", "Only continue if this is the address of your own Serve dashboard. It gets access to your Cloudflare account.", "confirm");
+          document.getElementById("continue").addEventListener("click", () => {
+            store.setItem(trustKey, JSON.stringify({ exp: Date.now() + 365 * 86400_000 }));
+            go();
+          });
+          document.getElementById("cancel").addEventListener("click", () => {
+            store.removeItem(PREFIX + state);
+            show("Not connected", "Nothing was shared with that dashboard. You can close this page.");
+          });
+          return;
         }
 
         // 2. Back from Cloudflare, on the way to the dashboard that started it.

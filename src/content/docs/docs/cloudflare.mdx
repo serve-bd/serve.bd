@@ -16,6 +16,7 @@ Go to **Integrations → Cloudflare** and choose **Connect Cloudflare**. There a
 Choose **Sign in with Cloudflare**, log in to Cloudflare, pick the account with your domains and allow access. You return to Serve with the account connected.
 
 - Cloudflare returns you through a page on `serve.bd`, which sends your browser back to the dashboard you started from. So a dashboard on a private address works too. The page never sees a usable token.
+- The first time in a browser, the page asks you to confirm your dashboard's address before it goes on to Cloudflare. Only continue if it is your own dashboard: anyone can make a link that would connect your Cloudflare account to their server.
 - The sign-in has to start and end in the same browser, within 30 minutes.
 - Serve renews the access by itself. If you remove Serve's access in Cloudflare (**My Profile → Manage OAuth authorizations**), the account shows an error with a **Reconnect** button.
 - Traefik's Cloudflare DNS challenge needs an API token, because Traefik keeps its token for months.
