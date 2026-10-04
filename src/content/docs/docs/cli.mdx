@@ -213,7 +213,7 @@ Serve keeps the last 5 uploads of each service. `serve redeploy` uses them again
 | `serve start\|stop\|restart` | Control the service |
 | `serve env ls\|get\|set\|unset\|pull\|push` | Environment variables. Values are hidden unless you pass `--reveal` |
 | `serve domains ls\|add\|rm` | The service's domains |
-| `serve db url [--public]` | A database's connection string |
+| `serve db url [database] [--public]` | A database's connection string, like `serve db url postgres` |
 | `serve projects`, `services`, `servers` | Browse what you have |
 | `serve version` | The version, and whether a newer one is out |
 | `serve upgrade [--check] [--version v]` | Replace this `serve` with the newest version, or the one given |
