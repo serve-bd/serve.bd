@@ -21,6 +21,46 @@ Choose **Sign in with Cloudflare**, log in to Cloudflare, pick the account with 
 - Traefik's Cloudflare DNS challenge needs an API token, because Traefik keeps its token for months.
 - An administrator of a Cloudflare account can block outside apps. Then paste an API token instead.
 
+### Use your own OAuth client
+
+**Sign in with Cloudflare** uses Serve's OAuth client by default. To use your own client instead, for example so that sign-ins skip `serve.bd`, create one in Cloudflare:
+
+1. Go to **Manage Account → OAuth clients → Create client**.
+2. Set these fields:
+
+   | Field | Value |
+   | --- | --- |
+   | Response type | Code |
+   | Grant type | Authorization Code and Refresh Token |
+   | Token authentication method | None (PKCE) |
+   | Redirect URL | `https://<your dashboard>/api/cloudflare/oauth/callback` |
+
+3. Select these scopes, all required:
+
+   | Scope | Id |
+   | --- | --- |
+   | Zone Read | `zone.read` |
+   | DNS Write | `dns.write` |
+   | Zone Settings Write | `zone-settings.write` |
+   | SSL and Certificates Write | `ssl-and-certificates.write` |
+   | Cloudflare Tunnel Write | `argotunnel.write` |
+   | Cloudflare One Connectors Write | `teams-connectors.write` |
+
+   Without **Refresh Token**, the access ends after an hour.
+
+4. Add these lines to `/data/serve/.env`:
+
+   ```bash
+   CLOUDFLARE_OAUTH_CLIENT_ID=<the client id>
+   CLOUDFLARE_OAUTH_REDIRECT_URI=https://<your dashboard>/api/cloudflare/oauth/callback
+   ```
+
+5. Restart Serve with `cd /data/serve && docker compose up -d`.
+
+The redirect URL must match exactly, with the address you open the dashboard at. A client stays private unless you make it public, and a private client only lets members of your own Cloudflare account sign in. That is enough for your own instance.
+
+`CLOUDFLARE_OAUTH_SCOPES` replaces the scope list, separated by spaces. Leave it unset unless your client has other scopes. Serve adds no scopes to it, so include `offline_access` to keep a refresh token.
+
 ### Paste an API token
 
 Paste an **API token** from your Cloudflare dashboard. Serve encrypts the token and only uses it for your zones.
