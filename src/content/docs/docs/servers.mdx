@@ -92,7 +92,15 @@ The **Builds & deploys** page has two cards.
 | **Time limit** | Deployments that run longer are stopped, and the previous version keeps running. Empty uses Serve's default. |
 | **Queue size** | How many deployments may wait for this server. Empty means no limit. |
 
-When the queue is full, a new deployment is refused, and a push or deploy hook is recorded as skipped. Rollbacks and first deploys never wait for the queue limit.
+When the queue is full, a new deployment is refused, and a push or deploy hook is recorded as skipped. Rollbacks and first deploys never wait for the queue limit. The limit holds even when many deploys arrive at the same moment, like a burst of pushes or a [tag deploy hook](/docs/tags#deploy-hook): Serve counts them one after another.
+
+#### Force start
+
+A deployment that waits for a free build slot has a **Force start** button next to **Cancel** on its page. After you confirm, it starts at once, past the build server's limit of **Concurrent builds**.
+
+It still waits for a running deployment of the same service, because two at once would fight over it. The button then says so. Cancel that deployment to start this one now.
+
+Force start needs the **Deploy** permission and shows in the [activity log](/docs/security#activity-log). In the [API](/docs/api): `POST /deployments/{deploymentId}/force-start`.
 
 ### Alerts
 
