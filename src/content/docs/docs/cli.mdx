@@ -13,9 +13,11 @@ The `serve` command deploys a folder to your Serve dashboard and manages its ser
 curl -fsSL https://raw.githubusercontent.com/serve-bd/serve/main/install-cli.sh | sh
 ```
 
-It installs to `/usr/local/bin` when it can write there, and to `~/.local/bin` otherwise. To install a given release, set `SERVE_CLI_VERSION`, like `SERVE_CLI_VERSION=v0.3.2`.
+It installs the newest CLI to `/usr/local/bin` when it can write there, and to `~/.local/bin` otherwise. To install a given version, set `SERVE_CLI_VERSION`, like `SERVE_CLI_VERSION=v1.0.0` (`1.0.0` and `cli-v1.0.0` work too). The script checks the download against its SHA-256 checksum.
 
-Each [GitHub release](https://github.com/serve-bd/serve/releases) also has downloads for Linux, macOS and Windows, named `serve_<version>_<os>_<arch>`. On Windows, download the `.zip` for your machine and put `serve.exe` in your `PATH`.
+The CLI has its own versions, apart from Serve's. Its [GitHub releases](https://github.com/serve-bd/serve/releases) are tagged `cli-v1.0.0`, `cli-v1.1.0` and so on, and named "Serve CLI". Any recent CLI works with any recent Serve, so you don't need to match the two. CLI versions up to v0.3.x came with Serve's own releases and are still attached to them.
+
+Each CLI release has downloads for Linux, macOS and Windows, named `serve_<version>_<os>_<arch>`, and a `checksums.txt`. On Windows, download the `.zip` for your machine and put `serve.exe` in your `PATH`.
 
 With Go 1.26 or newer, you can also build it yourself:
 
@@ -23,7 +25,40 @@ With Go 1.26 or newer, you can also build it yourself:
 go install github.com/serve-bd/serve/cli/cmd/serve@latest
 ```
 
-`serve version` shows the version, and says when a newer one is out.
+## Upgrade
+
+```bash
+serve upgrade
+```
+
+This downloads the newest CLI for your machine, checks it against the release's `checksums.txt`, and replaces the `serve` you ran. It prints the old and the new version. When you already have the newest, it says so and changes nothing.
+
+- `serve upgrade --check` only says whether a newer version is out.
+- `serve upgrade --version v1.2.0` installs that version, newer or older.
+- When `serve` is in a folder you can't write to, like `/usr/local/bin`, run `sudo serve upgrade`, or run the install script again.
+- A build of your own (`serve version` says `dev`) is not replaced unless you pass `--force`.
+- On Windows, the old binary is kept next to the new one as `serve.exe.old`. The next upgrade removes it.
+
+`HTTPS_PROXY` is honored. `--insecure` and `SERVE_INSECURE` are not: they are for your dashboard's certificate, and a new binary always comes over checked HTTPS.
+
+### The update notice
+
+After `deploy`, `redeploy`, `rollback`, `init`, `link`, `status`, `login`, `logs` and `env pull` or `env push`, the CLI prints one line when a newer version is out:
+
+```
+  serve v1.2.0 is out (you have v1.1.0). Run: serve upgrade
+```
+
+It never slows a command down. The CLI asks GitHub at most once a day, in the background while the command runs, and remembers the answer.
+
+It is never shown:
+
+- when the output is not a terminal, like in a script or a pipe,
+- with `--json`, or with `logs -f`,
+- in CI (when `CI` is set),
+- when `SERVE_NO_UPDATE_CHECK` is set. Set it to turn the notice off, like `export SERVE_NO_UPDATE_CHECK=1`. This also stops `serve version` from asking GitHub.
+
+`serve version` shows the version, and always checks whether a newer one is out.
 
 ## Log in
 
@@ -177,6 +212,7 @@ Serve keeps the last 5 uploads of each service. `serve redeploy` uses them again
 | `serve db url [--public]` | A database's connection string |
 | `serve projects`, `services`, `servers` | Browse what you have |
 | `serve version` | The version, and whether a newer one is out |
+| `serve upgrade [--check] [--version v]` | Replace this `serve` with the newest version, or the one given |
 | `serve completion bash\|zsh\|fish\|powershell` | A shell completion script |
 
 Commands that work on a service use the linked one, or the one you name with `--service <name or id>`.
