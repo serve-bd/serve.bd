@@ -10,8 +10,10 @@ The `serve` command deploys a folder to your Serve dashboard and manages its ser
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/serve-bd/serve/main/install-cli.sh | sh
+curl -fsSL https://serve.bd/cli.sh | sh
 ```
+
+The same script is also at `https://raw.githubusercontent.com/serve-bd/serve/main/install-cli.sh`.
 
 It installs the newest CLI to `/usr/local/bin` when it can write there, and to `~/.local/bin` otherwise. To install a given version, set `SERVE_CLI_VERSION`, like `SERVE_CLI_VERSION=v1.0.0` (`1.0.0` and `cli-v1.0.0` work too). The script checks the download against its SHA-256 checksum.
 

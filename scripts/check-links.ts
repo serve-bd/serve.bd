@@ -34,7 +34,7 @@ const idsOf = (file: string) => {
 };
 
 // Paths served by the host, not by files in dist.
-const external = new Set(["/install.sh"]);
+const external = new Set(["/install.sh", "/cli.sh"]);
 const problems: string[] = [];
 let checked = 0;
 

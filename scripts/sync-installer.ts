@@ -16,6 +16,8 @@ if (!from) {
 
 const files: [string, string][] = [
   ["install.sh", "public/install.sh"],
+  // The CLI installer, at serve.bd/cli.sh.
+  ["install-cli.sh", "public/cli.sh"],
   ["docker/compose.yml", "public/install/compose.yml"],
   ["scripts/restore-instance.sh", "public/install/restore-instance.sh"],
 ];
