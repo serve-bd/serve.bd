@@ -31,11 +31,11 @@ go install github.com/serve-bd/serve/cli/cmd/serve@latest
 serve login https://serve.example.com
 ```
 
-The CLI shows a code and opens the dashboard in your browser. Check that the code matches, pick the organization and approve. A token named "CLI on &lt;computer&gt;" then appears on the **Keys & tokens** page, where you can revoke it.
+The CLI shows a code and opens the dashboard in your browser. Check that the code matches, pick the organization and approve. The approval page also shows the address and time of the request, so you can tell it is yours. Sign-in codes are rate limited. A token named "CLI on &lt;computer&gt;" then appears on the **Keys & tokens** page, where you can revoke it.
 
 - Without a browser, pass `--no-browser` and open the link on any device.
 - To use a token you made yourself on **Keys & tokens**, run `serve login <url> --token <token>`.
-- `serve whoami` shows the login, and `serve logout` logs out and revokes the token.
+- `serve whoami` shows the login, and `serve logout` logs out and revokes the token. If it can't reach the server to revoke the token, it says so. Then revoke it yourself on **Keys & tokens**.
 
 ### Several logins
 
@@ -46,15 +46,31 @@ Each login is a context:
 - `serve context rm <name>` removes one.
 - `--context <name>` picks one for a single command.
 
-A folder linked to a dashboard uses the context for that dashboard.
+A folder linked to a dashboard uses the context for that dashboard. Each saved token only goes to the address of its own context. The address in a folder's link only picks which saved login to use.
 
 ### In CI
 
-Set `SERVE_URL` and `SERVE_TOKEN` instead of logging in. The CLI never asks a question without a terminal. Where it needs a choice, the error names the flag to pass.
+Set both `SERVE_URL` and `SERVE_TOKEN` instead of logging in:
+
+```bash
+export SERVE_URL=https://serve.example.com
+export SERVE_TOKEN=srv_...
+serve deploy --yes --service web
+```
+
+`SERVE_URL` is the dashboard address, without `/api/v1`. The [API](/docs/api) examples add `/api/v1` to it, so don't reuse their value for the CLI.
+
+The token only goes to `SERVE_URL`, never to an address in a folder's link. With `SERVE_TOKEN` but no `SERVE_URL`, the CLI stops with "Set SERVE_URL with SERVE_TOKEN" and exit code `2`.
+
+The CLI never asks a question without a terminal. Where it needs a choice, the error names the flag to pass.
 
 ### Self-signed certificates
 
 For a dashboard with a self-signed certificate, pass `--insecure`, or set `SERVE_INSECURE=1`. `HTTPS_PROXY` is honored.
+
+### Redirects
+
+When a request carries a token, the CLI refuses to follow a redirect from `https` to `http`, to another host, or to another port on the same host. So a token never leaves for an address you didn't log in to. Sign-in requests carry no token, and still follow redirects.
 
 ### On the server that runs Serve
 
@@ -84,14 +100,14 @@ In a git checkout, the deployment also shows the commit, branch and message, and
 
 ### What is uploaded
 
-These are left out:
+A file is left out when any of these apply:
 
-- Files that `.gitignore` names, with nested `.gitignore` files, `.git/info/exclude` and your global git ignore file.
-- Files that `.dockerignore` names.
-- Always: `.git`, `.serve`, `node_modules` and `.env` files. Pass `--include-env` to keep the `.env` files.
-- Links that point outside the folder, and files that can't be read. The CLI warns about them.
+- **Git ignores it.** Every `.gitignore` from the repository root down counts, also the ones above a subfolder you deploy, plus `.git/info/exclude` and your global git ignore file. With git's `core.ignorecase=true`, these rules match in any case.
+- **`.dockerignore` names it.** This is a second, separate filter. A `!` line in `.dockerignore` never brings back a file that git ignores.
+- **It is always left out:** `.git`, `.serve`, `node_modules`, and env files: `.env`, `.env.*`, `.env-*`, `*.env` in any case, and `.envrc`. Pass `--include-env` to keep the env files.
+- **It can't be sent:** links that point outside the folder, and files that can't be read. The CLI warns about them.
 
-A `.serveignore` file, in the same format, replaces the `.gitignore` files. Use it to send build output that git ignores. The deploy says which files it used.
+A `.serveignore` file in the folder you deploy, in the same format, replaces the git rules. Use it to send build output that git ignores. `.dockerignore` still applies on top. The deploy says which files it used, and warns about a rule it can't read.
 
 A home folder, the root folder, or a folder with more than 5,000 files and no project file is not uploaded until you say yes. Without a terminal, pass `--yes`.
 
@@ -111,7 +127,7 @@ A home folder, the root folder, or a folder with more than 5,000 files and no pr
 
 In a monorepo, deploy a subfolder with `serve deploy apps/web`, or use `--root .` when the service's root directory is inside the folder.
 
-A failed upload is tried twice more.
+A failed upload is tried twice more, but a deploy is never sent twice. If the answer gets lost after the whole upload went out, the CLI says so. Check `serve deployments` before you deploy again.
 
 ### Apps that deploy from git
 
@@ -128,13 +144,13 @@ Serve keeps the last 5 uploads of each service. `serve redeploy` uses them again
 | `serve login [url]`, `logout`, `whoami` | Log in, log out and revoke the token, show the login |
 | `serve login --local` | Use this server's own Serve again |
 | `serve context ls\|use\|rm` | List and switch logins |
-| `serve init` | Create an app deployed from this folder, and link it |
+| `serve init` | Create an app deployed from this folder, and link it. `--port` is 1 to 65535 |
 | `serve link`, `unlink` | Link this folder to a service, or remove the link |
 | `serve deploy [path]` | Upload, build and deploy the folder |
 | `serve status` | The service, its URL, the running deployment and replicas |
 | `serve open [--dashboard]` | Open the service's address, or its page in the dashboard |
-| `serve logs [-f] [--tail N]` | The service's logs. `--build [id]` shows a build log |
-| `serve deployments` | The deployments, newest first |
+| `serve logs [-f] [--tail N]` | The service's logs. `--tail` is 1 or more. `--build [id]` shows a build log |
+| `serve deployments` | The deployments, newest first. `--limit` is 1 to 200 |
 | `serve redeploy [id]`, `rollback [id]` | Deploy a source again, or run an earlier image again |
 | `serve cancel [id]`, `force-start [id]` | Cancel a deployment, or [start a queued one now](/docs/servers#force-start) |
 | `serve start\|stop\|restart` | Control the service |
@@ -168,6 +184,12 @@ The CLI uses the [API](/docs/api). These parts were added for it:
 - The `upload` source type, when you create or update an app.
 - `offset` on `GET /deployments/{id}/logs`, to read a build log from where you stopped.
 - `since` on `GET /services/{id}/logs`.
+
+Limits on uploads:
+
+- An upload to an app with host access, like bind mounts or privileged mode, needs a Root admin.
+- An upload with more than 1,000,000 entries, or a path name longer than 4,096 characters, is refused.
+- Hard links in an upload are kept as links.
 
 <CardGrid>
 <LinkCard href="/docs/deployments" title="Deployments" description="Strategies, health checks and rollbacks." />
