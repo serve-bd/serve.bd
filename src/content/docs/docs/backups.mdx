@@ -22,6 +22,11 @@ Under **How often**, pick one of:
 
 Times use the instance timezone. Change it in **Settings → General**.
 
+### Time limit and CPU priority
+
+- **Time limit**: in minutes. A backup that runs longer is stopped and marked failed. It applies to **Back up now** too.
+- **Low CPU priority**: the dump and its compression run with `nice 19`, so apps get the CPU first. Backups take longer.
+
 ### How many to keep
 
 Older backups are deleted automatically. When you keep backups in one place, **Keep the latest** sets how many copies stay there. When you keep them in both, **Keep on this server** and **Keep in bucket** set each one. Keep more in the bucket for longer off-site history.

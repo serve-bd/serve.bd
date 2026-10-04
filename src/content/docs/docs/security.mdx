@@ -82,6 +82,13 @@ SERVE_ALLOW_PASSWORD_LOGIN=1
 
 While it is set, password sign-in stays on. Remove it again to go back to the setting in the dashboard.
 
+## API access
+
+The **API** card under **Settings → Security** controls the [REST API](/docs/api):
+
+- **Allow API requests**: when off, every API call answers `503`, whatever the token. Tokens are kept and work again when you turn it back on.
+- **Rate limit**: requests per minute for each token. The default is 200. Above it, calls answer `429` with a `Retry-After` header. `0` means no limit.
+
 ## Allowed addresses
 
 **Settings → Security → Dashboard access** has an **Allowed addresses** list. Only these IP addresses can open the dashboard. Enter one per line, like `203.0.113.7` or `10.0.0.0/8`.

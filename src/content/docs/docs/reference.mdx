@@ -86,6 +86,15 @@ If the file already has `default-address-pools`, the installer changes nothing. 
 
 If other containers run, the installer asks before it restarts Docker. If you say no, Docker is left as it is. Serve still works, but it has fewer address ranges for its networks.
 
+## Background jobs
+
+**Settings → Jobs** shows the work the worker does in the background:
+
+- Whether the worker is up.
+- **Schedulers**: work the worker repeats on its own, with each one's last run, failures and skipped runs. A run that is still going when the next one is due skips that one.
+- **Queue**: jobs running now and waiting to run, like deployments, backups and tasks.
+- **Failed jobs**: the last 7 days, newest first.
+
 ## Health endpoint
 
 The dashboard answers on `/api/health`. It checks that Serve can reach its database.

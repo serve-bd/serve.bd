@@ -1,0 +1,45 @@
+---
+title: "Tags"
+description: "Label services across projects, and deploy everything with a tag at once."
+---
+
+Tags are labels on services, shared across the projects of an organization. Use them to group services, like `production` or `frontend`, and to redeploy everything with a tag at once, from the dashboard or from CI.
+
+## Add tags
+
+- On the **Tags** page in the sidebar, choose **New tag**. Give it a **Name** and a **Color**. Names use letters, numbers, dots, dashes and underscores.
+- To tag a service, open **Settings → General → Tags**. Type a tag and press Enter.
+
+Changing tags needs the **Manage services** permission.
+
+## Deploy all
+
+On the **Tags** page, **Deploy all** deploys every service with the tag. It needs the **Deploy** permission.
+
+Project rules still apply to each service. A [deploy freeze](/docs/deployments#deploy-freezes) skips its deploy, and a project that asks for [approval](/docs/deployments#deploy-approvals) holds it until someone approves.
+
+## Deploy hook
+
+Each tag has a deploy hook. A GET or POST to it deploys every service with the tag, for example as the last step of CI. It needs no login, so keep it secret.
+
+```bash
+curl -X POST "https://serve.example.com/api/deploy-hooks/tags/<id>?token=<secret>"
+```
+
+Or send the token in the `x-deploy-token` header:
+
+```bash
+curl -X POST "https://serve.example.com/api/deploy-hooks/tags/<id>" \
+  -H "x-deploy-token: <secret>"
+```
+
+## API
+
+| Endpoint | What it does |
+| --- | --- |
+| `GET` and `POST /tags` | List tags, or create one |
+| `PATCH` and `DELETE /tags/{id}` | Rename or recolor a tag, or delete it |
+| `POST /tags/{id}/deploy` | Deploy every service with the tag |
+| `PUT /services/{id}/tags` | Set a service's tags |
+
+See the [API](/docs/api).

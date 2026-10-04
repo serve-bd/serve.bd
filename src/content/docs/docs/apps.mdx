@@ -92,6 +92,16 @@ When a container keeps restarting, the service shows a warning. A successful dep
 
 **Privileged**, **GPUs**, **Devices** and **Security options** are only available to the Root organization. **Security options** takes one per line, like `apparmor=my-profile`, `seccomp=unconfined`, `label=disable` or `systempaths=unconfined`.
 
+## Clone a service
+
+Open **Manage → Clone…** on a service to make a copy. Pick a **Name**, a **Project**, an **Environment** and a **Server**. The copy can go to another project or environment.
+
+The copy gets the same settings, variables, tags and scheduled tasks, and a generated domain if the original had one. Its tasks start turned off. Nothing is deployed until you deploy it.
+
+These stay with the original: custom domains, host ports, backup schedules and database domains. Volumes start empty. For a database, tick **Copy the data too** to copy its data. That needs the **Database backups** permission.
+
+In the [API](/docs/api): `POST /services/{id}/clone`, with `copyData: true` to copy a database's data.
+
 ## Scheduled tasks
 
 Use the **Tasks** tab to run commands on a schedule, like a cleanup job or a report.
@@ -110,7 +120,7 @@ Under **Settings → Maintenance** you can put an app behind a 503 page. You set
 
 | Page | What it controls |
 | --- | --- |
-| General | Name and basic details |
+| General | Name, tags and basic details |
 | Server | Which server runs the app |
 | Servers & registry | Build server, registry push, extra servers |
 | Source | Repository, branch, image or Dockerfile |

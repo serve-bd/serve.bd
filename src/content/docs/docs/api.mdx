@@ -99,6 +99,12 @@ Errors are JSON with a message:
 | `405` | Wrong method. The `Allow` header lists the right ones. |
 | `409` | Conflict, such as a name already in use or a deploy in progress. |
 | `413` | The body is larger than 10 MB. |
+| `429` | Too many requests for this token. Wait the seconds in the `Retry-After` header. |
+| `503` | An admin turned the API off. |
+
+### Rate limit
+
+Each token may make 200 requests per minute by default. Every response carries the `X-RateLimit-Limit`, `X-RateLimit-Remaining` and `X-RateLimit-Reset` headers. An admin changes the limit, or turns the API off, under **Settings → Security**. See [Security](/docs/security#api-access).
 
 ## Common tasks
 

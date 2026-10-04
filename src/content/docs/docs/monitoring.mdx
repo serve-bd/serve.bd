@@ -65,7 +65,7 @@ Channels used to have a **Send** filter for problems only or critical only. The 
 | Uptime & incidents | Uptime check failing, Uptime check recovered, Service crashed, Container restarting repeatedly |
 | Backups | Backup succeeded, Backup failed |
 | Certificates | Certificate issued or renewed, Certificate failed |
-| Servers | Server CPU, memory or disk high; Disk full, cleanup ran |
+| Servers | Server CPU, memory or disk high; Disk full, cleanup ran; Operating system updates available |
 | Tasks | Scheduled task failed |
 | Organization | Organization limit reached |
 | Instance | Instance backup succeeded, Instance backup failed, Update available, Instance updated, Update failed |
@@ -91,6 +91,10 @@ Each provider shows them in its own way:
 | Others | A list under the message |
 
 Links in messages use the dashboard domain, not the server's IP and port. They use `https://` when the domain answers there.
+
+### Telegram topics
+
+A Telegram channel can send to a topic in a group with the **Topic ID**. To send some events to other topics, fill in **Topics by event**, like `deploy=12, backup=15, server=20`. `deploy` covers every deployment event, and `deploy.failed` only that one. The most specific name wins. Other events go to the **Topic ID**.
 
 ### Message placeholders
 

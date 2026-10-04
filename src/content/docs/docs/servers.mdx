@@ -61,16 +61,38 @@ Each server has these pages:
 | Page | What it shows |
 | --- | --- |
 | General | Name, connection details and status. |
+| Sharing | The organization that owns the server, and the organizations it is shared with. |
+| Builds & deploys | Concurrent builds, images kept, and limits for deployments. |
 | Metrics | CPU, memory, disk and load over time. |
 | Services | The containers running on the server. |
 | Resources | Disk usage of the data directory and Docker, and the containers on the server. CPU use is a share of the whole server, so the containers add up to 100% at most. |
 | Alerts | **Resource alerts** for CPU, memory and disk. |
 | Docker cleanup | Clean up Docker now, and see past cleanups. |
+| OS updates | Package updates for the server's operating system. |
 | Domains | **Addressing** and domains on this server. See [Domains](/docs/domains). |
 | Proxy | The reverse proxy: nginx, Caddy, Traefik or None. |
 | Private network | The [private network](/docs/private-networks) this server is in. |
 | Terminal | A shell on the server in your browser. |
 | Danger zone | Remove the server. Not shown for the machine Serve runs on. |
+
+Server IP addresses are blurred until you click them, so they stay private when you share your screen.
+
+### Sharing
+
+A server belongs to one organization. Only that organization deploys to it, unless a Root admin shares it with others. The **Sharing** page shows the owner and the organizations the server is shared with.
+
+### Builds and deploys
+
+The **Builds & deploys** page has two cards.
+
+| Setting | What it does |
+| --- | --- |
+| **Concurrent builds** | How many builds the server runs at once. More need more CPU and memory. The rest wait. |
+| **Images kept per service** | Each kept image allows an instant rollback. |
+| **Time limit** | Deployments that run longer are stopped, and the previous version keeps running. Empty uses Serve's default. |
+| **Queue size** | How many deployments may wait for this server. Empty means no limit. |
+
+When the queue is full, a new deployment is refused, and a push or deploy hook is recorded as skipped. Rollbacks and first deploys never wait for the queue limit.
 
 ### Alerts
 
@@ -92,8 +114,24 @@ The schedule for every server is set under **Settings → Advanced → Automatic
 | **Clean up when disk reaches** | Runs an aggressive cleanup when the disk fills to this level, and notifies you. |
 | **Keep build cache for** | How long to keep build cache. `0` keeps it forever: faster builds, more disk. |
 | **Remove unused images** | Also deletes images no container uses that are older than a day. |
+| **Remove unused anonymous volumes** | Also deletes volumes without a name that no container uses. Off by default. Needs Docker 23 or newer (Docker API 1.42). |
+| **Remove unused networks** | Also deletes Docker networks no container uses. Off by default. |
 
-Volumes and running containers are never touched. Images kept for rollbacks stay.
+:::caution[These two work on the whole server]
+The volume and network options also remove volumes and networks of projects that Serve does not manage. Data in a removed volume can't be brought back. Named volumes are never removed. Serve's own networks, and networks a container uses, are never removed.
+:::
+
+Without those options, volumes and running containers are never touched. Images kept for rollbacks stay.
+
+## OS updates
+
+The **OS updates** page lists package updates for the server's operating system. It works with apt, dnf, yum, zypper, pacman and apk. On Arch Linux, install `pacman-contrib`: Serve uses its `checkupdates` to look for updates.
+
+- Serve checks once a week and only tells you. It sends the **Operating system updates available** notification. Choose **Check now** to look right away.
+- Serve installs updates only when you ask: pick some packages, or choose **Update all**.
+- Docker's packages are left out of **Update all**, because updating Docker restarts every container. Pick them on their own. On the server Serve runs on, Docker can't be updated from here, because it would stop Serve itself. Update it in a terminal on the host.
+- A server connected as a user other than `root` needs passwordless sudo.
+- Serve never reboots the server. The page shows when the server waits for a reboot, for example after a new kernel.
 
 ## Terminal
 

@@ -9,6 +9,15 @@
   "logo": null
  },
  {
+  "id": "9router",
+  "name": "9Router",
+  "description": "AI coding gateway that routes Claude Code, Codex, Cursor and other tools to many LLM providers with fallback.",
+  "category": "AI",
+  "website": "https://9router.com",
+  "color": "#111827",
+  "logo": null
+ },
+ {
   "id": "activepieces",
   "name": "Activepieces",
   "description": "No-code workflow automation with hundreds of integrations.",
@@ -63,6 +72,15 @@
   "logo": "/templates/akaunting.svg"
  },
  {
+  "id": "alexandrie",
+  "name": "Alexandrie",
+  "description": "Markdown note-taking workspace for knowledge bases, personal wikis and documents.",
+  "category": "Productivity",
+  "website": "https://alexandrie-hub.fr",
+  "color": "#6366F1",
+  "logo": null
+ },
+ {
   "id": "ampache",
   "name": "Ampache",
   "description": "Web based audio and video streaming server for your music library.",
@@ -87,6 +105,15 @@
   "category": "AI",
   "website": "https://anythingllm.com",
   "color": "#0E0F0F",
+  "logo": null
+ },
+ {
+  "id": "appflowy",
+  "name": "AppFlowy",
+  "description": "Open source workspace for notes, wikis, tasks and databases, a self-hosted alternative to Notion.",
+  "category": "Productivity",
+  "website": "https://appflowy.com",
+  "color": "#8427E0",
   "logo": null
  },
  {
@@ -117,6 +144,15 @@
   "logo": "/templates/arangodb.svg"
  },
  {
+  "id": "argilla",
+  "name": "Argilla",
+  "description": "Collaboration tool for AI engineers and domain experts to label and curate high-quality datasets.",
+  "category": "AI",
+  "website": "https://argilla.io",
+  "color": "#FF675F",
+  "logo": null
+ },
+ {
   "id": "audiobookshelf",
   "name": "Audiobookshelf",
   "description": "Audiobook and podcast server with mobile apps.",
@@ -144,12 +180,39 @@
   "logo": "/templates/authentik.svg"
  },
  {
+  "id": "autobase",
+  "name": "Autobase",
+  "description": "Console to deploy and manage highly available PostgreSQL clusters on your own servers or cloud providers.",
+  "category": "Databases",
+  "website": "https://autobase.tech",
+  "color": "#2F6BF5",
+  "logo": null
+ },
+ {
   "id": "automatisch",
   "name": "Automatisch",
   "description": "Open-source business automation to connect apps without code.",
   "category": "Automation",
   "website": "https://automatisch.io",
   "color": "#6E3AD8",
+  "logo": null
+ },
+ {
+  "id": "azimutt",
+  "name": "Azimutt",
+  "description": "Database explorer and ERD tool to design, explore, document and analyze large schemas.",
+  "category": "Developer tools",
+  "website": "https://azimutt.app",
+  "color": "#4F46E5",
+  "logo": null
+ },
+ {
+  "id": "babybuddy",
+  "name": "Baby Buddy",
+  "description": "Track a baby's sleep, feedings, diaper changes and growth to learn their needs.",
+  "category": "Productivity",
+  "website": "https://docs.baby-buddy.net",
+  "color": "#35B5E5",
   "logo": null
  },
  {
@@ -180,6 +243,15 @@
   "logo": null
  },
  {
+  "id": "bento-pdf",
+  "name": "BentoPDF",
+  "description": "PDF toolkit that merges, splits, converts and edits PDFs right in the browser, so files never leave the device.",
+  "category": "Productivity",
+  "website": "https://bentopdf.com",
+  "color": "#4F46E5",
+  "logo": null
+ },
+ {
   "id": "beszel",
   "name": "Beszel",
   "description": "Lightweight server monitoring with Docker stats, history and alerts.",
@@ -205,6 +277,15 @@
   "website": "https://blinko.space",
   "color": "#2D2D2D",
   "logo": null
+ },
+ {
+  "id": "bluesky-pds",
+  "name": "Bluesky PDS",
+  "description": "Personal Data Server that hosts your own Bluesky accounts and data on the AT Protocol network.",
+  "category": "Communication",
+  "website": "https://github.com/bluesky-social/pds",
+  "color": "#1185FE",
+  "logo": "/templates/bluesky-pds.svg"
  },
  {
   "id": "booklore",
@@ -234,6 +315,15 @@
   "logo": null
  },
  {
+  "id": "budge",
+  "name": "Budge",
+  "description": "Envelope budgeting app for personal finance, with accounts, categories and monthly budgets.",
+  "category": "Productivity",
+  "website": "https://github.com/linuxserver/budge",
+  "color": "#2E7D32",
+  "logo": null
+ },
+ {
   "id": "budibase",
   "name": "Budibase",
   "description": "Low-code platform for internal tools, forms and workflows.",
@@ -241,6 +331,33 @@
   "website": "https://budibase.com",
   "color": "#000000",
   "logo": "/templates/budibase.svg"
+ },
+ {
+  "id": "bugsink",
+  "name": "Bugsink",
+  "description": "Error tracking that works with the Sentry SDKs, light enough to run on one small server.",
+  "category": "Monitoring",
+  "website": "https://www.bugsink.com",
+  "color": "#1E293B",
+  "logo": null
+ },
+ {
+  "id": "bulwark",
+  "name": "Bulwark",
+  "description": "JMAP webmail with mail, calendar, contacts and files, built for Stalwart and other JMAP servers.",
+  "category": "Communication",
+  "website": "https://bulwarkmail.org",
+  "color": "#1D4ED8",
+  "logo": null
+ },
+ {
+  "id": "buzz",
+  "name": "Buzz",
+  "description": "Workspace where people and AI agents share chat rooms, built on a Nostr relay you own.",
+  "category": "Communication",
+  "website": "https://github.com/block/buzz",
+  "color": "#F5B700",
+  "logo": null
  },
  {
   "id": "cadvisor",
@@ -279,6 +396,33 @@
   "logo": "/templates/calibre-web.svg"
  },
  {
+  "id": "cap",
+  "name": "Cap",
+  "description": "Open source screen recorder and Loom alternative: record, upload and share videos with a link.",
+  "category": "Media",
+  "website": "https://cap.so",
+  "color": "#1C64F2",
+  "logo": null
+ },
+ {
+  "id": "cap-captcha",
+  "name": "Cap CAPTCHA",
+  "description": "Self-hosted proof-of-work CAPTCHA that protects forms from bots without tracking visitors.",
+  "category": "Security",
+  "website": "https://capjs.js.org",
+  "color": "#0F172A",
+  "logo": null
+ },
+ {
+  "id": "castopod",
+  "name": "Castopod",
+  "description": "Podcast hosting platform with its own RSS feeds, analytics and fediverse integration.",
+  "category": "Media",
+  "website": "https://castopod.org",
+  "color": "#009486",
+  "logo": null
+ },
+ {
   "id": "changedetection",
   "name": "changedetection.io",
   "description": "Watch websites for changes and get notified.",
@@ -297,6 +441,15 @@
   "logo": "/templates/chatwoot.svg"
  },
  {
+  "id": "checkmate",
+  "name": "Checkmate",
+  "description": "Uptime and server monitoring with status pages, incidents and alerts.",
+  "category": "Monitoring",
+  "website": "https://checkmate.so",
+  "color": "#13715B",
+  "logo": null
+ },
+ {
   "id": "checkmk",
   "name": "Checkmk",
   "description": "Infrastructure and app monitoring, Raw Edition.",
@@ -306,12 +459,48 @@
   "logo": "/templates/checkmk.svg"
  },
  {
+  "id": "chibisafe",
+  "name": "Chibisafe",
+  "description": "File uploader and vault with albums, share links and ShareX support.",
+  "category": "Storage",
+  "website": "https://chibisafe.app",
+  "color": "#E11D48",
+  "logo": null
+ },
+ {
   "id": "chromadb",
   "name": "Chroma",
   "description": "Open-source embedding database for AI applications.",
   "category": "Databases",
   "website": "https://www.trychroma.com",
   "color": "#E8590C",
+  "logo": null
+ },
+ {
+  "id": "classicpress",
+  "name": "ClassicPress",
+  "description": "Lightweight CMS based on WordPress with the classic editor and no block editor, with MariaDB.",
+  "category": "CMS",
+  "website": "https://www.classicpress.net",
+  "color": "#057F99",
+  "logo": null
+ },
+ {
+  "id": "classicpress-mysql",
+  "name": "ClassicPress (MySQL)",
+  "description": "Lightweight CMS based on WordPress with the classic editor and no block editor, with MySQL.",
+  "category": "CMS",
+  "website": "https://www.classicpress.net",
+  "color": "#057F99",
+  "logo": null
+ },
+ {
+  "id": "classicpress-standalone",
+  "name": "ClassicPress (no database)",
+  "description": "Lightweight CMS based on WordPress with the classic editor, connected to a MySQL or MariaDB database you already run.",
+  "category": "CMS",
+  "website": "https://www.classicpress.net",
+  "color": "#057F99",
   "logo": null
  },
  {
@@ -342,6 +531,15 @@
   "logo": null
  },
  {
+  "id": "cockpit",
+  "name": "Cockpit CMS",
+  "description": "Lightweight headless CMS with an API for any frontend.",
+  "category": "CMS",
+  "website": "https://getcockpit.com",
+  "color": "#2D2D2D",
+  "logo": null
+ },
+ {
   "id": "code-server",
   "name": "code-server",
   "description": "VS Code in the browser, running on your server.",
@@ -358,6 +556,15 @@
   "website": "https://coder.com",
   "color": "#090B0B",
   "logo": "/templates/coder.svg"
+ },
+ {
+  "id": "codimd",
+  "name": "CodiMD",
+  "description": "Collaborative Markdown notes that several people can edit in real time.",
+  "category": "Productivity",
+  "website": "https://github.com/hackmdio/codimd",
+  "color": "#453AFF",
+  "logo": "/templates/codimd.svg"
  },
  {
   "id": "collabora",
@@ -387,6 +594,15 @@
   "logo": null
  },
  {
+  "id": "convex",
+  "name": "Convex",
+  "description": "Reactive backend with a database, server functions and file storage, plus its dashboard.",
+  "category": "Databases",
+  "website": "https://www.convex.dev",
+  "color": "#EE342F",
+  "logo": "/templates/convex.svg"
+ },
+ {
   "id": "copyparty",
   "name": "copyparty",
   "description": "A file server with resumable uploads, media indexing, thumbnails and WebDAV.",
@@ -411,6 +627,15 @@
   "category": "Automation",
   "website": "https://github.com/jhuckaby/Cronicle",
   "color": "#3F7ED5",
+  "logo": null
+ },
+ {
+  "id": "cryptgeon",
+  "name": "Cryptgeon",
+  "description": "Share notes and files that are encrypted in the browser and deleted after a set number of views or time.",
+  "category": "Security",
+  "website": "https://github.com/cupcakearmy/cryptgeon",
+  "color": "#1F2937",
   "logo": null
  },
  {
@@ -441,6 +666,15 @@
   "logo": null
  },
  {
+  "id": "databasus",
+  "name": "Databasus",
+  "description": "Scheduled backups for PostgreSQL, MySQL and MongoDB to local disk or cloud storage, with a web UI.",
+  "category": "Databases",
+  "website": "https://databasus.com",
+  "color": "#155DFC",
+  "logo": null
+ },
+ {
   "id": "dbgate",
   "name": "DbGate",
   "description": "A database manager in the browser for Postgres, MySQL, MongoDB, Redis and more.",
@@ -448,6 +682,15 @@
   "website": "https://dbgate.org",
   "color": "#1B6EC2",
   "logo": null
+ },
+ {
+  "id": "deno-kv",
+  "name": "Deno KV",
+  "description": "Self-hosted Deno KV database that Deno apps reach over the KV Connect protocol.",
+  "category": "Databases",
+  "website": "https://github.com/denoland/denokv",
+  "color": "#000000",
+  "logo": "/templates/deno-kv.svg"
  },
  {
   "id": "directus",
@@ -492,6 +735,15 @@
   "category": "Developer tools",
   "website": "https://dockge.kuma.pet",
   "color": "#74C2FF",
+  "logo": null
+ },
+ {
+  "id": "docling",
+  "name": "Docling",
+  "description": "API and web UI that turn PDF, Office, HTML and image files into Markdown or JSON for AI pipelines.",
+  "category": "AI",
+  "website": "https://github.com/docling-project/docling-serve",
+  "color": "#1F2937",
   "logo": null
  },
  {
@@ -565,6 +817,15 @@
   "website": "https://www.drawio.com",
   "color": "#F08705",
   "logo": "/templates/drawio.svg"
+ },
+ {
+  "id": "drizzle-gateway",
+  "name": "Drizzle Gateway",
+  "description": "Self-hosted Drizzle Studio to browse and edit your PostgreSQL, MySQL and SQLite databases.",
+  "category": "Databases",
+  "website": "https://gateway.drizzle.team",
+  "color": "#121212",
+  "logo": "/templates/drizzle-gateway.svg"
  },
  {
   "id": "drupal",
@@ -657,6 +918,24 @@
   "logo": null
  },
  {
+  "id": "engram",
+  "name": "Engram Cloud",
+  "description": "Sync server that shares the memory of AI coding agents across machines, with a dashboard.",
+  "category": "AI",
+  "website": "https://github.com/Gentleman-Programming/engram",
+  "color": "#7C3AED",
+  "logo": null
+ },
+ {
+  "id": "ente-photos",
+  "name": "Ente Photos",
+  "description": "End-to-end encrypted photo and video backup with apps for phones and desktops, with MinIO for storage.",
+  "category": "Media",
+  "website": "https://ente.io",
+  "color": "#00BC45",
+  "logo": "/templates/ente-photos.svg"
+ },
+ {
   "id": "erpnext",
   "name": "ERPNext",
   "description": "Open source ERP for accounting, inventory, sales, HR and manufacturing, with MariaDB and Redis.",
@@ -664,6 +943,15 @@
   "website": "https://erpnext.com",
   "color": "#0089FF",
   "logo": "/templates/erpnext.svg"
+ },
+ {
+  "id": "esphome",
+  "name": "ESPHome",
+  "description": "Dashboard to build and flash firmware for ESP32 and ESP8266 devices from simple YAML files.",
+  "category": "Automation",
+  "website": "https://esphome.io",
+  "color": "#18BCF2",
+  "logo": "/templates/esphome.svg"
  },
  {
   "id": "espocrm",
@@ -684,6 +972,15 @@
   "logo": null
  },
  {
+  "id": "evolution-api",
+  "name": "Evolution API",
+  "description": "REST API for WhatsApp that connects bots, CRMs and automation tools to your numbers.",
+  "category": "Communication",
+  "website": "https://doc.evolution-api.com",
+  "color": "#25D366",
+  "logo": null
+ },
+ {
   "id": "excalidraw",
   "name": "Excalidraw",
   "description": "Virtual whiteboard for hand-drawn style diagrams.",
@@ -693,12 +990,30 @@
   "logo": "/templates/excalidraw.svg"
  },
  {
+  "id": "executor",
+  "name": "Executor",
+  "description": "Server that gives AI agents your integrations and a sandbox to run code, over MCP and a web console.",
+  "category": "AI",
+  "website": "https://executor.sh",
+  "color": "#18181B",
+  "logo": null
+ },
+ {
   "id": "ezbookkeeping",
   "name": "ezBookkeeping",
   "description": "Personal finance app to track income, spending and accounts.",
   "category": "Productivity",
   "website": "https://ezbookkeeping.mayswind.net",
   "color": "#C67E48",
+  "logo": null
+ },
+ {
+  "id": "faraday",
+  "name": "Faraday",
+  "description": "Vulnerability management platform that gathers results from security tools into one place for a team.",
+  "category": "Security",
+  "website": "https://faradaysec.com",
+  "color": "#1E3A8A",
   "logo": null
  },
  {
@@ -720,6 +1035,15 @@
   "logo": null
  },
  {
+  "id": "fileflows",
+  "name": "FileFlows",
+  "description": "Processes media files with visual flows: convert video and audio, rename and sort files automatically.",
+  "category": "Media",
+  "website": "https://fileflows.com",
+  "color": "#1E88E5",
+  "logo": null
+ },
+ {
   "id": "filestash",
   "name": "Filestash",
   "description": "A web file manager for S3, SFTP, FTP, WebDAV, Git and more.",
@@ -738,12 +1062,30 @@
   "logo": "/templates/firefly-iii.svg"
  },
  {
+  "id": "firefox",
+  "name": "Firefox",
+  "description": "Firefox running on the server, used from any web browser.",
+  "category": "Productivity",
+  "website": "https://github.com/jlesage/docker-firefox",
+  "color": "#FF7139",
+  "logo": "/templates/firefox.svg"
+ },
+ {
   "id": "fittrackee",
   "name": "FitTrackee",
   "description": "Track outdoor activities from GPX files with maps and statistics, with PostgreSQL and PostGIS.",
   "category": "Productivity",
   "website": "https://docs.fittrackee.org",
   "color": "#2A6F97",
+  "logo": null
+ },
+ {
+  "id": "fizzy",
+  "name": "Fizzy",
+  "description": "Simple kanban boards for tracking issues and ideas, made by 37signals.",
+  "category": "Productivity",
+  "website": "https://www.fizzy.do",
+  "color": "#2563EB",
   "logo": null
  },
  {
@@ -762,6 +1104,15 @@
   "category": "Communication",
   "website": "https://flarum.org",
   "color": "#E7672E",
+  "logo": null
+ },
+ {
+  "id": "flipt",
+  "name": "Flipt",
+  "description": "Feature flag server with a web UI and APIs for gradual rollouts and experiments.",
+  "category": "Developer tools",
+  "website": "https://www.flipt.io",
+  "color": "#7E22CE",
   "logo": null
  },
  {
@@ -810,6 +1161,24 @@
   "logo": "/templates/formbricks.svg"
  },
  {
+  "id": "foundryvtt",
+  "name": "Foundry Virtual Tabletop",
+  "description": "Virtual tabletop for playing role-playing games online with friends.",
+  "category": "Media",
+  "website": "https://foundryvtt.com",
+  "color": "#FE6A1F",
+  "logo": "/templates/foundryvtt.svg"
+ },
+ {
+  "id": "freescout",
+  "name": "FreeScout",
+  "description": "Help desk and shared inbox for answering customer email as a team.",
+  "category": "Communication",
+  "website": "https://freescout.net",
+  "color": "#3B82F6",
+  "logo": null
+ },
+ {
   "id": "freshrss",
   "name": "FreshRSS",
   "description": "Fast, self-hosted RSS and Atom feed reader.",
@@ -817,6 +1186,15 @@
   "website": "https://freshrss.org",
   "color": "#0062BE",
   "logo": "/templates/freshrss.svg"
+ },
+ {
+  "id": "garage",
+  "name": "Garage",
+  "description": "Lightweight S3-compatible object storage, run here as a single node.",
+  "category": "Storage",
+  "website": "https://garagehq.deuxfleurs.fr",
+  "color": "#FF9329",
+  "logo": null
  },
  {
   "id": "gatus",
@@ -963,6 +1341,15 @@
   "logo": null
  },
  {
+  "id": "gowa",
+  "name": "GOWA",
+  "description": "WhatsApp REST API and web panel that links to your account like WhatsApp Web, with webhooks for incoming messages.",
+  "category": "Communication",
+  "website": "https://github.com/aldinokemal/go-whatsapp-web-multidevice",
+  "color": "#25D366",
+  "logo": null
+ },
+ {
   "id": "grafana",
   "name": "Grafana",
   "description": "Dashboards and visualisation for metrics and logs.",
@@ -970,6 +1357,15 @@
   "website": "https://grafana.com",
   "color": "#F46800",
   "logo": "/templates/grafana.svg"
+ },
+ {
+  "id": "gramps-web",
+  "name": "Gramps Web",
+  "description": "Genealogy web app to build and share your family tree together, compatible with Gramps desktop.",
+  "category": "Productivity",
+  "website": "https://www.grampsweb.org",
+  "color": "#6D4C41",
+  "logo": null
  },
  {
   "id": "grav",
@@ -988,6 +1384,15 @@
   "website": "https://graylog.org",
   "color": "#FF3633",
   "logo": "/templates/graylog.svg"
+ },
+ {
+  "id": "grimmory",
+  "name": "Grimmory",
+  "description": "Library for your ebooks and comics: organize, read and annotate in the browser, and sync with e-readers.",
+  "category": "Media",
+  "website": "https://github.com/grimmory-tools/grimmory",
+  "color": "#7C3AED",
+  "logo": null
  },
  {
   "id": "grocy",
@@ -1014,6 +1419,15 @@
   "category": "Media",
   "website": "https://handbrake.fr",
   "color": "#D9532C",
+  "logo": null
+ },
+ {
+  "id": "hatchet",
+  "name": "Hatchet",
+  "description": "Task queue and workflow engine for background jobs, with retries, scheduling and a dashboard.",
+  "category": "Automation",
+  "website": "https://hatchet.run",
+  "color": "#0A1029",
   "logo": null
  },
  {
@@ -1050,6 +1464,24 @@
   "category": "Productivity",
   "website": "https://heimdall.site",
   "color": "#2B6CB0",
+  "logo": null
+ },
+ {
+  "id": "hermes-agent",
+  "name": "Hermes Agent",
+  "description": "Autonomous AI agent with long-term memory, skills and scheduled tasks, managed from a web dashboard.",
+  "category": "AI",
+  "website": "https://github.com/NousResearch/hermes-agent",
+  "color": "#1E1B4B",
+  "logo": null
+ },
+ {
+  "id": "heyform",
+  "name": "HeyForm",
+  "description": "Conversational form builder for surveys, quizzes and polls, with no code needed.",
+  "category": "Productivity",
+  "website": "https://heyform.net",
+  "color": "#1F2937",
   "logo": null
  },
  {
@@ -1134,6 +1566,15 @@
   "logo": null
  },
  {
+  "id": "imgcompress",
+  "name": "ImgCompress",
+  "description": "Compress and convert images in the browser, with offline AI background removal. Files stay on your server.",
+  "category": "Media",
+  "website": "https://imgcompress.karimzouine.com",
+  "color": "#2563EB",
+  "logo": null
+ },
+ {
   "id": "immich",
   "name": "Immich",
   "description": "Photo and video backup with face recognition. A Google Photos alternative.",
@@ -1159,6 +1600,15 @@
   "website": "https://www.influxdata.com",
   "color": "#22ADF6",
   "logo": "/templates/influxdb.svg"
+ },
+ {
+  "id": "inngest",
+  "name": "Inngest",
+  "description": "Durable workflow engine for background jobs, queues and scheduled functions, with a dashboard.",
+  "category": "Automation",
+  "website": "https://www.inngest.com",
+  "color": "#000000",
+  "logo": null
  },
  {
   "id": "invidious",
@@ -1249,6 +1699,15 @@
   "website": "https://www.jenkins.io",
   "color": "#D24939",
   "logo": "/templates/jenkins.svg"
+ },
+ {
+  "id": "jitsi",
+  "name": "Jitsi Meet",
+  "description": "Video meetings in the browser, with screen sharing and chat. No account needed to join.",
+  "category": "Communication",
+  "website": "https://jitsi.org/jitsi-meet/",
+  "color": "#1D76BA",
+  "logo": "/templates/jitsi.svg"
  },
  {
   "id": "joomla",
@@ -1467,6 +1926,24 @@
   "logo": null
  },
  {
+  "id": "kuzzle",
+  "name": "Kuzzle",
+  "description": "Backend for web, mobile and IoT apps: realtime database, pub/sub, users and permissions over HTTP and WebSocket.",
+  "category": "Developer tools",
+  "website": "https://kuzzle.io",
+  "color": "#002835",
+  "logo": null
+ },
+ {
+  "id": "labelstudio",
+  "name": "Label Studio",
+  "description": "Data labeling tool for text, images, audio and video, to prepare training data for machine learning.",
+  "category": "AI",
+  "website": "https://labelstud.io",
+  "color": "#FF7557",
+  "logo": null
+ },
+ {
   "id": "langflow",
   "name": "Langflow",
   "description": "Visual builder for AI agents and RAG workflows.",
@@ -1519,6 +1996,15 @@
   "website": "https://www.librenms.org",
   "color": "#E57E1C",
   "logo": null
+ },
+ {
+  "id": "libreoffice",
+  "name": "LibreOffice",
+  "description": "The LibreOffice desktop suite in your browser: documents, spreadsheets and presentations.",
+  "category": "Productivity",
+  "website": "https://www.libreoffice.org",
+  "color": "#18A303",
+  "logo": "/templates/libreoffice.svg"
  },
  {
   "id": "librespeed",
@@ -1683,6 +2169,15 @@
   "logo": null
  },
  {
+  "id": "mage-ai",
+  "name": "Mage",
+  "description": "Build, run and schedule data pipelines in Python, SQL and R, with a notebook-style editor.",
+  "category": "Automation",
+  "website": "https://www.mage.ai",
+  "color": "#6B50D7",
+  "logo": null
+ },
+ {
   "id": "mailpit",
   "name": "Mailpit",
   "description": "Email testing: catch outgoing mail over SMTP and read it in a web UI.",
@@ -1708,6 +2203,24 @@
   "website": "https://maintainerr.info",
   "color": "#EAB308",
   "logo": null
+ },
+ {
+  "id": "marimo",
+  "name": "marimo",
+  "description": "Reactive Python notebooks that are stored as plain scripts, with SQL built in and a way to share notebooks as apps.",
+  "category": "Developer tools",
+  "website": "https://marimo.io",
+  "color": "#1C7361",
+  "logo": null
+ },
+ {
+  "id": "martin",
+  "name": "Martin",
+  "description": "Vector tile server that serves map tiles straight from PostGIS tables and functions.",
+  "category": "Developer tools",
+  "website": "https://maplibre.org/martin/",
+  "color": "#396CB2",
+  "logo": "/templates/martin.svg"
  },
  {
   "id": "mastodon",
@@ -1809,6 +2322,15 @@
   "logo": "/templates/metabase-mysql.svg"
  },
  {
+  "id": "metamcp",
+  "name": "MetaMCP",
+  "description": "Gateway that groups many MCP servers behind one endpoint, with namespaces, tool filtering and API keys.",
+  "category": "AI",
+  "website": "https://github.com/metatool-ai/metamcp",
+  "color": "#111827",
+  "logo": null
+ },
+ {
   "id": "metube",
   "name": "MeTube",
   "description": "A web interface for yt-dlp to download videos from YouTube and many other sites.",
@@ -1824,6 +2346,15 @@
   "category": "Productivity",
   "website": "https://microbin.eu",
   "color": "#4E7BB8",
+  "logo": null
+ },
+ {
+  "id": "mindsdb",
+  "name": "MindsDB",
+  "description": "Query engine that connects your databases and apps to AI models and agents with SQL.",
+  "category": "AI",
+  "website": "https://mindsdb.com",
+  "color": "#00B06D",
   "logo": null
  },
  {
@@ -1881,6 +2412,24 @@
   "logo": "/templates/monica.svg"
  },
  {
+  "id": "moodle",
+  "name": "Moodle",
+  "description": "Learning platform for online courses, quizzes and grading.",
+  "category": "Productivity",
+  "website": "https://moodle.org",
+  "color": "#F98012",
+  "logo": "/templates/moodle.svg"
+ },
+ {
+  "id": "mosquitto",
+  "name": "Mosquitto",
+  "description": "Lightweight MQTT broker from the Eclipse Foundation.",
+  "category": "Developer tools",
+  "website": "https://mosquitto.org",
+  "color": "#3C5280",
+  "logo": "/templates/mosquitto.svg"
+ },
+ {
   "id": "n8n",
   "name": "n8n",
   "description": "Workflow automation with a visual editor and 400+ integrations.",
@@ -1935,6 +2484,15 @@
   "logo": "/templates/neo4j.svg"
  },
  {
+  "id": "neon-ws-proxy",
+  "name": "Neon WebSocket Proxy",
+  "description": "Postgres behind a WebSocket proxy, so the Neon serverless driver can reach it from edge and serverless code.",
+  "category": "Databases",
+  "website": "https://github.com/neondatabase/wsproxy",
+  "color": "#34D59A",
+  "logo": "/templates/neon-ws-proxy.svg"
+ },
+ {
   "id": "netdata",
   "name": "Netdata",
   "description": "Real-time, per-second metrics for the server and its containers.",
@@ -1942,6 +2500,15 @@
   "website": "https://www.netdata.cloud",
   "color": "#00AB44",
   "logo": "/templates/netdata.svg"
+ },
+ {
+  "id": "new-api",
+  "name": "New API",
+  "description": "Gateway that puts many AI model providers behind one OpenAI-compatible API, with keys, quotas and usage logs.",
+  "category": "AI",
+  "website": "https://github.com/QuantumNous/new-api",
+  "color": "#1E293B",
+  "logo": null
  },
  {
   "id": "nextchat",
@@ -1989,6 +2556,33 @@
   "logo": "/templates/nexus.svg"
  },
  {
+  "id": "nitropage",
+  "name": "Nitropage",
+  "description": "Visual page builder for websites made from reusable building blocks.",
+  "category": "CMS",
+  "website": "https://nitropage.org",
+  "color": "#0F172A",
+  "logo": null
+ },
+ {
+  "id": "nitropage-sqlite",
+  "name": "Nitropage (SQLite)",
+  "description": "Visual page builder for websites made from reusable building blocks, with SQLite.",
+  "category": "CMS",
+  "website": "https://nitropage.org",
+  "color": "#0F172A",
+  "logo": null
+ },
+ {
+  "id": "nocobase",
+  "name": "NocoBase",
+  "description": "No-code platform to build internal tools, CRMs and business apps on your own data model.",
+  "category": "Productivity",
+  "website": "https://www.nocobase.com",
+  "color": "#1677FF",
+  "logo": null
+ },
+ {
   "id": "nocodb",
   "name": "NocoDB",
   "description": "Turn a database into a smart spreadsheet. An Airtable alternative.",
@@ -2034,6 +2628,24 @@
   "logo": "/templates/ntfy.svg"
  },
  {
+  "id": "observium",
+  "name": "Observium",
+  "description": "Network monitoring that discovers switches, routers and servers over SNMP and graphs their health.",
+  "category": "Monitoring",
+  "website": "https://www.observium.org",
+  "color": "#1F5F99",
+  "logo": null
+ },
+ {
+  "id": "obsidian",
+  "name": "Obsidian",
+  "description": "The Obsidian notes app as a full desktop app in your browser, with vaults kept on the server.",
+  "category": "Productivity",
+  "website": "https://obsidian.md",
+  "color": "#7C3AED",
+  "logo": "/templates/obsidian.svg"
+ },
+ {
   "id": "ocis",
   "name": "ownCloud Infinite Scale",
   "description": "File sync and sharing platform with spaces, built in Go.",
@@ -2070,12 +2682,30 @@
   "logo": null
  },
  {
+  "id": "once-campfire",
+  "name": "Campfire",
+  "description": "Simple group chat with rooms, direct messages, file sharing and bots, from Basecamp.",
+  "category": "Communication",
+  "website": "https://github.com/basecamp/once-campfire",
+  "color": "#1D2D35",
+  "logo": null
+ },
+ {
   "id": "onedev",
   "name": "OneDev",
   "description": "Git server with CI/CD, kanban boards and package registries.",
   "category": "Developer tools",
   "website": "https://onedev.io",
   "color": "#2563EB",
+  "logo": null
+ },
+ {
+  "id": "onetimesecret",
+  "name": "Onetime Secret",
+  "description": "Share passwords and other secrets through links that work only once.",
+  "category": "Security",
+  "website": "https://onetimesecret.com",
+  "color": "#DC4A22",
   "logo": null
  },
  {
@@ -2086,6 +2716,15 @@
   "website": "https://www.onlyoffice.com",
   "color": "#FF6F3D",
   "logo": "/templates/onlyoffice.svg"
+ },
+ {
+  "id": "open-archiver",
+  "name": "Open Archiver",
+  "description": "Archive and search email from Google Workspace, Microsoft 365 and IMAP accounts.",
+  "category": "Productivity",
+  "website": "https://openarchiver.com",
+  "color": "#2563EB",
+  "logo": null
  },
  {
   "id": "open-webui",
@@ -2124,6 +2763,15 @@
   "logo": null
  },
  {
+  "id": "openpanel",
+  "name": "OpenPanel",
+  "description": "Web and product analytics with events, funnels, retention and real-time dashboards.",
+  "category": "Analytics",
+  "website": "https://openpanel.dev",
+  "color": "#2563EB",
+  "logo": null
+ },
+ {
   "id": "openproject",
   "name": "OpenProject",
   "description": "Project management with Gantt charts, agile boards, time tracking and wikis.",
@@ -2151,6 +2799,51 @@
   "logo": null
  },
  {
+  "id": "openwa",
+  "name": "OpenWA",
+  "description": "Self-hosted WhatsApp HTTP API with a dashboard, for sending and receiving messages from your own apps.",
+  "category": "Communication",
+  "website": "https://github.com/rmyndharis/OpenWA",
+  "color": "#25D366",
+  "logo": null
+ },
+ {
+  "id": "openwa-postgres",
+  "name": "OpenWA (PostgreSQL)",
+  "description": "Self-hosted WhatsApp HTTP API with a dashboard, with PostgreSQL and Redis for queues and many sessions.",
+  "category": "Communication",
+  "website": "https://github.com/rmyndharis/OpenWA",
+  "color": "#25D366",
+  "logo": null
+ },
+ {
+  "id": "opnform",
+  "name": "OpnForm",
+  "description": "Form builder for surveys, contact forms and sign-ups, with unlimited forms and submissions.",
+  "category": "Productivity",
+  "website": "https://opnform.com",
+  "color": "#2563EB",
+  "logo": null
+ },
+ {
+  "id": "orangehrm",
+  "name": "OrangeHRM",
+  "description": "HR management for employee records, leave, time tracking, recruitment and performance reviews.",
+  "category": "Productivity",
+  "website": "https://www.orangehrm.com",
+  "color": "#F28C38",
+  "logo": null
+ },
+ {
+  "id": "organizr",
+  "name": "Organizr",
+  "description": "Homepage that puts your self-hosted services in tabs behind one login.",
+  "category": "Productivity",
+  "website": "https://organizr.app",
+  "color": "#2D9CDB",
+  "logo": null
+ },
+ {
   "id": "outline",
   "name": "Outline",
   "description": "Fast, collaborative knowledge base and wiki for teams, with PostgreSQL and Redis.",
@@ -2169,12 +2862,30 @@
   "logo": null
  },
  {
+  "id": "owncloud",
+  "name": "ownCloud",
+  "description": "File sync and sharing server with desktop and mobile clients (ownCloud Server 10).",
+  "category": "Storage",
+  "website": "https://owncloud.com",
+  "color": "#041E42",
+  "logo": "/templates/owncloud.svg"
+ },
+ {
   "id": "pairdrop",
   "name": "PairDrop",
   "description": "Send files between devices in the browser. An AirDrop alternative.",
   "category": "Storage",
   "website": "https://pairdrop.net",
   "color": "#4285F4",
+  "logo": null
+ },
+ {
+  "id": "palworld",
+  "name": "Palworld",
+  "description": "Dedicated server for the game Palworld, with automatic updates and backups.",
+  "category": "Media",
+  "website": "https://github.com/thijsvanloef/palworld-server-docker",
+  "color": "#1E88E5",
   "logo": null
  },
  {
@@ -2196,6 +2907,15 @@
   "logo": "/templates/passbolt.svg"
  },
  {
+  "id": "paymenter",
+  "name": "Paymenter",
+  "description": "Billing and client portal for hosting companies, with invoices, products and automatic server provisioning.",
+  "category": "Productivity",
+  "website": "https://paymenter.org",
+  "color": "#4F46E5",
+  "logo": null
+ },
+ {
   "id": "peertube",
   "name": "PeerTube",
   "description": "Decentralized video hosting that federates with the Fediverse.",
@@ -2214,6 +2934,15 @@
   "logo": "/templates/penpot.svg"
  },
  {
+  "id": "peppermint",
+  "name": "Peppermint",
+  "description": "Help desk and issue tracker for support teams, with tickets, clients and a knowledge base.",
+  "category": "Productivity",
+  "website": "https://peppermint.sh",
+  "color": "#10B981",
+  "logo": null
+ },
+ {
   "id": "pgadmin",
   "name": "pgAdmin",
   "description": "Web administration tool for PostgreSQL.",
@@ -2221,6 +2950,15 @@
   "website": "https://www.pgadmin.org",
   "color": "#336791",
   "logo": "/templates/pgadmin.svg"
+ },
+ {
+  "id": "pgbackweb",
+  "name": "PG Back Web",
+  "description": "Web UI to schedule PostgreSQL backups to local storage or S3 and restore them.",
+  "category": "Databases",
+  "website": "https://github.com/eduardolat/pgbackweb",
+  "color": "#336791",
+  "logo": null
  },
  {
   "id": "pgweb",
@@ -2295,6 +3033,24 @@
   "logo": null
  },
  {
+  "id": "pingvinshare",
+  "name": "Pingvin Share",
+  "description": "File sharing platform to upload files and share them with a link, with expiry and passwords.",
+  "category": "Storage",
+  "website": "https://github.com/stonith404/pingvin-share",
+  "color": "#46509E",
+  "logo": null
+ },
+ {
+  "id": "pingvinshare-with-clamav",
+  "name": "Pingvin Share (ClamAV)",
+  "description": "File sharing platform with ClamAV, which scans every upload and removes infected files.",
+  "category": "Storage",
+  "website": "https://github.com/stonith404/pingvin-share",
+  "color": "#46509E",
+  "logo": null
+ },
+ {
   "id": "piwigo",
   "name": "Piwigo",
   "description": "Photo gallery for organizing and sharing large photo collections, with MariaDB.",
@@ -2311,6 +3067,15 @@
   "website": "https://pixelfed.org",
   "color": "#6366F1",
   "logo": "/templates/pixelfed.svg"
+ },
+ {
+  "id": "plane",
+  "name": "Plane",
+  "description": "Project management for software teams: issues, cycles, modules, pages and roadmaps.",
+  "category": "Productivity",
+  "website": "https://plane.so",
+  "color": "#3F76FF",
+  "logo": "/templates/plane.svg"
  },
  {
   "id": "planka",
@@ -2340,6 +3105,15 @@
   "logo": "/templates/plex.svg"
  },
  {
+  "id": "plunk",
+  "name": "Plunk",
+  "description": "Email platform for transactional mail, newsletters and automations, sending through AWS SES.",
+  "category": "Communication",
+  "website": "https://www.useplunk.com",
+  "color": "#18181B",
+  "logo": null
+ },
+ {
   "id": "pocket-id",
   "name": "Pocket ID",
   "description": "Simple OIDC provider that signs users in with passkeys.",
@@ -2358,6 +3132,15 @@
   "logo": "/templates/pocketbase.svg"
  },
  {
+  "id": "portabase",
+  "name": "Portabase",
+  "description": "Dashboard to back up and restore databases through lightweight agents on your servers.",
+  "category": "Databases",
+  "website": "https://portabase.io",
+  "color": "#1E293B",
+  "logo": null
+ },
+ {
   "id": "portainer",
   "name": "Portainer",
   "description": "Web UI to manage containers, images, volumes and networks.",
@@ -2365,6 +3148,24 @@
   "website": "https://www.portainer.io",
   "color": "#13BEF9",
   "logo": "/templates/portainer.svg"
+ },
+ {
+  "id": "postiz",
+  "name": "Postiz",
+  "description": "Social media scheduler to plan and publish posts on X, LinkedIn, Instagram, Mastodon and more.",
+  "category": "Productivity",
+  "website": "https://postiz.com",
+  "color": "#612AD5",
+  "logo": null
+ },
+ {
+  "id": "prefect",
+  "name": "Prefect",
+  "description": "Workflow orchestration for Python data pipelines, with a server, a web UI and a process worker.",
+  "category": "Automation",
+  "website": "https://www.prefect.io",
+  "color": "#070E10",
+  "logo": "/templates/prefect.svg"
  },
  {
   "id": "privatebin",
@@ -2394,12 +3195,39 @@
   "logo": null
  },
  {
+  "id": "proxyscotch",
+  "name": "Proxyscotch",
+  "description": "Small proxy server that lets Hoppscotch send API requests past browser CORS limits.",
+  "category": "Developer tools",
+  "website": "https://github.com/hoppscotch/proxyscotch",
+  "color": "#09090B",
+  "logo": "/templates/proxyscotch.svg"
+ },
+ {
   "id": "psitransfer",
   "name": "PsiTransfer",
   "description": "Simple file sharing with resumable uploads and expiring download links.",
   "category": "Storage",
   "website": "https://github.com/psi-4ward/psitransfer",
   "color": "#2E7D32",
+  "logo": null
+ },
+ {
+  "id": "pterodactyl-panel",
+  "name": "Pterodactyl Panel",
+  "description": "Game server management panel. Game servers run on separate Wings nodes that you connect to it.",
+  "category": "Developer tools",
+  "website": "https://pterodactyl.io",
+  "color": "#10539F",
+  "logo": "/templates/pterodactyl-panel.svg"
+ },
+ {
+  "id": "pydio-cells",
+  "name": "Pydio Cells",
+  "description": "File sharing and collaboration platform for teams, with workspaces, versioning and fine-grained access rules.",
+  "category": "Storage",
+  "website": "https://pydio.com",
+  "color": "#134E6F",
   "logo": null
  },
  {
@@ -2466,6 +3294,15 @@
   "logo": null
  },
  {
+  "id": "reactive-resume",
+  "name": "Reactive Resume",
+  "description": "Resume builder with many templates, live preview, PDF export and public share links.",
+  "category": "Productivity",
+  "website": "https://rxresu.me",
+  "color": "#18181B",
+  "logo": "/templates/reactive-resume.svg"
+ },
+ {
   "id": "readeck",
   "name": "Readeck",
   "description": "Save web pages to read later, with highlights, labels and e-book export.",
@@ -2511,6 +3348,15 @@
   "logo": null
  },
  {
+  "id": "redmine",
+  "name": "Redmine",
+  "description": "Project management and issue tracking with wikis, time tracking and Gantt charts.",
+  "category": "Productivity",
+  "website": "https://www.redmine.org",
+  "color": "#B32024",
+  "logo": "/templates/redmine.svg"
+ },
+ {
   "id": "redpanda",
   "name": "Redpanda",
   "description": "Kafka-compatible streaming platform as a single node, with Redpanda Console on the domain.",
@@ -2527,6 +3373,15 @@
   "website": "https://joxit.dev/docker-registry-ui/",
   "color": "#2496ED",
   "logo": "/templates/registry-browser.svg"
+ },
+ {
+  "id": "rivet-engine",
+  "name": "Rivet Engine",
+  "description": "Self-hosted engine for Rivet Actors: long-running, stateful serverless processes.",
+  "category": "Developer tools",
+  "website": "https://rivet.dev",
+  "color": "#FF4F00",
+  "logo": null
  },
  {
   "id": "rocketchat",
@@ -2565,6 +3420,15 @@
   "logo": "/templates/rundeck.svg"
  },
  {
+  "id": "rustfs",
+  "name": "RustFS",
+  "description": "S3-compatible object storage written in Rust, with a web console.",
+  "category": "Storage",
+  "website": "https://rustfs.com",
+  "color": "#0196D0",
+  "logo": "/templates/rustfs.svg"
+ },
+ {
   "id": "rybbit",
   "name": "Rybbit",
   "description": "Privacy-friendly web analytics with sessions, funnels and goals.",
@@ -2574,12 +3438,30 @@
   "logo": null
  },
  {
+  "id": "ryot",
+  "name": "Ryot",
+  "description": "Tracker for movies, shows, books, games, workouts and other parts of your life.",
+  "category": "Media",
+  "website": "https://ryot.io",
+  "color": "#5C7CFA",
+  "logo": null
+ },
+ {
   "id": "sabnzbd",
   "name": "SABnzbd",
   "description": "Usenet binary downloader with a web interface.",
   "category": "Media",
   "website": "https://sabnzbd.org",
   "color": "#F5C400",
+  "logo": null
+ },
+ {
+  "id": "satisfactory",
+  "name": "Satisfactory",
+  "description": "Dedicated server for the factory building game Satisfactory.",
+  "category": "Media",
+  "website": "https://github.com/wolveix/satisfactory-server",
+  "color": "#E59345",
   "logo": null
  },
  {
@@ -2599,6 +3481,15 @@
   "website": "https://docs.searxng.org",
   "color": "#3050FF",
   "logo": "/templates/searxng.svg"
+ },
+ {
+  "id": "seaweedfs",
+  "name": "SeaweedFS",
+  "description": "Distributed storage for billions of files, with an S3 API and an admin web UI.",
+  "category": "Storage",
+  "website": "https://github.com/seaweedfs/seaweedfs",
+  "color": "#2B6CB0",
+  "logo": null
  },
  {
   "id": "seerr",
@@ -2625,6 +3516,24 @@
   "category": "Storage",
   "website": "https://github.com/timvisee/send",
   "color": "#0060DF",
+  "logo": null
+ },
+ {
+  "id": "sequin",
+  "name": "Sequin",
+  "description": "Streams changes from PostgreSQL to Kafka, SQS, Redis, webhooks and other sinks in real time.",
+  "category": "Databases",
+  "website": "https://sequinstream.com",
+  "color": "#2E2E2E",
+  "logo": null
+ },
+ {
+  "id": "sessy",
+  "name": "Sessy",
+  "description": "Email observability for AWS SES: see deliveries, bounces, complaints, opens and clicks.",
+  "category": "Monitoring",
+  "website": "https://github.com/marckohlbrugge/sessy",
+  "color": "#4F46E5",
   "logo": null
  },
  {
@@ -2691,6 +3600,15 @@
   "logo": "/templates/siyuan.svg"
  },
  {
+  "id": "slash",
+  "name": "Slash",
+  "description": "Bookmark and short link manager: save links and open them with short names like s/docs.",
+  "category": "Productivity",
+  "website": "https://github.com/yourselfhosted/slash",
+  "color": "#0F172A",
+  "logo": null
+ },
+ {
   "id": "slskd",
   "name": "slskd",
   "description": "A modern client and web interface for the Soulseek file sharing network.",
@@ -2718,6 +3636,24 @@
   "logo": null
  },
  {
+  "id": "soju",
+  "name": "soju",
+  "description": "IRC bouncer that stays connected to your networks and keeps history, with the gamja web client.",
+  "category": "Communication",
+  "website": "https://soju.im",
+  "color": "#2E3440",
+  "logo": null
+ },
+ {
+  "id": "soketi",
+  "name": "Soketi",
+  "description": "Fast WebSocket server that speaks the Pusher protocol, for Laravel Echo and other Pusher clients.",
+  "category": "Developer tools",
+  "website": "https://soketi.app",
+  "color": "#FF7A59",
+  "logo": null
+ },
+ {
   "id": "sonarqube",
   "name": "SonarQube",
   "description": "Continuous code quality and security analysis.",
@@ -2734,6 +3670,15 @@
   "website": "https://sonarr.tv",
   "color": "#2596BE",
   "logo": "/templates/sonarr.svg"
+ },
+ {
+  "id": "sparkyfitness",
+  "name": "SparkyFitness",
+  "description": "Fitness and nutrition tracker for food, exercise, water and body measurements.",
+  "category": "Productivity",
+  "website": "https://github.com/CodeWithCJ/SparkyFitness",
+  "color": "#16A34A",
+  "logo": null
  },
  {
   "id": "speedtest-tracker",
@@ -2781,6 +3726,15 @@
   "logo": null
  },
  {
+  "id": "statusnook",
+  "name": "Statusnook",
+  "description": "Status page and uptime monitoring for your endpoints, with email and Slack alerts.",
+  "category": "Monitoring",
+  "website": "https://statusnook.com",
+  "color": "#2563EB",
+  "logo": null
+ },
+ {
   "id": "stirling-pdf",
   "name": "Stirling PDF",
   "description": "Merge, split, convert, sign and OCR PDFs in the browser.",
@@ -2806,6 +3760,33 @@
   "website": "https://superset.apache.org",
   "color": "#20A6C9",
   "logo": "/templates/superset.svg"
+ },
+ {
+  "id": "supertokens",
+  "name": "SuperTokens",
+  "description": "Open-source authentication core for sign-in, sessions, social login and passwordless flows, with PostgreSQL.",
+  "category": "Security",
+  "website": "https://supertokens.com",
+  "color": "#FF9933",
+  "logo": null
+ },
+ {
+  "id": "supertokens-mysql",
+  "name": "SuperTokens (MySQL)",
+  "description": "Open-source authentication core for sign-in, sessions, social login and passwordless flows, with MySQL.",
+  "category": "Security",
+  "website": "https://supertokens.com",
+  "color": "#FF9933",
+  "logo": null
+ },
+ {
+  "id": "sure",
+  "name": "Sure",
+  "description": "Personal finance app for accounts, budgets, net worth and investments, a community fork of Maybe Finance.",
+  "category": "Productivity",
+  "website": "https://github.com/we-promise/sure",
+  "color": "#141414",
+  "logo": null
  },
  {
   "id": "surrealdb",
@@ -2835,6 +3816,15 @@
   "logo": "/templates/swagger-ui.svg"
  },
  {
+  "id": "swetrix",
+  "name": "Swetrix",
+  "description": "Privacy-friendly, cookieless web analytics with traffic, performance, sessions and error tracking.",
+  "category": "Analytics",
+  "website": "https://swetrix.com",
+  "color": "#4F46E5",
+  "logo": null
+ },
+ {
   "id": "synapse",
   "name": "Synapse",
   "description": "Matrix homeserver for secure, decentralized chat.",
@@ -2842,6 +3832,15 @@
   "website": "https://element-hq.github.io/synapse",
   "color": "#000000",
   "logo": "/templates/synapse.svg"
+ },
+ {
+  "id": "synapse-postgres",
+  "name": "Synapse (PostgreSQL)",
+  "description": "Matrix homeserver for secure, decentralized chat, with PostgreSQL for larger servers.",
+  "category": "Communication",
+  "website": "https://element-hq.github.io/synapse",
+  "color": "#000000",
+  "logo": "/templates/synapse-postgres.svg"
  },
  {
   "id": "syncthing",
@@ -2898,12 +3897,39 @@
   "logo": null
  },
  {
+  "id": "tolgee",
+  "name": "Tolgee",
+  "description": "Localization platform where developers and translators manage app translations together, with in-context editing.",
+  "category": "Developer tools",
+  "website": "https://tolgee.io",
+  "color": "#EC407A",
+  "logo": null
+ },
+ {
   "id": "tooljet",
   "name": "ToolJet",
   "description": "Low-code platform for internal tools, dashboards and workflows.",
   "category": "Developer tools",
   "website": "https://www.tooljet.com",
   "color": "#3E63DD",
+  "logo": null
+ },
+ {
+  "id": "traccar",
+  "name": "Traccar",
+  "description": "GPS tracking server for phones and hundreds of tracker models, with live maps, history and alerts.",
+  "category": "Monitoring",
+  "website": "https://www.traccar.org",
+  "color": "#000000",
+  "logo": "/templates/traccar.svg"
+ },
+ {
+  "id": "trailbase",
+  "name": "TrailBase",
+  "description": "Single-binary app backend on SQLite with type-safe REST APIs, realtime, auth and an admin UI.",
+  "category": "Developer tools",
+  "website": "https://trailbase.io",
+  "color": "#0073AA",
   "logo": null
  },
  {
@@ -2988,6 +4014,15 @@
   "logo": null
  },
  {
+  "id": "unstructured",
+  "name": "Unstructured API",
+  "description": "API that turns PDFs, Office files, HTML, images and emails into clean structured text for RAG and LLM pipelines.",
+  "category": "AI",
+  "website": "https://unstructured.io",
+  "color": "#1C1C2E",
+  "logo": null
+ },
+ {
   "id": "uptime-kuma",
   "name": "Uptime Kuma",
   "description": "Self-hosted uptime monitoring with status pages and alerts.",
@@ -3004,6 +4039,24 @@
   "website": "https://uptrace.dev",
   "color": "#4F46E5",
   "logo": null
+ },
+ {
+  "id": "usesend",
+  "name": "useSend",
+  "description": "Open-source email platform on top of Amazon SES for transactional and marketing email, with an API, SMTP and analytics.",
+  "category": "Communication",
+  "website": "https://usesend.com",
+  "color": "#000000",
+  "logo": null
+ },
+ {
+  "id": "vault",
+  "name": "Vault",
+  "description": "Secrets manager that stores, issues and controls access to tokens, passwords, certificates and keys.",
+  "category": "Security",
+  "website": "https://www.hashicorp.com/products/vault",
+  "color": "#FFEC6E",
+  "logo": "/templates/vault.svg"
  },
  {
   "id": "vaultwarden",
@@ -3033,6 +4086,15 @@
   "logo": "/templates/verdaccio.svg"
  },
  {
+  "id": "vert",
+  "name": "VERT",
+  "description": "File converter for images, audio and documents that runs in the browser, so files never leave the device.",
+  "category": "Productivity",
+  "website": "https://vert.sh",
+  "color": "#F2ABEE",
+  "logo": null
+ },
+ {
   "id": "victoriametrics",
   "name": "VictoriaMetrics",
   "description": "A fast time series database that speaks the Prometheus API.",
@@ -3049,6 +4111,42 @@
   "website": "https://vikunja.io",
   "color": "#196AFF",
   "logo": "/templates/vikunja.svg"
+ },
+ {
+  "id": "vvveb",
+  "name": "Vvveb CMS",
+  "description": "Website builder and CMS for sites, blogs and online shops, with a drag and drop page editor, with SQLite.",
+  "category": "CMS",
+  "website": "https://www.vvveb.com",
+  "color": "#1F8EF1",
+  "logo": null
+ },
+ {
+  "id": "vvveb-mariadb",
+  "name": "Vvveb CMS (MariaDB)",
+  "description": "Website builder and CMS for sites, blogs and online shops, with a drag and drop page editor, with MariaDB.",
+  "category": "CMS",
+  "website": "https://www.vvveb.com",
+  "color": "#1F8EF1",
+  "logo": null
+ },
+ {
+  "id": "vvveb-mysql",
+  "name": "Vvveb CMS (MySQL)",
+  "description": "Website builder and CMS for sites, blogs and online shops, with a drag and drop page editor, with MySQL.",
+  "category": "CMS",
+  "website": "https://www.vvveb.com",
+  "color": "#1F8EF1",
+  "logo": null
+ },
+ {
+  "id": "wakapi",
+  "name": "Wakapi",
+  "description": "Coding time tracker compatible with the WakaTime editor plugins, with stats and reports per project and language.",
+  "category": "Analytics",
+  "website": "https://wakapi.dev",
+  "color": "#2F855A",
+  "logo": null
  },
  {
   "id": "wallabag",
@@ -3076,6 +4174,24 @@
   "website": "https://weaviate.io",
   "color": "#0B6B3A",
   "logo": null
+ },
+ {
+  "id": "web-check",
+  "name": "Web Check",
+  "description": "All-in-one OSINT tool that shows a website's DNS, SSL, headers, tech stack, security setup and more.",
+  "category": "Security",
+  "website": "https://web-check.xyz",
+  "color": "#9FEF00",
+  "logo": null
+ },
+ {
+  "id": "weblate",
+  "name": "Weblate",
+  "description": "Web-based translation platform with Git integration, translation memory and quality checks.",
+  "category": "Developer tools",
+  "website": "https://weblate.org",
+  "color": "#2ECCAA",
+  "logo": "/templates/weblate.svg"
  },
  {
   "id": "wekan",
@@ -3123,6 +4239,15 @@
   "logo": "/templates/whoami.svg"
  },
  {
+  "id": "whoogle",
+  "name": "Whoogle",
+  "description": "Private Google search proxy without ads, tracking, JavaScript or AMP links.",
+  "category": "Productivity",
+  "website": "https://github.com/benbusby/whoogle-search",
+  "color": "#4285F4",
+  "logo": null
+ },
+ {
   "id": "wikijs",
   "name": "Wiki.js",
   "description": "Modern, powerful wiki with a Markdown and visual editor.",
@@ -3139,6 +4264,15 @@
   "website": "https://www.windmill.dev",
   "color": "#3B82F6",
   "logo": null
+ },
+ {
+  "id": "windows",
+  "name": "Windows",
+  "description": "Windows in a virtual machine, installed automatically and used from the browser.",
+  "category": "Productivity",
+  "website": "https://github.com/dockur/windows",
+  "color": "#0078D4",
+  "logo": "/templates/windows.svg"
  },
  {
   "id": "wordpress",
@@ -3204,6 +4338,24 @@
   "logo": null
  },
  {
+  "id": "yamtrack",
+  "name": "Yamtrack",
+  "description": "Tracker for the movies, shows, anime, games and books you watch, play and read, with SQLite.",
+  "category": "Media",
+  "website": "https://github.com/FuzzyGrim/Yamtrack",
+  "color": "#4F46E5",
+  "logo": null
+ },
+ {
+  "id": "yamtrack-postgres",
+  "name": "Yamtrack (PostgreSQL)",
+  "description": "Tracker for the movies, shows, anime, games and books you watch, play and read, with PostgreSQL.",
+  "category": "Media",
+  "website": "https://github.com/FuzzyGrim/Yamtrack",
+  "color": "#4F46E5",
+  "logo": null
+ },
+ {
   "id": "yopass",
   "name": "Yopass",
   "description": "Share secrets safely with end to end encrypted, one time links.",
@@ -3228,6 +4380,15 @@
   "category": "Monitoring",
   "website": "https://www.zabbix.com",
   "color": "#D40000",
+  "logo": null
+ },
+ {
+  "id": "zero",
+  "name": "Zero",
+  "description": "Sync engine that keeps a client-side cache of your Postgres data in sync for instant, realtime web apps.",
+  "category": "Developer tools",
+  "website": "https://zero.rocicorp.dev",
+  "color": "#0D0D0D",
   "logo": null
  },
  {
