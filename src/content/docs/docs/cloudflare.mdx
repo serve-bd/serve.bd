@@ -80,6 +80,14 @@ The **Origin CA key** field is optional. You only need it if your token cannot c
 
 If you disconnect an account, existing DNS records stay in Cloudflare. Certificates that use the account stop renewing.
 
+### Several accounts
+
+A sign-in or a token can reach several Cloudflare accounts. Each account gets its own entry, with its own domains and tunnels, and they share the login: renewing it or choosing **Reconnect** fixes all of them. Disconnecting one keeps the others; the login goes, and its access in Cloudflare ends, once no account uses it.
+
+With one account, the Cloudflare page shows that account directly. With several, it lists them, and each opens its own page.
+
+Signing in again to an account that is already connected moves it to the new login, with its tunnels, domains and certificates. An account connected with a pasted API token keeps that token.
+
 ## DNS records
 
 Each zone shows its DNS records. You can add, edit and delete records, filter by type and search. A record has a type (such as `A`, `AAAA` or `CNAME`), a name, content, a TTL and a **Proxied** switch. Proxied means traffic goes through Cloudflare (orange cloud). **DNS only** means it does not.

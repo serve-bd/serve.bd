@@ -48,6 +48,25 @@ The tunnel connects out to the main server on TCP port 7822. Open that port in t
 
 To give apps on such a server a public domain, use a [Cloudflare Tunnel](/docs/cloudflare).
 
+## Default server
+
+Each organization has a default server. New services start on it, and the [API](/docs/api) and the [CLI](/docs/cli) use it when no server is given. You can still pick another server when you create a service.
+
+Until you choose one, the default is the first server the organization can use (the machine Serve runs on, on a new install). To change it, open a server and choose **Make default**; the server list shows a **Default** badge. When the default server is removed, not ready or no longer shared with the organization, new services go to the first usable server instead.
+
+## Remove a server
+
+Open the server, then **Danger zone**, **Remove server**. Serve also removes its own containers there: the proxy, the private network, the log collector and the Cloudflare tunnels. Your files and other containers stay.
+
+When services run on the server, you choose what happens to them, and type the server's name to confirm:
+
+| Choice | What happens |
+| --- | --- |
+| **Stop and delete them** | Their containers, domains and the DNS records Serve made are removed. Tick **Also delete the data** to remove their volumes too; otherwise database data stays on the server. |
+| **Keep them running** | Serve forgets the services; their containers keep running on the machine. Serve's proxy and the Cloudflare tunnel are removed unless you untick them, so you can put your own in place. |
+
+A server that holds a read replica of a database running on another server, or that other services use as an extra or build server, cannot be removed until those settings change.
+
 ## serve-agent
 
 Remote servers can run `serve-agent`, a small program written in Go. It samples CPU, memory, disk, load and containers and sends them to the dashboard. When the dashboard is unreachable, the agent buffers up to a day of samples and sends them later.
