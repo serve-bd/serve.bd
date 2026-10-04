@@ -1,0 +1,124 @@
+---
+title: "Metrics export"
+description: "Scrape your services' metrics with your own Prometheus and chart them in Grafana."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Serve shows CPU, memory, network and requests in the dashboard. To keep them longer, alert on them or put them next to your other systems, scrape them with your own Prometheus and chart them in Grafana.
+
+## Set it up
+
+Go to **Integrations → Metrics**. The page shows:
+
+- **Endpoint**: the address Prometheus scrapes, `https://<your dashboard>/api/v1/metrics`.
+- **Scrape token**: choose **Create scrape token** to make a read-only API token. It can view projects and, if your role may read logs, request rates. It cannot change anything. Copy it right away: it is shown once.
+- **prometheus.yml**: a ready scrape config with the token already filled in.
+- **Grafana dashboard**: **Download JSON** for a dashboard you can import.
+
+You need the **Manage integrations** permission to open the page. Any API token with **View projects** works for scraping, so you can also make one in **Keys & tokens**.
+
+The API must be on. If it is off, an admin of the Root organization can turn it on in **Settings → Security**.
+
+## Prometheus
+
+Add this to `scrape_configs` in `prometheus.yml`, with your dashboard address and token:
+
+```yaml
+scrape_configs:
+  - job_name: serve
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    scheme: https
+    metrics_path: /api/v1/metrics
+    authorization:
+      type: Bearer
+      credentials: srv_your_token_here
+    static_configs:
+      - targets: ["serve.example.com"]
+```
+
+Serve takes a new sample every 30 seconds, so a shorter interval gives you the same numbers more often. You can still scrape every 15 seconds: the answer is cached for 5 seconds, and a token may scrape 60 times a minute. If several Prometheus servers scrape, give each its own token, so you can revoke one without the others.
+
+To check it by hand:
+
+```bash
+curl -H "Authorization: Bearer srv_your_token_here" https://serve.example.com/api/v1/metrics
+```
+
+## Grafana
+
+1. On **Integrations → Metrics**, choose **Download JSON**.
+2. In Grafana, open **Dashboards → New → Import** and upload the file.
+3. Pick the Prometheus data source that scrapes Serve, then **Import**.
+
+The dashboard has CPU, memory, network, running containers, requests per second and 5xx per second for each service. Use the **Project** and **Service** pickers at the top to narrow it down.
+
+## What you get
+
+Each service metric has the labels `organization`, `project`, `environment`, `service`, `service_id` and `server`. Container metrics add `replica` and `container`.
+
+| Metric | Type | What it is |
+| --- | --- | --- |
+| `serve_service_info` | gauge | Always 1, one per service. The `type` label says app, database or compose |
+| `serve_service_up` | gauge | 1 when the service is running |
+| `serve_service_status` | gauge | 1 for the current status (`running`, `stopped`, `crashed`, ...), 0 for the others |
+| `serve_service_cpu_cores` | gauge | CPU in cores, summed over the service's containers (1.5 = one and a half cores) |
+| `serve_service_memory_bytes` | gauge | Memory in use, without file cache |
+| `serve_service_memory_limit_bytes` | gauge | Memory limit of one container (the server's memory when there is no limit) |
+| `serve_service_network_receive_bytes_total` | counter | Bytes received since the containers started |
+| `serve_service_network_transmit_bytes_total` | counter | Bytes sent since the containers started |
+| `serve_service_sample_timestamp_seconds` | gauge | When the figures above were sampled |
+| `serve_service_replicas_running` | gauge | Containers of the service that run |
+| `serve_replica_up` | gauge | 1 when the container runs |
+| `serve_replica_state` | gauge | 1 for the container's Docker state (`running`, `restarting`, `exited`, ...) |
+| `serve_replica_restarts_total` | counter | Times Docker restarted the container |
+| `serve_service_http_requests_per_second` | gauge | Requests to the service's domains per second, the average over the last 5 full minutes |
+| `serve_service_http_5xx_per_second` | gauge | Answers with a 5xx status per second, over the same 5 minutes |
+| `serve_service_deployments_total` | counter | Deployments ever started |
+| `serve_service_deployments` | gauge | Deployments by their current status (`success`, `failed`, ...) |
+| `serve_service_last_deploy_timestamp_seconds` | gauge | When the last successful deployment finished |
+
+Use `rate()` on the counters, like `rate(serve_service_network_receive_bytes_total[5m])`. The request metrics are already rates: Serve counts requests per minute from the proxy log, so use them as they are.
+
+CPU, memory and network are left out for a service whose last sample is older than 3 minutes, for example a stopped one. Request rates need a token that may read logs, the same as the request charts in the dashboard.
+
+### Servers
+
+A token of the Root organization made by a Root admin also gets the servers' own figures, with the labels `server` and `server_id`. They are the same numbers the dashboard shows only to Root admins.
+
+| Metric | What it is |
+| --- | --- |
+| `serve_server_up` | 1 when Serve can reach the server |
+| `serve_server_cpu_usage_ratio` | CPU use of the whole server, from 0 to 1 |
+| `serve_server_cpu_cores` | CPU cores |
+| `serve_server_memory_used_bytes`, `serve_server_memory_total_bytes` | Memory in use and in total |
+| `serve_server_disk_used_bytes`, `serve_server_disk_total_bytes` | The disk that holds Serve's data |
+| `serve_server_load1`, `serve_server_load5`, `serve_server_load15` | Load averages |
+
+## Who sees what
+
+- A token only gets the services of its own organization, and only the projects it may reach. A token limited to some projects gets only those.
+- Request rates need **View logs** on the token. Server figures need a Root admin's token in the Root organization.
+- A revoked or expired token gets `401`. Prometheus then shows the target as down with that error.
+
+## Example alerts
+
+```yaml
+groups:
+  - name: serve
+    rules:
+      - alert: ServiceCrashed
+        expr: serve_service_status{status=~"crashed|failed"} == 1
+        for: 5m
+      - alert: ManyServerErrors
+        expr: serve_service_http_5xx_per_second / serve_service_http_requests_per_second > 0.05
+        for: 10m
+      - alert: ContainerRestarting
+        expr: increase(serve_replica_restarts_total[15m]) > 3
+```
+
+<CardGrid>
+<LinkCard href="/docs/monitoring" title="Monitoring" description="Uptime checks, alerts and notifications in Serve." />
+<LinkCard href="/docs/api" title="API" description="API tokens and permissions." />
+</CardGrid>
