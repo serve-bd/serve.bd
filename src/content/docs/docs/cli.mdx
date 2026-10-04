@@ -58,7 +58,7 @@ export SERVE_TOKEN=srv_...
 serve deploy --yes --service web
 ```
 
-`SERVE_URL` is the dashboard address, without `/api/v1`. The [API](/docs/api) examples add `/api/v1` to it, so don't reuse their value for the CLI.
+`SERVE_URL` is usually the dashboard address. An API address that ends in `/api/v1`, like the one in the [API](/docs/api) examples, works too.
 
 The token only goes to `SERVE_URL`, never to an address in a folder's link. With `SERVE_TOKEN` but no `SERVE_URL`, the CLI stops with "Set SERVE_URL with SERVE_TOKEN" and exit code `2`.
 
