@@ -1,0 +1,146 @@
+---
+title: "Tailscale"
+description: "Reach servers through your Tailscale tailnet, and run the private network between servers that are all behind NAT."
+---
+
+Serve can reach servers through your [Tailscale](https://tailscale.com) tailnet. A server in the tailnet needs no public IP, no open port and no tunnel to the main server: Serve connects to its Tailscale address (100.x.y.z) over SSH, the same way it connects to any server.
+
+Tailscale is an option next to the other ways to add a server. It replaces nothing: servers with a public IP and servers that connect out through a tunnel keep working as before.
+
+Only admins of the Root organization manage Tailscale. Servers in the tailnet belong to the instance, not to an organization: an organization's servers are always reached at their public address.
+
+## Before you connect
+
+Set up two things in the [Tailscale admin console](https://login.tailscale.com/admin).
+
+### 1. A tag for Serve's devices
+
+Every device Serve adds to the tailnet gets a tag, `tag:serve` by default. Open **Access controls** and add the tag's owner to the tailnet policy (merge it into an existing `tagOwners` block):
+
+```json
+"tagOwners": {
+  "tag:serve": ["autogroup:admin"]
+}
+```
+
+The default policy lets every device reach every other device. If your policy is stricter, also let the tag reach itself. Serve needs SSH (TCP 22, or the server's SSH port) and, for the [private network](/docs/private-networks), UDP 51820:
+
+```json
+"grants": [
+  { "src": ["tag:serve"], "dst": ["tag:serve"], "ip": ["*"] }
+]
+```
+
+### 2. An OAuth client
+
+Open **Settings → Trust credentials** (OAuth clients) and create a client with these scopes:
+
+| Scope | Access | Why Serve needs it |
+| --- | --- | --- |
+| `auth_keys` | Write | Serve makes a single-use key for each server that joins |
+| `devices:core` | Write | Serve finds each server's device, reads whether it is online, and removes it when you ask |
+
+Select `tag:serve` for both scopes. Copy the client id and the secret.
+
+An OAuth client does not expire, so it is the better choice. An **API access key** (Settings → Keys) also works, but it expires after at most 90 days. Serve then shows the error on the Tailscale page and you paste a new key.
+
+## Connect a tailnet
+
+Go to **Integrations → Tailscale** and choose **Connect tailnet**. Pick **OAuth client** or **API access key**, paste the credentials and enter:
+
+- **Tailnet**: its name from **Settings → General** in the admin console, or `-` for the tailnet the credentials belong to.
+- **Tag**: `tag:serve`, or the tag you set up.
+
+Before saving, Serve lists the tailnet's devices and makes (and right away removes) an auth key with the tag. If either fails, you see Tailscale's own error, for example a tag whose owner is missing from the policy, or an OAuth client without the `auth_keys` scope.
+
+You can connect more than one tailnet. Each one has its own card with **Test** (calls the API now), **Edit** and **Disconnect**.
+
+## Add the main server to the tailnet
+
+Serve's containers reach Tailscale addresses through the machine they run on. So the main server (the machine the dashboard runs on) must be in the tailnet before Serve can reach any server there.
+
+On the tailnet's card, choose **Add this server to the tailnet**. Serve installs Tailscale on the host itself (not in a container) with the official script from tailscale.com, and joins it with a single-use key and the tag. If the host is in the tailnet already, Serve only records it.
+
+If the main server is not in the tailnet, Serve says so: when you connect an existing server, in the setup log of a new one, and on the server's page.
+
+## Add a server through Tailscale
+
+Go to **Servers → Add server** and choose **Through Tailscale**. Enter a **Name**, the **User** Serve signs in as (root, or a user with passwordless sudo) and the server's **SSH port**. Choose **Create join command** and run the command on the server:
+
+```bash
+curl -fsSL 'https://serve.example.com/api/servers/join/tailscale/…' | sudo bash
+```
+
+The command:
+
+1. Installs the SSH server if it is missing, and adds Serve's key to `authorized_keys`.
+2. Installs Tailscale with the official script if it is missing.
+3. Asks Serve for an auth key. Serve makes it at that moment: single-use, pre-authorized, with the tag, valid for one hour. A command that waited a day still works.
+4. Joins the tailnet as `serve-<name>`. If another device already has that name, Serve picks `serve-<name>-2`.
+5. Tells Serve it joined. Serve finds the device in the tailnet by its node key, keeps its Tailscale address and sets the server up over it.
+
+The page moves on by itself and shows the setup log. The command works until the server joined, for at most 24 hours. Running it again before then is safe: a machine that is in the tailnet already only reports its address again.
+
+A machine that is in **another** tailnet is not moved. The command stops and says so. To move it, run the command with `SERVE_TAILSCALE_FORCE=1`:
+
+```bash
+curl -fsSL '…' | sudo SERVE_TAILSCALE_FORCE=1 bash
+```
+
+Tailscale through Serve works on Linux. If the official script cannot install Tailscale (an unsupported system), install it by hand and run the command again.
+
+## Connect an existing server
+
+Open the server and find the **Tailscale** card on its General page:
+
+- **Connect through Tailscale** installs Tailscale over SSH and joins the server in one click. It needs the server to be reachable now, and the main server to be in the tailnet.
+- **Join command instead** gives you the command to run on the machine, for a server that is not reachable right now.
+
+Once it joined, Serve reaches the server at its Tailscale address. Its public address or tunnel stays in place: **Stop using Tailscale** goes back to it. You can also remove the device from the tailnet at the same time.
+
+## What the server page shows
+
+The **Tailscale** card shows the server as the Tailscale API sees it now:
+
+| Field | What it shows |
+| --- | --- |
+| Status | Online or offline, and when Tailscale last saw it |
+| Address | Its Tailscale IPv4 address, where Serve connects |
+| Name in the tailnet | Its MagicDNS name, like `serve-web.tail1234.ts.net` |
+| From the dashboard | Whether the server's SSH port answers at that address from the dashboard |
+
+Every five minutes the worker reads every server's device from the API. A device that got a new address is reached there from then on. A device that was removed from the tailnet (or whose key expired) shows an error on the card.
+
+## The private network over Tailscale
+
+Two servers without a public address cannot reach each other in the [private network](/docs/private-networks) on their own. When both are in a tailnet, Serve uses their Tailscale addresses as the WireGuard endpoints, so the private network works between servers that are all behind NAT.
+
+Serve's private network stays as it is. Only the address WireGuard sends to changes, and only between two servers that both have a Tailscale address and no public address. A server with a public address is still reached there. Between servers that talk through the tailnet, the private network uses a smaller MTU (1200) so its packets fit inside Tailscale's.
+
+In the server's private network settings, choose **No public address** for servers in the tailnet. The peers list shows **through Tailscale** for those links.
+
+## Disconnect a tailnet
+
+**Disconnect** on the tailnet's card lists the servers that use it first. Servers keep running:
+
+- A server that has another way in (its public address, or its tunnel) goes back to it.
+- A server that was added through Tailscale has no other way in. It shows as unreachable, with the reason, until you connect the tailnet again and connect the server through it.
+
+Devices stay in the tailnet. Auth keys Serve made for joins that never finished are removed.
+
+When you remove a server, you can also remove its device from the tailnet: tick **Also remove its device from the tailnet** in the confirmation.
+
+## Troubleshooting
+
+| Problem | What to do |
+| --- | --- |
+| "requested tags are invalid or not permitted" | The tag's owner is missing from the policy, or the OAuth client does not have that tag. See [Before you connect](#before-you-connect). |
+| "The API access key expired or was revoked" | Edit the tailnet and paste a new key, or switch to an OAuth client. |
+| A server shows "not reachable" from the dashboard | Add the main server to the tailnet. If it is in already, check that Tailscale runs on both machines and that the policy lets the tag reach itself on the SSH port. |
+| "This machine is already in another tailnet" | Run the command with `SERVE_TAILSCALE_FORCE=1`, or sign it out first with `sudo tailscale logout`. |
+| "This join command expired or was used already" | Make a new one on the server's page. |
+
+## Not yet supported
+
+- Apps reachable only inside the tailnet, at their `ts.net` names.
+- Tailscale Funnel, to publish an app from a server in the tailnet.
