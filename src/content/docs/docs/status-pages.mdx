@@ -1,0 +1,89 @@
+---
+title: "Status pages"
+description: "A public page that shows how your services are doing."
+---
+
+A status page shows visitors whether your services work. It lists the services you pick, colored by their uptime checks. It also shows the incidents and maintenance you post. Open **Status pages** in the sidebar.
+
+## Make a page
+
+1. Click **New status page** and give it a name, like **Acme**.
+2. The page starts with every service that has an uptime check. Remove the ones visitors should not see.
+3. Click **Publish**.
+
+Until you publish, the page is a draft. Only signed-in members of your organization can open it.
+
+The page is at `/status/<address>` on the dashboard's domain. You can also give it its own domain. See [Own domain](#own-domain).
+
+## Components
+
+A component is one line on the page. Each one follows a service's uptime check, or nothing.
+
+- **Follows**: the service whose check sets the color. Pick **Nothing** for a part you report on yourself, like **Support**.
+- **Name**: what visitors see. The service's own name and address never show.
+- **Group**: components with the same group show under one heading.
+
+Move components up and down with the arrows. A service without an uptime check always shows **Operational**. Set up a check first. See [Monitoring](/docs/monitoring).
+
+## Incidents and maintenance
+
+In the **Incidents** tab:
+
+- **Report incident** posts a problem. Pick the impact and the affected components. The page shows it at once.
+- **Update** adds a message. Move the state from **Investigating** to **Identified**, **Monitoring** and **Resolved**. **Resolved** closes the incident.
+- **Plan maintenance** sets a start and an end. Visitors see it ahead of time. During the window, its components show **Under maintenance**. Outages found by checks in that window stay off the page.
+
+When a check finds a component down, the page shows the outage by itself. To keep these outages off the page, turn off **Show outages found by checks** in **Design → History**.
+
+## Design
+
+The **Design** tab has a live preview, for desktop and phone. Click **Save** to publish your changes.
+
+| Setting | What it does |
+| --- | --- |
+| **Starting point** | Ready-made looks: **Clean**, **Night**, **Editorial** and **Terminal**. Every value stays editable. |
+| **Logo** / **Logo on dark** | Shown at the top. The dark one shows when the page is dark. |
+| **Accent color** | Links and highlights. Status colors stay green, amber and red. |
+| **Theme** | **Visitor's choice** follows the visitor's device. |
+| **Font**, **Corners**, **Spacing** | Sans, serif or mono; round or square; roomy or compact. |
+| **Daily bars** | One bar per day for 30, 60 or 90 days. Phones show the last 30. |
+| **Uptime percent**, **Response time** | Shown under each component. |
+| **Past incidents** | How many days of history to list. |
+| **Banner** | A note at the top of the page. |
+| **Header links**, **Footer text** | Links to your site, support or docs. |
+| **Custom CSS** | Extra styles for this page only. Colors are variables like `--sp-bg` and `--sp-ok`. |
+| **Hide from search engines** | Asks search engines not to list the page. |
+
+## Who can see it
+
+In **Settings → Who can see it**:
+
+- **Public**: anyone with the address.
+- **Password**: visitors type a password once. Their browser remembers it for a month. A new password signs everyone out.
+- **Draft**: only signed-in members of your organization.
+
+## Own domain
+
+1. In **Settings → Own domain**, enter a domain like `status.example.com`.
+2. Point an A record for it to the dashboard's server.
+3. Click **Check DNS**.
+
+With **HTTPS** on, Serve gets a Let's Encrypt certificate once the record points to the server. Caddy and Traefik get their own certificate.
+
+The domain shows the status page only. The dashboard and its sign-in page never answer there. An IP allow list on the dashboard does not apply to the status page either.
+
+## Use it elsewhere
+
+Each page also answers at these addresses:
+
+| Address | What it gives |
+| --- | --- |
+| `/badge` | An SVG badge with the overall status. Add `?component=<id>` for one component, and `?label=API` to change its text. |
+| `/summary.json` | The status, components, ongoing incidents and planned maintenance as JSON. |
+| `/feed.xml` | Incidents and maintenance as RSS. |
+
+A draft or a password page does not answer at these addresses.
+
+## Permissions
+
+The **Status pages** permission lets a member create and change pages and post incidents. Owners, Admins and Developers have it by default. A page can list services from every project, so members limited to some projects cannot manage pages.
