@@ -43,9 +43,12 @@ Set up providers under **Settings → Sign-in**. Changes apply at once; nobody n
 | --- | --- |
 | GitHub | Sign in with a GitHub account. You can limit sign-in to members of a **GitHub organization**. |
 | Google | Sign in with a Google or Workspace account. |
-| OpenID Connect | Your company login, like Okta, Microsoft Entra ID, Authentik or Keycloak. |
+| Microsoft | Work and school accounts (Entra ID), from any organization or from yours. |
+| GitLab | GitLab.com or a GitLab of your own. |
+| Bitbucket | Sign in with a Bitbucket account. |
+| OpenID Connect | Your company login, like Keycloak, Authentik, Okta, Auth0, Zitadel or Pocket ID. |
 
-For each provider, create an OAuth app at the provider, add the callback URL that Serve shows, then paste the app's **Client ID** and **Client secret**.
+For each provider, create an OAuth app at the provider, add the callback URL that Serve shows, then paste the app's **Client ID** and **Client secret**. [Sign-in providers](/docs/sign-in) has the steps for each one.
 
 :::note
 Most providers only accept `https` callback URLs. Give the dashboard a domain with HTTPS in **Settings → General** first.
@@ -59,7 +62,8 @@ If the dashboard is set to HTTP only but its domain also answers on HTTPS, for e
 | --- | --- |
 | **Issuer URL** | For example `https://login.example.com`. Serve reads its `/.well-known/openid-configuration`. |
 | **Scopes** | Default: `openid email profile`. |
-| **Button text** | The label on the sign-in page. Default: **Sign in with SSO**. |
+| **Provider** | Keycloak, Authentik, Okta and more: shows where the issuer is and names the button. |
+| **Button text** | The label on the sign-in page. Default: the provider's name, or **Sign in with SSO**. |
 
 ### Who can sign in
 

@@ -1,0 +1,163 @@
+---
+title: "Sign-in providers"
+description: "Step-by-step setup for GitHub, Google, Microsoft, GitLab, Bitbucket and company logins."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+People can sign in to the dashboard with an account they already have. Set providers up under **Settings → Sign-in**. Each one works the same way:
+
+1. Create an OAuth app (or client) at the provider.
+2. Add the **callback URL** that Serve shows in the setup dialog.
+3. Paste the app's ID and secret into Serve.
+
+:::note
+Most providers only accept `https` callback URLs. Give the dashboard a domain with HTTPS in **Settings → General** first.
+:::
+
+The rules that limit who can sign in are described in [Security](/docs/security#who-can-sign-in).
+
+## GitHub
+
+1. On GitHub open **Settings → Developer settings → OAuth Apps → New OAuth App**. For an organization, use the organization's settings instead.
+2. Use the dashboard's address as the **Homepage URL** and paste the callback URL as the **Authorization callback URL**.
+3. Create a client secret, then paste the **Client ID** and **Client secret** into Serve.
+
+To let only members of a GitHub organization in, add the organization in Serve. Each organization can add its members to an organization in the dashboard, with a role.
+
+## Google
+
+1. In Google Cloud open **APIs & Services → Credentials → Create credentials → OAuth client ID**.
+2. Choose **Web application** and add the callback URL under **Authorized redirect URIs**.
+3. Paste the **Client ID** and **Client secret** into Serve.
+
+To allow only your company, set **Only allow emails from** to your Workspace domain.
+
+## Microsoft
+
+For Microsoft Entra ID (work and school accounts, formerly Azure AD).
+
+1. In the Microsoft Entra admin center open **App registrations → New registration**.
+2. Under **Redirect URI**, pick **Web** and paste the callback URL.
+3. Open **Certificates & secrets → New client secret** and copy its **Value** (not the secret ID).
+4. From the app's **Overview**, copy the **Application (client) ID** and the **Directory (tenant) ID**.
+5. Paste them into Serve. The **User.Read** permission the app starts with is enough.
+
+**Organization (tenant ID)**: with it, only people from your organization can sign in. Leave it empty to allow any work or school account, but only for people who already have an account in the dashboard and linked Microsoft on their Account page.
+
+New accounts and **Only allow emails from** need a tenant ID. A Microsoft account can carry any email its organization lets it set, so Serve only trusts the email from one named organization.
+
+## GitLab
+
+Works with GitLab.com and with a GitLab of your own.
+
+1. On GitLab open **Preferences → Applications → Add new application**. A group's applications or the admin area's work too.
+2. Paste the callback URL as the **Redirect URI** and keep **Confidential** ticked.
+3. Tick only the **read_user** scope.
+4. Paste the **Application ID** and **Secret** into Serve. For your own GitLab, also enter its address in **GitLab server**.
+
+Changing the **GitLab server** later unlinks the GitLab accounts linked on the old server, since another server numbers its users the same way. People link again from their Account page.
+
+## Bitbucket
+
+1. In Bitbucket open your workspace's **Settings → OAuth consumers → Add consumer**.
+2. Paste the callback URL and tick **This is a private consumer**.
+3. Give it only the **Account: Email** and **Account: Read** permissions.
+4. Paste the consumer's **Key** and **Secret** into Serve.
+
+Serve uses the account's confirmed email only. An account without one cannot sign in.
+
+## OpenID Connect
+
+For a company login that speaks OpenID Connect. Pick your provider in the setup dialog: Serve then shows where its issuer is, and names the sign-in button after it.
+
+In every provider:
+
+1. Create a **confidential** web application (or client) using the **authorization code** flow.
+2. Add the callback URL as a redirect URI.
+3. Paste the **Issuer URL**, **Client ID** and **Client secret** into Serve. **Test** checks that Serve can read the issuer.
+
+Serve asks for the `openid email profile` scopes and uses PKCE.
+
+### Keycloak
+
+In your realm open **Clients → Create client**, type **OpenID Connect**. Turn on **Client authentication**, keep **Standard flow**, and add the callback URL to **Valid redirect URIs**. The secret is on the **Credentials** tab.
+
+Issuer: `https://<keycloak>/realms/<realm>`
+
+### Authentik
+
+Open **Applications → Providers → Create → OAuth2/OpenID Provider**. Choose **Confidential**, add the callback URL as a redirect URI, then create an application that uses the provider.
+
+Issuer: `https://<authentik>/application/o/<application-slug>/`
+
+### Okta
+
+Open **Applications → Create App Integration**, pick **OIDC** and **Web Application**, and add the callback URL under **Sign-in redirect URIs**.
+
+Issuer: `https://<your-org>.okta.com`, or your authorization server's issuer, like `https://<your-org>.okta.com/oauth2/default`.
+
+### Auth0
+
+Create a **Regular Web Application** and add the callback URL to **Allowed Callback URLs**.
+
+Issuer: `https://<your-tenant>.auth0.com` (your Auth0 domain, or your custom domain).
+
+### Zitadel
+
+In a project create a **Web** application with the **Code** flow and add the callback URL as a redirect URI.
+
+Issuer: your instance's address, like `https://<instance>.zitadel.cloud`.
+
+### Pocket ID
+
+As an admin open **OIDC Clients → Add** and paste the callback URL.
+
+Issuer: your Pocket ID address, like `https://id.example.com`.
+
+### Authelia
+
+Add a client under `identity_providers.oidc.clients` in Authelia's configuration, with the callback URL in `redirect_uris` and the `openid`, `email` and `profile` scopes.
+
+Issuer: your Authelia address, like `https://auth.example.com`.
+
+### Kanidm
+
+Create an OAuth2 client with `kanidm system oauth2 create`, add the callback URL with `kanidm system oauth2 add-redirect-url`, and map the `openid`, `email` and `profile` scopes to a group.
+
+Issuer: `https://<kanidm>/oauth2/openid/<client-name>`
+
+### Casdoor
+
+Open **Applications → Add** and add the callback URL to its redirect URLs.
+
+Issuer: your Casdoor address.
+
+### Logto
+
+Create a **Traditional web** application and add the callback URL as a redirect URI.
+
+Issuer: `https://<logto>/oidc`
+
+### Dex
+
+Add a static client to Dex's configuration with the callback URL in `redirectURIs`.
+
+Issuer: the `issuer` set in Dex's configuration.
+
+### Gitea or Forgejo
+
+Open **Settings → Applications → OAuth2 applications** (yours, or the site administration's), add the callback URL as a redirect URI and keep the client confidential.
+
+Issuer: your Gitea or Forgejo address, like `https://git.example.com`.
+
+### Infomaniak
+
+Create an OAuth2 application in your Infomaniak account and add the callback URL as a redirect URI.
+
+Issuer: `https://login.infomaniak.com`
+
+<CardGrid>
+<LinkCard href="/docs/security" title="Security" description="Two-factor, passkeys and who can sign in." />
+<LinkCard href="/docs/teams" title="Teams" description="Organizations, roles and invitations." />
+</CardGrid>
