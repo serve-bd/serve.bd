@@ -105,6 +105,8 @@ You can also push each built image to a registry. Pick a saved registry and set 
 
 Turn on **Also tag as latest** to push a `latest` tag too. When you add extra servers, they all run the same image.
 
+A registry is optional. Without one, Serve builds once and copies the image from the build server to every other server on each deploy. With a registry, each server pulls the image instead, which is faster for big images and many servers.
+
 ## Watch paths
 
 With **Deploy on push** on, every push to the branch starts a deploy. **Watch paths** limits that to pushes that change certain files. This helps in a monorepo where several apps share one repository. Set up deploy on push in [Deployments](/docs/deployments).
