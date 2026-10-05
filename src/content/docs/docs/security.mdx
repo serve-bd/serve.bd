@@ -86,6 +86,14 @@ SERVE_ALLOW_PASSWORD_LOGIN=1
 
 While it is set, password sign-in stays on. Remove it again to go back to the setting in the dashboard.
 
+## Confirming deletes
+
+Deleting a server, a service, or a project or environment that has services asks for your password in the confirmation.
+
+- Accounts without a password (they sign in with a provider only) need a sign-in from the last 15 minutes. Otherwise Serve asks you to sign in again with your provider, then you delete again.
+- Deleting an empty project or environment asks for nothing more: there is nothing to lose.
+- API tokens do not need it. The token is the proof.
+
 ## API access
 
 The **API** card under **Settings → Security** controls the [REST API](/docs/api):
