@@ -15,7 +15,26 @@ Visitors arrive at the app's own server, through its public IP or its Cloudflare
 - **HTTPS** is handled by the app's own server. It holds the certificates.
 - **No public IP?** If the app's own server has no public IP (a home server behind a router, for example), give the app's domains a Cloudflare Tunnel. The settings page warns you when you need one.
 
-If the app's own server goes down, the app is down too, even when the extra servers still run. This is the usual setup with one load balancer in front of several app servers.
+If the app's own server goes down, the app is down too, even when the extra servers still run. This is the usual setup with one load balancer in front of several app servers. To bring the app back, make an extra server the main one (see below).
+
+## Change the main server
+
+The app's own server is its main server. Visitors enter through it. You can make another server the main one at any time, without a redeploy:
+
+- In **Settings → Servers & registry**, click **Make main** next to an extra server.
+- Or, on the **Domains** tab, click **Change** next to **Visitors enter through**.
+- When you add a domain, you can also pick the server under **Visitors enter through**.
+
+A server can only take visitors when its proxy runs, it has a public IP or a Cloudflare Tunnel, and it runs the current version of the app. Serve says so when one of these is missing.
+
+When you switch, Serve:
+
+1. Copies the HTTPS certificates to the new main server (nginx). Caddy and Traefik get their own.
+2. Gives the new main server the load balancing. The old one stays as an extra server.
+3. Points the DNS records it made in Cloudflare at the new server. Tunnel domains move to the new server's tunnel of the same Cloudflare account.
+4. Tells you which domains you must point at the new IP yourself, when your DNS is somewhere else. Until you do, those visitors still reach the old server, which serves its own replicas only.
+
+Serve refuses the switch when a domain would stop working, for example a tunnel domain when the new server has no tunnel of that Cloudflare account and no public IP.
 
 ## Set it up
 
