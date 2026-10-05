@@ -90,7 +90,7 @@ A server whose deploy fails keeps its old version and gets no visitors until a d
 
 ## Images
 
-A Git, Dockerfile or upload app is built once. Without a registry, Serve copies the image from the build server to each extra server, so every server runs the exact same image. With a registry (**Settings → Servers & registry**), each server pulls the image instead. That is faster for big images and many servers. A server with another CPU type (an ARM server next to Intel or AMD ones) builds the image itself from the same commit, since an image only runs on the CPU type it was built for.
+A Git, Dockerfile or upload app is built once. Without a registry, Serve copies the image from the build server to each extra server, so every server runs the exact same image. With a registry (**Settings → Servers & registry**), each server pulls the image instead. That is faster for big images and many servers. An image only runs on the CPU type it was built for. So when the app runs on servers of another CPU type (ARM servers next to Intel or AMD ones), one of those servers builds the image from the same commit, at the same time as the main build. The other servers of that type copy the image from it. With two ARM and two AMD servers, there are two builds side by side, and the other two servers only copy.
 
 An app from a Docker image is pulled on each server.
 
