@@ -67,6 +67,21 @@ A visitor that reaches a replica that just died is retried on another replica. T
 
 An error from your app, like a 500 page, does not take a replica out. Only replicas that do not answer are taken out.
 
+## Load balancing strategy
+
+Pick how visitors are spread in **Domains & ports → HTTP options → Load balancing**:
+
+| Strategy | What it does |
+| --- | --- |
+| **Round robin** | Each replica gets visitors in turn. This is the default. |
+| **Least busy** | Each visitor goes to the replica with the fewest open requests. Good for slow requests, like uploads or streams. |
+| **Sticky sessions** | A visitor keeps reaching the same replica. Use it for Socket.IO or sessions kept in memory. |
+| **Main server first** | Only the main server's replicas get visitors. When none of them answers its health check, the extra servers take the visitors until the main server is back. |
+
+With **Main server first**, Serve also checks the main server's own replicas every 5 seconds. The switch to the extra servers, and back, takes about 10 seconds. The extra servers show **Standby** in **Settings → Servers** while they wait.
+
+If the domain's DNS points at an extra server instead of the main one, the domain shows **Points to** and that server's name. That server only serves its own replicas. Point the record at the main server, or make that server the main one.
+
 ## Deploys
 
 The app's own server deploys first. If that fails, the deploy fails and every server keeps the old version. Then the extra servers deploy at the same time. Each one keeps serving its old version until its new replicas are healthy.
