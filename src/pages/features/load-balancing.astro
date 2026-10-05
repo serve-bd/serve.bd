@@ -1,0 +1,93 @@
+---
+import { Activity, ArrowRight, Cloud, Copy, HeartPulse, Layers, Rocket, ScrollText } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import BalanceCanvas from "@/components/site/BalanceCanvas.astro";
+import Section from "@/components/site/Section.astro";
+import SectionTitle from "@/components/site/SectionTitle.astro";
+import Site from "@/layouts/Site.astro";
+
+const steps = [
+  { n: "01", title: "Connect the servers", text: "Put them in a private network. It is encrypted, and the extra servers need no open ports." },
+  { n: "02", title: "Tick them in the app", text: "In Servers & registry, tick the extra servers. Load balancing turns on with the first one." },
+  { n: "03", title: "Save and deploy", text: "Every server runs the app with the replicas you set. Visitors spread over all of them." },
+];
+
+const points = [
+  { icon: HeartPulse, title: "Dead replicas drop out", text: "Each replica is checked every 5 seconds. One that stops answering gets no visitors until it is back." },
+  { icon: Rocket, title: "Deploys stay safe", text: "Each server switches only when its new replicas are healthy. A server whose deploy fails keeps the old version and gets no traffic." },
+  { icon: Cloud, title: "One address for DNS", text: "Point DNS at the app's own server, or give it a Cloudflare Tunnel when it has no public IP." },
+  { icon: Copy, title: "The same image everywhere", text: "Built once. Without a registry, Serve copies the image to each server, so they all run exactly the same code." },
+  { icon: Layers, title: "Any proxy", text: "nginx, Caddy or Traefik. Sticky sessions keep a visitor on one replica, on any server." },
+  { icon: ScrollText, title: "See every replica", text: "Logs, the console and the request log show each replica with its server. The request log says which one answered." },
+];
+---
+
+<Site title="Load balancing" description="Run an app on several servers. Tick them, set the replicas, deploy: Serve spreads visitors over every replica.">
+  <div class="relative overflow-hidden">
+    <div class="hero-grid pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="mx-auto max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+      <div class="max-w-2xl animate-rise">
+        <a href="/features/" class="mb-5 inline-flex font-mono text-[12px] tracking-wide text-accent uppercase">Features / Load balancing</a>
+        <h1 class="text-[40px] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-fg sm:text-[56px]">More servers. Same app. Three clicks.</h1>
+        <p class="mt-5 max-w-xl text-[17px] leading-relaxed text-pretty text-muted">
+          Tick the servers, set the replicas and deploy. Serve runs the app on every server and spreads visitors over all of its replicas, around the ones that stop answering.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-2">
+          <a href="/docs/several-servers/" class={buttonVariants({ variant: "primary", size: "lg" })}>Read the docs <ArrowRight /></a>
+          <a href="/docs/installation/" class={buttonVariants({ size: "lg" })}>Install Serve</a>
+        </div>
+      </div>
+      <div class="mt-14 animate-rise sm:mt-16" style="animation-delay: 120ms">
+        <BalanceCanvas />
+      </div>
+    </div>
+  </div>
+
+  <Section>
+    <SectionTitle eyebrow="How it works" title="No load balancer to set up." />
+    <ol class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li class="border-t border-line pt-5">
+            <span class="font-mono text-[13px] text-faint">{s.n}</span>
+            <h3 class="mt-2 text-[16px] font-semibold text-fg">{s.title}</h3>
+            <p class="mt-1.5 text-[15px] leading-relaxed text-muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section class="border-t border-line">
+    <SectionTitle eyebrow="Why it matters" title="Grow past one machine." />
+    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {
+        points.map(({ icon: Icon, title, text }) => (
+          <div class="bg-surface p-6">
+            <span class="mb-4 flex size-9 items-center justify-center rounded-lg border border-line bg-bg text-fg-2">
+              <Icon className="size-[18px]" />
+            </span>
+            <h3 class="text-[15px] font-semibold text-fg">{title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 max-w-3xl text-[13px] leading-relaxed text-faint">
+      Visitors reach the app through its own server, which holds the certificates. If that server goes down, the app is down too, as with any single load balancer. Each
+      server keeps its own volumes, so keep shared state in a database.
+    </p>
+  </Section>
+
+  <Section class="border-t border-line">
+    <div class="flex flex-col items-center text-center">
+      <Activity className="mb-4 size-6 text-accent" />
+      <h2 class="text-3xl font-semibold text-balance text-fg sm:text-4xl">Add a server when the traffic comes.</h2>
+      <p class="mt-3 text-muted">Works with every Serve install. Two servers are enough to start.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-2">
+        <a href="/docs/installation/" class={buttonVariants({ variant: "primary", size: "lg" })}>Install Serve <ArrowRight /></a>
+        <a href="/docs/private-networks/" class={buttonVariants({ size: "lg" })}>Private networks</a>
+      </div>
+    </div>
+  </Section>
+</Site>

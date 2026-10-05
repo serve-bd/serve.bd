@@ -1,0 +1,159 @@
+---
+/*
+ * Load balancing on a canvas, played once like a setup: the settings tick three servers and two
+ * replicas, Save and deploy is pressed, then each server comes up with its replicas and the
+ * proxy on the app's own server starts sending visitors to all of them. One replica does not
+ * answer and gets no visitors; the rest of its server still does.
+ */
+import { Check, Rocket } from "lucide-react";
+import CanvasCard from "./CanvasCard.astro";
+import CanvasDefs from "./CanvasDefs.astro";
+import CanvasPill from "./CanvasPill.astro";
+
+const W = 1208;
+const H = 600;
+const CH = 104;
+const SET = { x: 24, y: 150, w: 252, h: 300 };
+const VIS = { x: 332, y: 72, w: 236 };
+const PROXY = { x: 332, y: 300, w: 236 };
+const FRAME = { x: 648, w: 536, h: 168 };
+const CARD = 240;
+/** Seconds into the play: when the settings are done, and when each server comes up. */
+const SAVE = 2.0;
+const servers = [
+  { y: 24, name: "fsn1-main · the app's own server", at: SAVE + 0.5, replicas: [{ s: "Running" }, { s: "Running" }] },
+  { y: 216, name: "hel1-app · private network", at: SAVE + 1.1, replicas: [{ s: "Running" }, { s: "Running" }] },
+  {
+    y: 408,
+    name: "nbg1-app · private network · 1 of 2 answering",
+    at: SAVE + 1.7,
+    replicas: [{ s: "Running" }, { s: "Not answering", tone: "warn" as const }],
+  },
+];
+const ticks = [
+  { name: "fsn1-main", at: 0, fixed: true },
+  { name: "hel1-app", at: 0.5 },
+  { name: "nbg1-app", at: 0.9 },
+];
+const mid = (y: number) => y + CH / 2;
+const curve = (x1: number, y1: number, x2: number, y2: number) => {
+  const d = (x2 - x1) / 2;
+  return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2 - 4} ${y2}`;
+};
+const at = (s: number) => `animation-delay: ${s}s`;
+---
+
+<div
+  class="cv-frame cv-wide"
+  role="img"
+  aria-label="Setting it up: tick three servers, choose two replicas, turn on load balancing and press Save and deploy. Each server then runs two replicas, and the proxy on fsn1-main, the app's own server, spreads the visitors of app.acme.dev over all six, through the private network for the other two servers. One replica does not answer, so it gets no visitors until it does."
+>
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <CanvasDefs id="lb" />
+    <rect width={W} height={H} fill="url(#lb-dots)"></rect>
+
+    {/* The settings, filled in as you would: servers ticked, replicas set, the switch on, saved. */}
+    <foreignObject x={SET.x} y={SET.y} width={SET.w} height={SET.h} class="overflow-visible">
+      <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-line-strong bg-surface font-sans shadow-sm">
+        <div class="border-b border-line px-4 py-3">
+          <p class="text-[13px] font-semibold text-fg">Servers</p>
+          <p class="text-[11px] text-muted">Settings of the web app</p>
+        </div>
+        <div class="flex flex-col gap-2 px-4 py-3">
+          {
+            ticks.map((t) => (
+              <div class="flex items-center gap-2.5 text-[12px] text-fg-2">
+                <span class="relative flex size-4 items-center justify-center rounded border border-line-strong bg-surface-2">
+                  <span class={`absolute inset-0 flex items-center justify-center rounded bg-accent text-white ${t.fixed ? "" : "lb-step"}`} style={t.fixed ? "" : at(t.at)}>
+                    <Check className="size-3" strokeWidth={3} />
+                  </span>
+                </span>
+                <span class="font-medium text-fg">{t.name}</span>
+                {t.fixed && <span class="ml-auto text-[10px] text-faint">own server</span>}
+              </div>
+            ))
+          }
+        </div>
+        <div class="flex items-center justify-between border-t border-line px-4 py-2.5 text-[12px]">
+          <span class="text-fg-2">Replicas per server</span>
+          <span class="grid rounded-md border border-line-strong bg-surface-2 px-2 py-0.5 font-mono text-fg">
+            <span class="lb-out col-start-1 row-start-1" style={at(1.3)}>1</span>
+            <span class="lb-step col-start-1 row-start-1" style={at(1.3)}>2</span>
+          </span>
+        </div>
+        <div class="flex items-center justify-between border-t border-line px-4 py-2.5 text-[12px]">
+          <span class="text-fg-2">Load balance visitors</span>
+          <span class="relative h-4 w-7 rounded-full bg-line-strong">
+            <span class="lb-step absolute inset-0 rounded-full bg-accent" style={at(1.6)}></span>
+            <span class="lb-knob absolute top-0.5 left-0.5 size-3 rounded-full bg-white shadow-sm" style={at(1.6)}></span>
+          </span>
+        </div>
+        <div class="mt-auto border-t border-line px-4 py-3">
+          <span class="lb-press flex h-8 items-center justify-center gap-1.5 rounded-lg bg-accent text-[12px] font-medium text-white" style={at(SAVE)}>
+            <Rocket className="size-3.5" /> Save and deploy
+          </span>
+        </div>
+      </div>
+    </foreignObject>
+    <text x={SET.x} y={SET.y + SET.h + 26} class="cv-note">That is the whole setup.</text>
+
+    {/* Visitors come in through the app's own server only: DNS points there. */}
+    <path d={`M ${VIS.x + VIS.w / 2} ${VIS.y + CH} V ${PROXY.y - 4}`} class="cv-edge-accent" marker-end="url(#lb-arrow-accent)"></path>
+    <CanvasPill x={VIS.x + VIS.w / 2} y={(VIS.y + CH + PROXY.y) / 2} text="DNS · HTTPS" accent />
+
+    {
+      servers.map((s) => (
+        <g>
+          <path
+            d={curve(PROXY.x + PROXY.w, mid(PROXY.y), FRAME.x, s.y + FRAME.h / 2)}
+            class="cv-edge-accent lb-edge"
+            style={at(s.at + 0.5)}
+            marker-end="url(#lb-arrow-accent)"
+          />
+          <g class="lb-step" style={at(s.at)}>
+            <rect x={FRAME.x} y={s.y} width={FRAME.w} height={FRAME.h} rx="22" class="cv-server" />
+            <text x={FRAME.x + 20} y={s.y + 26} class="cv-server-label">
+              {s.name}
+            </text>
+          </g>
+          {s.replicas.map((r, i) => (
+            <g class="lb-step" style={at(s.at + 0.15 + i * 0.15)}>
+              <CanvasCard x={FRAME.x + 20 + i * (CARD + 16)} y={s.y + 44} w={CARD} name={`web · replica ${i + 1}`} detail="acme/web:4f2a9c1" status={r.s} tone={r.tone} />
+            </g>
+          ))}
+        </g>
+      ))
+    }
+
+    <CanvasCard x={VIS.x} y={VIS.y} w={VIS.w} name="app.acme.dev" detail="Visitors" icon="globe" status="Online" />
+    <CanvasCard x={PROXY.x} y={PROXY.y} w={PROXY.w} name="Proxy on fsn1-main" detail="nginx, Caddy or Traefik" icon="server" status="5 of 6 replicas get traffic" selected />
+    <g class="lb-step" style={at(SAVE + 2.4)}>
+      <text x={PROXY.x} y={PROXY.y + CH + 26} class="cv-note">Every replica is checked every</text>
+      <text x={PROXY.x} y={PROXY.y + CH + 42} class="cv-note">5 seconds. One that does not</text>
+      <text x={PROXY.x} y={PROXY.y + CH + 58} class="cv-note">answer gets no visitors.</text>
+    </g>
+  </svg>
+</div>
+
+<div class="cv-frame cv-tall" role="img" aria-label="Tick three servers, choose two replicas and deploy: the proxy on the app's own server spreads visitors over all six replicas.">
+  <svg viewBox="0 0 330 700" aria-hidden="true">
+    <CanvasDefs id="lbt" />
+    <rect width="330" height="700" fill="url(#lbt-dots)"></rect>
+    <path d="M 165 136 V 168" class="cv-edge-accent" marker-end="url(#lbt-arrow-accent)"></path>
+    <path d="M 165 276 V 316" class="cv-edge-accent lb-edge" style={at(0.6)} marker-end="url(#lbt-arrow-accent)"></path>
+    <g class="lb-step" style={at(0.6)}>
+      <CanvasPill x={165} y={296} text="spread over every replica" accent />
+    </g>
+    <CanvasCard x={22} y={28} w={286} name="app.acme.dev" detail="Visitors" icon="globe" status="Online" />
+    <CanvasCard x={22} y={172} w={286} name="Proxy on fsn1-main" detail="nginx, Caddy or Traefik" icon="server" status="5 of 6 replicas get traffic" selected />
+    <g class="lb-step" style={at(0.9)}>
+      <CanvasCard x={22} y={328} w={286} name="fsn1-main" detail="2 replicas · local" icon="server" status="Gets traffic" />
+    </g>
+    <g class="lb-step" style={at(1.3)}>
+      <CanvasCard x={22} y={448} w={286} name="hel1-app" detail="2 replicas · private network" icon="server" status="Gets traffic" />
+    </g>
+    <g class="lb-step" style={at(1.7)}>
+      <CanvasCard x={22} y={568} w={286} name="nbg1-app" detail="2 replicas · private network" icon="server" status="Gets traffic (1/2)" tone="warn" />
+    </g>
+  </svg>
+</div>

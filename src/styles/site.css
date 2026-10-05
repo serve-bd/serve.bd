@@ -196,6 +196,50 @@
       cv-dash 1s linear infinite,
       cv-out 0.4s ease 4.6s forwards;
   }
+  /*
+   * The load balancing canvas plays its setup once: each step fades in at its delay and stays.
+   * The replica count turns from 1 to 2, the switch's knob slides, the button is pressed.
+   */
+  .lb-step {
+    opacity: 0;
+    animation: cv-in 0.45s ease both;
+  }
+  .lb-out {
+    animation: cv-out 0.2s ease both;
+  }
+  /* A traffic line appears, then keeps flowing. */
+  .lb-edge {
+    opacity: 0;
+    animation:
+      cv-in 0.45s ease both,
+      cv-dash 1s linear infinite;
+  }
+  .lb-knob {
+    animation: lb-knob 0.25s ease both;
+  }
+  .lb-press {
+    animation: lb-press 0.3s ease both;
+  }
+  @keyframes lb-knob {
+    to {
+      transform: translateX(12px);
+    }
+  }
+  @keyframes lb-press {
+    50% {
+      transform: scale(0.94);
+      filter: brightness(0.85);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lb-step,
+    .lb-edge,
+    .lb-out,
+    .lb-knob,
+    .lb-press {
+      animation-delay: 0s !important;
+    }
+  }
   @keyframes cv-dash {
     to {
       stroke-dashoffset: -20;

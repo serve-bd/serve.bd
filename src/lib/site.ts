@@ -29,6 +29,7 @@ export const featurePages = [
   { href: "/features/database-branching/", label: "Database branching", text: "A full copy of a database, for migrations and previews." },
   { href: "/features/one-click-services/", label: "One-click services", text: "n8n, Plausible, Ghost and more, with secrets set for you." },
   { href: "/features/domains-and-https/", label: "Domains and HTTPS", text: "Add a domain and get a certificate that renews itself." },
+  { href: "/features/load-balancing/", label: "Load balancing", text: "One app on several servers, visitors spread over every replica." },
   { href: "/features/servers-without-public-ip/", label: "Servers without a public IP", text: "Run apps on a machine behind your router." },
   { href: "/features/teams/", label: "Teams", text: "Roles, project access and an activity log." },
 ];
