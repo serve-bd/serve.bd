@@ -33,6 +33,10 @@ In the **Incidents** tab:
 - **Update** adds a message. Move the state from **Investigating** to **Identified**, **Monitoring** and **Resolved**. **Resolved** closes the incident.
 - **Plan maintenance** sets a start and an end. Visitors see it ahead of time. During the window, its components show **Under maintenance**. Outages found by checks in that window stay off the page.
 
+**Templates** save time during an outage. When you report an incident, tick **Save as a template** and name it. Next time, pick it under **Start from a template**. Delete templates in the list under the incidents.
+
+**Postmortem**: after an incident is resolved, click **Postmortem** on it. Write what happened and what changes. Visitors can open it under the incident.
+
 When a check finds a component down, the page shows the outage by itself. To keep these outages off the page, turn off **Show outages found by checks** in **Design → History**.
 
 ## Design
@@ -48,12 +52,14 @@ The **Design** tab has a live preview, for desktop and phone. Click **Save** to 
 | **Theme** | **Visitor's choice** follows the visitor's device. |
 | **Font**, **Corners**, **Spacing** | Sans, serif or mono; round or square; roomy or compact. |
 | **Daily bars** | One bar per day for 30, 60 or 90 days. Phones show the last 30. |
-| **Uptime percent**, **Response time** | Shown under each component. |
+| **Uptime percent** | Shown under each component. |
+| **Response time** | A chart of the last day under each component, from the uptime checks. Hover it to see each half hour. |
 | **Past incidents** | How many days of history to list. |
 | **Banner** | A note at the top of the page. |
 | **Header links**, **Footer text** | Links to your site, support or docs. |
 | **Custom CSS** | Extra styles for this page only. Colors are variables like `--sp-bg` and `--sp-ok`. |
 | **Hide from search engines** | Asks search engines not to list the page. |
+| **Words and language** | Reword or translate every text on the page, like **All systems operational**. **Language of dates** takes a code like `de` or `pt-BR`. |
 
 ## Who can see it
 
@@ -86,6 +92,7 @@ Each page also answers at these addresses:
 | `/badge` | An SVG badge with the overall status. Add `?component=<id>` for one component, and `?label=API` to change its text. |
 | `/summary.json` | The status, components, ongoing incidents and planned maintenance as JSON. |
 | `/feed.xml` | Incidents and maintenance as RSS. |
+| `/widget.js` | A small status pill for any website. Add `<script src="…/widget.js" async></script>`. Options on the tag: `data-position="bottom-left"` or `"top"` (a bar shown only during issues), `data-only-issues="true"`, `data-theme="dark"`. Public pages only. |
 
 A draft or a password page does not answer at these addresses.
 
