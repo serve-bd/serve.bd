@@ -38,7 +38,7 @@ Serve refuses the switch when a domain would stop working, for example a tunnel 
 
 ## Set it up
 
-1. Put the servers in a [private network](/docs/private-networks).
+1. Put the servers in a [private network](/docs/private-networks). With load balancing on, Serve refuses servers that share no private network with the app's own server, since they would never get a visitor. The same goes for making a server the main one.
 2. Open the app's **Settings → Servers & registry**.
 3. Tick the extra servers. **Load balance visitors across these servers** turns on with the first one.
 4. Click **Save and deploy**.
