@@ -25,6 +25,22 @@ Set up a check in a service's **Settings → Monitoring**. Turn on **Check this 
 
 An HTTP check needs a domain on the service. Add one first. See [Domains](/docs/domains).
 
+## Request log
+
+Serve always counts the requests to a service with a domain. The request log keeps each request too, so you can see what an error was. It is off by default. Turn it on in **Settings → Monitoring → Request log**:
+
+| Field | What it does |
+| --- | --- |
+| **Keep** | Which responses to keep: **2xx**, **3xx**, **4xx** and **5xx**. **4xx** and **5xx** start ticked. Other responses are only counted. |
+| **Keep for** | Days to keep requests. Older ones are deleted every hour. |
+| **Keep visitor IP addresses** | Turning it off also removes the IP addresses already kept. |
+
+See the requests in **Metrics → Traffic** or **Logs → Requests**. New requests show within about a second while the page is open. Filter by status group or path. Click a bar on the traffic chart to see only its requests. Click a request for its details.
+
+Each request shows its time, method, path, status, time taken and **Answered by**: the server and replica that answered it. Query strings are never kept, because they can hold tokens. A request that had one shows `?…`.
+
+A busy service can keep millions of requests. Keep only what you need, for example only **5xx** for a few days. **Delete requests** on the same card removes everything kept so far. The API has the request log too: `GET /services/{serviceId}/request-log`.
+
 ## The Monitoring page
 
 **Monitoring** in the sidebar shows:

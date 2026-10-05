@@ -1,0 +1,83 @@
+---
+title: "Several servers"
+description: "Run an app on more than one server and spread visitors over them."
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+An app can run on more than one server. Each extra server runs the same image with the same number of replicas. The app's own server spreads visitors over all of them.
+
+## How it works
+
+Visitors arrive at the app's own server, through its public IP or its Cloudflare Tunnel. Its proxy sends each visitor to one replica, on that server or on an extra one. Traffic to the extra servers goes through a private network.
+
+- **DNS** points at the app's own server only. The extra servers need no DNS records and no open ports.
+- **HTTPS** is handled by the app's own server. It holds the certificates.
+- **No public IP?** If the app's own server has no public IP (a home server behind a router, for example), give the app's domains a Cloudflare Tunnel. The settings page warns you when you need one.
+
+If the app's own server goes down, the app is down too, even when the extra servers still run. This is the usual setup with one load balancer in front of several app servers.
+
+## Set it up
+
+1. Put the servers in a [private network](/docs/private-networks).
+2. Open the app's **Settings → Servers & registry**.
+3. Tick the extra servers. **Load balance visitors across these servers** turns on with the first one.
+4. Click **Save and deploy**.
+
+Each extra server shows how it takes part:
+
+| Badge | Meaning |
+| --- | --- |
+| **Gets traffic** | All its replicas get visitors. |
+| **Gets traffic (1/2)** | Some replicas do not answer. The others get visitors. |
+| **No traffic: no private network** | The server has no private network with the app's own server. |
+| **Joining the private network** | The server is getting its private addresses. This takes a few seconds. |
+| **No traffic until deployed** | Deploy the app to start using the server. |
+| **No traffic: deploy failed** | The last deploy failed there. The server keeps the older version and gets no visitors. |
+| **No traffic: not answering** | Its replicas do not answer. Serve tries again every few seconds. |
+
+Turn the switch off to keep the extra servers running the app without sending them visitors, for example behind a load balancer of your own.
+
+Two servers are enough to start. Add more when you need more capacity.
+
+## Health and failures
+
+Serve checks every replica on the extra servers every 5 seconds, from the app's own server. A replica that fails two checks in a row gets no visitors until it passes two checks again. If you set a health check path (**Settings → Health check**), Serve loads that path. Otherwise it checks that the port answers.
+
+A visitor that reaches a replica that just died is retried on another replica. The one exception: a request already in flight when a whole server goes down can fail.
+
+An error from your app, like a 500 page, does not take a replica out. Only replicas that do not answer are taken out.
+
+## Deploys
+
+The app's own server deploys first. If that fails, the deploy fails and every server keeps the old version. Then the extra servers deploy at the same time. Each one keeps serving its old version until its new replicas are healthy.
+
+A server whose deploy fails keeps its old version and gets no visitors until a deploy succeeds there. The deploy log names it.
+
+## Images
+
+A Git, Dockerfile or upload app is built once. Without a registry, Serve copies the image from the build server to each extra server, so every server runs the exact same image. With a registry (**Settings → Servers & registry**), each server pulls the image instead. That is faster for big images and many servers.
+
+An app from a Docker image is pulled on each server.
+
+## Replicas
+
+Each server runs the number of replicas set in **Settings → Runtime**. With 3 servers and 2 replicas, 6 containers run.
+
+Replica numbers continue across servers, so `SERVE_REPLICA_INDEX` goes from 0 to 5 in that example. Use it to give each replica its own shard or task. See [Per-replica variables](/docs/environment-variables#per-replica-variables).
+
+## Logs, console and metrics
+
+- **Logs** shows every server's replicas. Pick one replica from the dropdown, for example **hetzner-1 · Replica 2**.
+- **Console** lists every replica, with its server.
+- **Overview** counts and lists the replicas of every server.
+- **Metrics** adds up CPU, memory and network over every server that collects metrics. Turn on metrics on each server's **Metrics** page.
+
+## Data
+
+Each server has its own volumes. Nothing is shared or synced between servers, so keep state in a database. A pre-deploy command runs once, on the app's own server.
+
+<CardGrid>
+<LinkCard href="/docs/private-networks" title="Private networks" description="Connect your servers." />
+<LinkCard href="/docs/builds" title="Builds" description="Build servers and registries." />
+</CardGrid>

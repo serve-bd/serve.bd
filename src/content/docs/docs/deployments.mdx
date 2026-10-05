@@ -223,8 +223,8 @@ By default, previews get the app's variables, so they use its production databas
 
 Each deployment has its build log. A service also has tabs for runtime logs, request logs and metrics. The console tab opens a shell inside the running container.
 
-- **Logs**: for an app with more than one replica, pick one replica to see only its logs. The clock button hides or shows timestamps. On phones, timestamps start hidden.
-- **Metrics**: request charts appear only for a service with a domain. Hover over or tap a request bar to see its numbers. If the service has no domain and its server collects no metrics, the tab is hidden.
+- **Logs**: **App logs** shows what the app prints. For an app with more than one replica, pick one replica from the dropdown to see only its logs. The clock button hides or shows timestamps. On phones, timestamps start hidden. **Requests** shows the [request log](/docs/monitoring#request-log) for a service with a domain.
+- **Metrics**: **Resources** shows CPU, memory and network use. **Traffic** shows requests and the request log, for a service with a domain. Hover over or tap a request bar to see its numbers. If the service has no domain and its server collects no metrics, the tab is hidden.
 
 <CardGrid>
 <LinkCard href="/docs/domains" title="Domains" description="Point a domain at your app." />

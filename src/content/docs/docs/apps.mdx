@@ -81,20 +81,16 @@ When a container keeps restarting, the service shows a warning. A successful dep
 
 ## Advanced settings
 
-**Settings → Advanced** holds container options that most apps never need:
+**Settings → Advanced** holds container options that most apps never need. Each card saves on its own:
 
-- **Working directory**, **User**, **Entrypoint**.
-- **Stop signal**, **Graceful stop timeout**, **Init process**.
-- **Extra hosts** and **Container labels**.
-- **Log file size** and **Log files kept**.
-- **DNS servers**, **DNS search domains**, **DNS options**.
-- **Kernel parameters (sysctls)** and **Linux capabilities**.
-- **No new privileges**: processes can't gain rights after they start, for example through setuid programs. Safe for most apps.
-- **Drop capabilities**: rights taken away from Docker's defaults. `ALL` drops every one, which can break apps like nginx. Add back only what the app needs.
-- **Platform**: `linux/amd64`, `arm64` or `arm/v7`.
-- **Pull policy**.
+- **Process**: **Init process**, **Resource limits (ulimits)** and **Kernel parameters (sysctls)**.
+- **Log files**: **Log file size** and **Log files kept**.
+- **Hosts and DNS**: **Extra hosts**, **DNS servers**, **DNS search domains** and **DNS options**.
+- **Container labels**: for external tools.
+- **Security**: **No new privileges** (processes can't gain rights after they start, for example through setuid programs; safe for most apps) and **Drop capabilities** (rights taken away from Docker's defaults; `ALL` drops every one, which can break apps like nginx, so add back only what the app needs).
+- **Host access**: **Privileged**, **Linux capabilities**, **Security options**, **GPUs** and **Devices**. Only the Root organization has this card. **Security options** takes one per line, like `apparmor=my-profile`, `seccomp=unconfined`, `label=disable` or `systempaths=unconfined`.
 
-**Privileged**, **GPUs**, **Devices** and **Security options** are only available to the Root organization. **Security options** takes one per line, like `apparmor=my-profile`, `seccomp=unconfined`, `label=disable` or `systempaths=unconfined`.
+**Working directory**, **User**, **Entrypoint**, **Stop signal**, **Graceful stop timeout**, **Platform** and **Pull policy** are in **Settings → Runtime**.
 
 ## Clone a service
 
@@ -128,7 +124,7 @@ Under **Settings → Maintenance** you can put an app behind a 503 page. You set
 | --- | --- |
 | General | Name, tags and basic details |
 | Server | Which server runs the app |
-| Servers & registry | Build server, registry push, extra servers |
+| Servers & registry | Build server, registry push, [extra servers](/docs/several-servers) |
 | Source | Repository, branch, image or Dockerfile |
 | Previews | Pull request previews |
 | Build | Builder and build fields |
