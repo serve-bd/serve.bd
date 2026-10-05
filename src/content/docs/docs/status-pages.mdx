@@ -64,11 +64,15 @@ In **Settings → Who can see it**:
 
 ## Own domain
 
-1. In **Settings → Own domain**, enter a domain like `status.example.com`.
-2. Point an A record for it to the dashboard's server.
-3. Click **Check DNS**.
+In **Settings → Own domain**, enter a domain like `status.example.com`. Then pick a **Route**:
 
-With **HTTPS** on, Serve gets a Let's Encrypt certificate once the record points to the server. Caddy and Traefik get their own certificate.
+- **Public IP**: point an A record for the domain to the dashboard's server. Then pick the **Protocol**:
+  - **HTTPS** with **Automatic**: Serve gets a Let's Encrypt certificate once the record points to the server. Caddy and Traefik get their own.
+  - **HTTPS** with one of your certificates: pick any certificate of your organization on the dashboard's server that covers the domain. See [Certificates](/docs/domains).
+  - **HTTP only**: no certificate.
+- **Cloudflare Tunnel**: for a server without a public IP. Pick a tunnel of your organization on the dashboard's server. Serve points the domain at the tunnel in Cloudflare, and Cloudflare serves HTTPS. If the domain already has a record you made yourself, remove it in Cloudflare first.
+
+Click **Check DNS** to see where the domain points. A domain behind Cloudflare's proxy shows Cloudflare's addresses. With the Cloudflare account connected, Serve reads the real record.
 
 The domain shows the status page only. The dashboard and its sign-in page never answer there. An IP allow list on the dashboard does not apply to the status page either.
 
