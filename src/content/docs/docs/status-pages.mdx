@@ -55,13 +55,13 @@ Only a public page offers email and webhooks. A page behind a password keeps onl
 
 Turn on **Let subscribers pick components** to let visitors follow only the components they care about. Turn on **Send outages found by checks** to also send the outages your uptime checks find, and when they end. Outages during planned maintenance are not sent.
 
-Subscribers get a message when you report an incident, post an update, or plan maintenance. They also get one when a maintenance window starts and when it ends. Untick **Notify subscribers** in the dialog for a quiet change, like a typo fix. A webhook that fails 10 times in a row is removed. An email address nobody confirmed is removed after 7 days.
+Subscribers get a message when you report an incident, post an update, or plan maintenance. They also get one when a maintenance window starts and when it ends. Each post picks who hears about it, under **Notify** in the dialog: tick the subscriber types and team channels for this post, or untick them all for a quiet change, like a typo fix. A webhook that fails 10 times in a row is removed. An email address nobody confirmed is removed after 7 days.
 
 The list of subscribers shows 25 at a time. Search it by email address, or filter it by type.
 
 ### Post to your team
 
-Under **Post to your team**, tick notification channels of your organization, like your team's Slack. Every incident, update and maintenance posted on the page also goes there. Channels get it even when **Notify subscribers** is off. See [Monitoring](/docs/monitoring) for notification channels.
+Under **Post to your team**, tick notification channels of your organization, like your team's Slack. Every incident, update and maintenance posted on the page also goes there. These are ticked in every post by default; untick them, or tick other channels, for one post. See [Monitoring](/docs/monitoring) for notification channels.
 
 ## From CI and scripts
 
@@ -73,7 +73,7 @@ curl -X POST https://serve.example.com/api/v1/status-pages/PAGE_ID/incidents \
   -d '{"title": "Checkout errors", "body": "We are looking into it.", "impact": "major"}'
 ```
 
-List page ids with `GET /status-pages` and component ids with `GET /status-pages/PAGE_ID/components`. Add `"notify": false` to keep subscribers out of it. See the [API reference](/docs/api) for every endpoint.
+List page ids with `GET /status-pages` and component ids with `GET /status-pages/PAGE_ID/components`. Add `"notify": false` to keep subscribers out of it, `"subscriberTypes": ["email"]` to reach only some, and `"channels": [...]` to pick team channels (`[]` for none). See the [API reference](/docs/api) for every endpoint.
 
 ## Design
 

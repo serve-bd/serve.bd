@@ -14442,7 +14442,7 @@
      "Status pages"
     ],
     "summary": "Report an incident or plan maintenance",
-    "description": "kind incident needs a message (body); kind maintenance needs startsAt and endsAt. Subscribers are told unless notify is false; the page's team channels always are.\n\nNeeds: status-pages.manage (Status pages).",
+    "description": "kind incident needs a message (body); kind maintenance needs startsAt and endsAt. Subscribers are told unless notify is false (subscriberTypes picks which types); the page's team channels always are, unless channels names others ([] for none).\n\nNeeds: status-pages.manage (Status pages).",
     "operationId": "postStatusPagesByPageIdIncidents",
     "x-permissions": [
      "status-pages.manage"
@@ -14517,6 +14517,26 @@
          "notify": {
           "default": true,
           "type": "boolean"
+         },
+         "subscriberTypes": {
+          "description": "Only these subscriber types; left out: every type the page offers",
+          "type": "array",
+          "items": {
+           "type": "string",
+           "enum": [
+            "email",
+            "slack",
+            "discord",
+            "webhook"
+           ]
+          }
+         },
+         "channels": {
+          "description": "Only these notification channel ids; left out: the page's team channels; [] for none",
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
          }
         },
         "required": [
@@ -14607,6 +14627,26 @@
          "notify": {
           "default": true,
           "type": "boolean"
+         },
+         "subscriberTypes": {
+          "description": "Only these subscriber types; left out: every type the page offers",
+          "type": "array",
+          "items": {
+           "type": "string",
+           "enum": [
+            "email",
+            "slack",
+            "discord",
+            "webhook"
+           ]
+          }
+         },
+         "channels": {
+          "description": "Only these notification channel ids; left out: the page's team channels; [] for none",
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
          }
         },
         "required": [
