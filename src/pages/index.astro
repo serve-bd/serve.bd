@@ -5,6 +5,8 @@ import { GitHubMark } from "@/components/react/github-mark";
 import { TemplateLogo } from "@/components/react/template-logo";
 import { buttonVariants } from "@/components/react/ui/button";
 import InstallCommand from "@/components/site/InstallCommand.astro";
+// The released version: the API reference is synced from Serve on every release.
+import { apiVersion } from "@/lib/openapi";
 import Screenshot from "@/components/site/Screenshot.astro";
 import Section from "@/components/site/Section.astro";
 import SectionTitle from "@/components/site/SectionTitle.astro";
@@ -154,7 +156,7 @@ const faq = [
           class="mb-7 inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pr-3 pl-2.5 text-[13px] text-fg-2 shadow-sm transition-colors hover:border-line-strong"
         >
           <span class="led" data-pulse style="--led: var(--ok)"></span>
-          <span class="font-mono text-[12px] text-muted">{site.version}</span>
+          <span class="font-mono text-[12px] text-muted">v{apiVersion}</span>
           <span class="h-3 w-px bg-line-strong"></span>
           Open source and self-hosted
           <ArrowRight className="size-3.5 text-muted" />
