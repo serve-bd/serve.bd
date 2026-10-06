@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.4.16",
+  "version": "0.4.17",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -5335,7 +5335,7 @@
      "Backups"
     ],
     "summary": "Back up now",
-    "description": "target picks a compose service's backup (see the stack's backup settings). databases (a database service): the databases of the server to take, or [\"*\"] for every one, new ones included; without it the service's choice (database.backupDatabases) or the main database.\n\nNeeds: databases.backups (Database backups).",
+    "description": "target picks a compose service's backup (see the stack's backup settings). databases (a database service): the databases of the server to take, or [\"*\"] for every one, new ones included; without it the service's choice (database.backupDatabases) or the main database. choice (a database service): other settings for this backup only: s3DestinationId (null: this server only), copies (more buckets), local (keep a copy on the server too), users, encrypt (false leaves out encryption; admins only).\n\nNeeds: databases.backups (Database backups).",
     "operationId": "postServicesByServiceIdBackups",
     "x-permissions": [
      "databases.backups"
@@ -5368,6 +5368,32 @@
           "type": "array",
           "items": {
            "type": "string"
+          }
+         },
+         "choice": {
+          "type": "object",
+          "properties": {
+           "s3DestinationId": {
+            "type": [
+             "string",
+             "null"
+            ]
+           },
+           "copies": {
+            "type": "array",
+            "items": {
+             "type": "string"
+            }
+           },
+           "local": {
+            "type": "boolean"
+           },
+           "users": {
+            "type": "boolean"
+           },
+           "encrypt": {
+            "type": "boolean"
+           }
           }
          }
         }
@@ -5407,7 +5433,7 @@
      "Backups"
     ],
     "summary": "Restore a backup",
-    "description": "backupFirst: true backs up the current data first. users: true also restores database users and roles.\n\nNeeds: databases.backups (Database backups).",
+    "description": "backupFirst: true backs up the current data first. users: true also restores the dump's users, passwords and roles (Serve's own accounts keep theirs). into: another database service of the same engine to restore into. databases: only these databases of the backup (\"\" is a dump's unnamed one); renames: a database restored under another name; tables: only these tables of the one chosen database (Postgres as schema.table, MySQL, MariaDB). passphrase: for a backup encrypted with a passphrase other than the current one.\n\nNeeds: databases.backups (Database backups).",
     "operationId": "postBackupsByBackupIdRestore",
     "x-permissions": [
      "databases.backups"
@@ -5435,6 +5461,33 @@
          },
          "users": {
           "type": "boolean"
+         },
+         "into": {
+          "type": "string"
+         },
+         "databases": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "renames": {
+          "type": "object",
+          "propertyNames": {
+           "type": "string"
+          },
+          "additionalProperties": {
+           "type": "string"
+          }
+         },
+         "tables": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "passphrase": {
+          "type": "string"
          }
         }
        }
@@ -5443,6 +5496,598 @@
     },
     "responses": {
      "202": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/backups/{backupId}/contents": {
+   "get": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "What a backup holds",
+    "description": "Its databases and, for Postgres, MySQL and MariaDB, their tables: what a restore can choose. An encrypted backup made with another passphrase: that one in the X-Backup-Passphrase header.\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "getBackupsByBackupIdContents",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "backupId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/backups/{backupId}/test": {
+   "post": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Test a backup",
+    "description": "Restores it into a throwaway database on the database's server and counts what came back. The result shows on the backup (verifyStatus, verifyDetail).\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "postBackupsByBackupIdTest",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "backupId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "202": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/backups/{backupId}/download": {
+   "get": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Download a backup",
+    "description": "The file as it is stored (encrypted ones stay encrypted). X-Checksum-SHA256 carries the checksum recorded when it was made.\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "getBackupsByBackupIdDownload",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "backupId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/octet-stream": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/backups/import": {
+   "post": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Import a backup file",
+    "description": "The body is the file, streamed to disk (up to 20 GB), then restored: a dump for a database service, or for one backup of a compose stack (target). Query: filename (its extension says the format), target (db:…, volume:…, dir:…), backupFirst=1, users=1, database (restore the file's one database into this database of the server, merged). An encrypted file's passphrase goes in the X-Backup-Passphrase header.\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "postServicesByServiceIdBackupsImport",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "filename",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "target",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "backupFirst",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "users",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "database",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "202": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/backups/settings": {
+   "get": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Backup settings of a database",
+    "description": "Schedule, retention, buckets, encryption (whether it is on, never the passphrase), daily tests and more.\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "getServicesByServiceIdBackupsSettings",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Change backup settings of a database",
+    "description": "Fields left out keep their value. passphrase: a new one encrypts backups from now on (at least 8 characters), null stops encrypting. users: backups also take the server's users, passwords and rights (Postgres, MySQL, MariaDB).\n\nNeeds: databases.backups (Database backups), services.manage (Manage services).",
+    "operationId": "patchServicesByServiceIdBackupsSettings",
+    "x-permissions": [
+     "databases.backups",
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "schedule": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "databases": {
+          "anyOf": [
+           {
+            "type": "array",
+            "items": {
+             "type": "string"
+            }
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "retention": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+         },
+         "retentionS3": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "s3DestinationId": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "copyDestinationIds": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "local": {
+          "type": "boolean"
+         },
+         "timeoutMinutes": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "lowPriority": {
+          "type": "boolean"
+         },
+         "verify": {
+          "type": "boolean"
+         },
+         "users": {
+          "type": "boolean"
+         },
+         "passphrase": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/compose-backups": {
+   "get": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Backups set up in a compose stack",
+    "description": "Keyed by what they back up: db:<service> (a database container), volume:<name> or dir:<path>. encrypted says whether a passphrase is set; it is never returned.\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "getServicesByServiceIdComposeBackups",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/compose-backups/{key}": {
+   "put": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Set up or change a backup of a compose stack",
+    "description": "key: db:<service>, volume:<name> or dir:<path> (URL-encoded). Adds it when missing. Body: schedule (cron or null), retention, retentionS3, s3DestinationId, copyDestinationIds, local, timeoutMinutes, lowPriority, passphrase (null stops encrypting; left out keeps it).\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "putServicesByServiceIdComposeBackupsByKey",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "key",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": {}
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Backups"
+    ],
+    "summary": "Stop backing up part of a compose stack",
+    "description": "Backups already taken stay until deleted.\n\nNeeds: databases.backups (Database backups).",
+    "operationId": "deleteServicesByServiceIdComposeBackupsByKey",
+    "x-permissions": [
+     "databases.backups"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "key",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
       "description": "Success",
       "content": {
        "application/json": {
@@ -7044,7 +7689,7 @@
      "Backups"
     ],
     "summary": "Import a dump from a URL or S3 and restore it",
-    "description": "source: {\"kind\":\"url\",\"url\":\"https://...\"} or {\"kind\":\"s3\",\"destinationId\":\"...\",\"key\":\"path/to/dump\"}.\n\nNeeds: databases.backups (Database backups).",
+    "description": "source: {\"kind\":\"url\",\"url\":\"https://...\"} or {\"kind\":\"s3\",\"destinationId\":\"...\",\"key\":\"path/to/dump\"}. passphrase: for an encrypted file (.enc). database: restore the one database of the file into this database of the server (merged). To upload a file instead: POST /services/{serviceId}/backups/import.\n\nNeeds: databases.backups (Database backups).",
     "operationId": "postServicesByServiceIdDatabaseImport",
     "x-permissions": [
      "databases.backups"
@@ -7114,6 +7759,12 @@
          "users": {
           "default": false,
           "type": "boolean"
+         },
+         "passphrase": {
+          "type": "string"
+         },
+         "database": {
+          "type": "string"
          }
         },
         "required": [
@@ -13093,6 +13744,53 @@
     "parameters": [],
     "responses": {
      "202": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/instance/backups/{backupId}": {
+   "delete": {
+    "tags": [
+     "Instance"
+    ],
+    "summary": "Delete an instance backup",
+    "description": "Its file on this server and its S3 copy.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "deleteInstanceBackupsByBackupId",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "backupId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
       "description": "Success",
       "content": {
        "application/json": {

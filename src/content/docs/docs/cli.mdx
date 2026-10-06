@@ -321,7 +321,7 @@ serve db backups restore latest --database shop --as shop=shop_copy
 serve db backups restore latest --table public.orders        # only some tables
 serve db backups test latest --wait                           # test-restore it
 serve db backups download latest -o app.dump                  # checked against its checksum
-serve db backups settings --schedule '0 3 * * *' --keep-monthly 12 --verify --users
+serve db backups settings --schedule '0 3 * * *' --retention 14 --verify --users
 serve db import ./dump.sql.gz --wait                          # upload a file
 serve db import https://example.com/dump.sql.gz --wait
 serve db import s3://backups/old/app.dump --wait # an S3 storage by name, id or bucket

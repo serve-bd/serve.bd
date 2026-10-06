@@ -31,12 +31,7 @@ Times use the instance timezone. Change it in **Settings → General**.
 
 Older backups are deleted automatically. When you keep backups in one place, **Keep the latest** sets how many copies stay there. When you keep them in both, **Keep on this server** and **Keep in bucket** set each one. Keep more in the bucket for longer off-site history.
 
-**Keep longer** keeps more on top of the latest ones (for the bucket copies when you use a bucket):
-
-- **All from … days**: every backup younger than that.
-- **1 a day / week / month / year for …**: the newest backup of each of the last days, weeks, months or years.
-
-A backup is kept when any rule wants it. Backups taken [before a deploy](#back-up-before-each-deploy) are counted on their own, so they never push out the scheduled ones.
+Backups taken [before a deploy](#back-up-before-each-deploy) are counted on their own, so they never push out the scheduled ones.
 
 ### Where backups are stored
 
@@ -106,17 +101,19 @@ The **Backups** list shows every backup. From it you can:
 
 ### Restore
 
-**Restore** opens a window where you choose:
+A restore leaves the database exactly as the backup is. **Restore** opens a window that shows the databases the backup holds:
 
-- **Restore into**: this database, or another database service of the same kind, for example last night's production backup into staging.
-- **Databases**: which databases of the backup to restore, and **Restore as** to give one a new name.
-- **Tables**: **All tables**, or **Only some tables** of one database (PostgreSQL, MySQL, MariaDB). Those tables are replaced and the others stay as they are.
-- **Back up first**: takes a backup of the target first. If it fails, nothing is restored.
-- **Import backup** brings the file in (upload, URL or bucket), then the restore window opens: for each database in the file, choose **Into** its own name, a database already on the server (merged: its tables replace ones of the same name) or a new name.
-- **Databases keep their names.** A dump of `ecommerce` restores into `ecommerce`, not into the main database. If your app should connect to it, open **Settings → Credentials**, choose **Use another** and pick it. The connection URL and `${{name.DATABASE_URL}}` then name it.
+- **All databases** (the default): every database on the server is removed first, then the backup's databases and tables come back under their own names. Your [branches](/docs/databases) and the engine's own databases stay. When the backup has no database of the main one's name, its first database becomes the main one, and the connection URL names it.
+- **Some databases**: untick the ones to leave alone. Only the ticked ones are emptied and restored; the others stay as they are.
+- **Keep a backup of the current database**: a backup of everything (every database, table and user) is always taken first. When the restore fails, it is put back at once, for the databases the restore had changed. Tick this to keep it afterwards, so you can undo the restore later.
 - **Also restore the dump's users and passwords** (PostgreSQL, MySQL, MariaDB, MongoDB): only when you move a whole server. The old accounts come back with their passwords and rights. Serve's own accounts keep theirs.
+- **Restore into another database…**: another database service of the same kind, for example last night's production backup into staging.
 
-A backup keeps its database names when restored: a dump of `shop` goes back into `shop`, and empty databases in it are created too. On MySQL and MariaDB, the account apps connect with gets access to the databases a restore creates. On PostgreSQL, the dump's roles are created without login even when you leave users out, so row-level security policies that name them still work.
+**Import backup** brings a file in (upload, URL or bucket) and opens the same window, with the upload's progress, before anything changes. **Cancel** deletes the file, as if it was never uploaded. A dump made for another engine (a MySQL dump into PostgreSQL) is refused before anything changes.
+
+To connect apps to another database of the server, open **Overview → Connect** and pick it, or **Settings → Credentials → Use another**: the connection URL and `${{name.DATABASE_URL}}` then name it. On MySQL and MariaDB, the account apps connect with gets access to the databases a restore creates.
+
+Compose stacks restore only what the backup holds: other databases in the container stay.
 
 You get a notification when a restore or import finishes or fails.
 
