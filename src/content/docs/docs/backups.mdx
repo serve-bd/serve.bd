@@ -112,6 +112,7 @@ The **Backups** list shows every backup. From it you can:
 - **Databases**: which databases of the backup to restore, and **Restore as** to give one a new name.
 - **Tables**: **All tables**, or **Only some tables** of one database (PostgreSQL, MySQL, MariaDB). Those tables are replaced and the others stay as they are.
 - **Back up first**: takes a backup of the target first. If it fails, nothing is restored.
+- **Import backup** brings the file in (upload, URL or bucket), then the restore window opens: for each database in the file, choose **Into** its own name, a database already on the server (merged: its tables replace ones of the same name) or a new name.
 - **Databases keep their names.** A dump of `ecommerce` restores into `ecommerce`, not into the main database. If your app should connect to it, open **Settings → Credentials**, choose **Use another** and pick it. The connection URL and `${{name.DATABASE_URL}}` then name it.
 - **Also restore the dump's users and passwords** (PostgreSQL, MySQL, MariaDB, MongoDB): only when you move a whole server. The old accounts come back with their passwords and rights. Serve's own accounts keep theirs.
 
