@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -11700,7 +11700,7 @@
      "Integrations"
     ],
     "summary": "Add a notification channel",
-    "description": "kind: slack, discord, telegram, email, webhook, ... with its config, and the events it gets.\n\nNeeds: integrations.manage (Manage integrations).",
+    "description": "kind: slack, discord, telegram, email, webhook, ... with its config. Left out like in the dashboard: events (the problems), scope (everything), quietHours (none), throttleMinutes (0), template (none).\n\nNeeds: integrations.manage (Manage integrations).",
     "operationId": "postNotificationChannels",
     "x-permissions": [
      "integrations.manage"
@@ -11816,7 +11816,7 @@
      "Integrations"
     ],
     "summary": "Change a notification channel",
-    "description": "Needs: integrations.manage (Manage integrations).",
+    "description": "Fields left out keep their saved value; an empty secret in config keeps the stored one.\n\nNeeds: integrations.manage (Manage integrations).",
     "operationId": "putNotificationChannelsByChannelId",
     "x-permissions": [
      "integrations.manage"
@@ -11846,10 +11846,6 @@
           "type": "string"
          }
         },
-        "required": [
-         "name",
-         "kind"
-        ],
         "additionalProperties": {}
        }
       }
