@@ -171,6 +171,7 @@ Each domain has its own options.
 | --- | --- |
 | **www redirect** | Redirect between `www.` and the bare domain. |
 | **Redirect to** | Send all requests to another URL. |
+| **Only my team** | Visitors sign in to Serve first. See [Only my team](#only-my-team). |
 | **Password protection** | Ask for a user name and password. |
 | **Access control** | Allow or Block IP addresses. |
 | **Security headers** | Add common security headers. |
@@ -184,6 +185,21 @@ Each domain has its own options.
 | **Max request body** | Largest upload the proxy accepts. |
 | Timeouts | How long the proxy waits for the app. |
 | **Proxy config** | Raw configuration for the server's proxy. |
+
+### Only my team
+
+Turn on **Only my team** in **Domains → Access control** to put a login wall in front of an app. Use it for admin panels, internal tools and staging sites.
+
+- A visitor without a sign-in goes to the Serve sign-in page first.
+- Members of the organization who can open the app's project get in. Everyone else sees **No access**.
+- After the sign-in, the app's domain keeps a cookie for 7 days. A member who is removed loses access within 30 seconds.
+- Serve's own uptime checks still reach the app.
+
+It works with nginx, Caddy and Traefik.
+
+:::note
+Give the dashboard its own domain first (**Settings → Dashboard domain**). Visitors sign in there, and proxies on other servers check sign-ins there.
+:::
 
 ## Verified domains
 
