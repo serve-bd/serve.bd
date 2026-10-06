@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.3.6",
+  "version": "0.4.12",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -75,6 +75,10 @@
   {
    "name": "Monitoring",
    "description": "Uptime checks."
+  },
+  {
+   "name": "Status pages",
+   "description": "Incidents and maintenance on public status pages, for CI and scripts."
   },
   {
    "name": "Metrics",
@@ -5481,6 +5485,111 @@
       "required": true,
       "schema": {
        "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/request-log": {
+   "get": {
+    "tags": [
+     "Logs"
+    ],
+    "summary": "Request log",
+    "description": "Single requests through the proxy, newest first, when the service keeps a request log (Settings → Monitoring). Filters: status (like 5xx or 4,5), path (contains), method, from and to (RFC 3339 or Unix seconds), limit (1-500, default 100). Pass next as before for the next page.\n\nNeeds: logs.view (View logs).",
+    "operationId": "getServicesByServiceIdRequestLog",
+    "x-permissions": [
+     "logs.view"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "path",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "method",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "before",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 500
       }
      }
     ],
@@ -14174,6 +14283,517 @@
      }
     }
    }
+  },
+  "/status-pages": {
+   "get": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "List status pages",
+    "description": "Needs: status-pages.manage (Status pages).",
+    "operationId": "getStatusPages",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/components": {
+   "get": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "List a page's components",
+    "description": "Their ids are what incidents and maintenance take in componentIds.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "getStatusPagesByPageIdComponents",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/incidents": {
+   "get": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "List incidents and maintenance",
+    "description": "Newest first, with every update. open=true lists only ongoing incidents and maintenance that has not ended.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "getStatusPagesByPageIdIncidents",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "open",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 200
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Report an incident or plan maintenance",
+    "description": "kind incident needs a message (body); kind maintenance needs startsAt and endsAt. Subscribers are told unless notify is false; the page's team channels always are.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "postStatusPagesByPageIdIncidents",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "kind": {
+          "default": "incident",
+          "type": "string",
+          "enum": [
+           "incident",
+           "maintenance"
+          ]
+         },
+         "title": {
+          "type": "string"
+         },
+         "body": {
+          "default": "",
+          "type": "string"
+         },
+         "impact": {
+          "default": "major",
+          "type": "string",
+          "enum": [
+           "minor",
+           "major",
+           "critical"
+          ]
+         },
+         "state": {
+          "default": "investigating",
+          "type": "string",
+          "enum": [
+           "investigating",
+           "identified",
+           "monitoring",
+           "resolved"
+          ]
+         },
+         "componentIds": {
+          "default": [],
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "startsAt": {
+          "type": "string",
+          "description": "ISO 8601 time, like 2026-10-06T22:00:00Z"
+         },
+         "endsAt": {
+          "type": "string",
+          "description": "ISO 8601 time, like 2026-10-06T22:00:00Z"
+         },
+         "notify": {
+          "default": true,
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "title"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/incidents/{incidentId}/updates": {
+   "post": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Post an update",
+    "description": "For an incident, state is investigating, identified, monitoring or resolved (resolved closes it). For maintenance: scheduled, in-progress or completed (completed ends it now).\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "postStatusPagesByPageIdIncidentsByIncidentIdUpdates",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "incidentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "state": {
+          "type": "string",
+          "enum": [
+           "investigating",
+           "identified",
+           "monitoring",
+           "resolved",
+           "scheduled",
+           "in-progress",
+           "completed"
+          ]
+         },
+         "body": {
+          "type": "string"
+         },
+         "notify": {
+          "default": true,
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "state",
+         "body"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/incidents/{incidentId}": {
+   "patch": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Change an incident or maintenance",
+    "description": "Fields left out keep their value. Nobody is notified: post an update for news.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "patchStatusPagesByPageIdIncidentsByIncidentId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "incidentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "title": {
+          "type": "string"
+         },
+         "impact": {
+          "type": "string",
+          "enum": [
+           "minor",
+           "major",
+           "critical"
+          ]
+         },
+         "componentIds": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "startsAt": {
+          "type": "string",
+          "description": "ISO 8601 time, like 2026-10-06T22:00:00Z"
+         },
+         "endsAt": {
+          "type": "string",
+          "description": "ISO 8601 time, like 2026-10-06T22:00:00Z"
+         },
+         "postmortem": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Delete an incident or maintenance",
+    "description": "It goes from the page and its history, with every update.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "deleteStatusPagesByPageIdIncidentsByIncidentId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "incidentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
   }
  },
  "components": {
@@ -14276,6 +14896,12 @@
     "label": "View logs",
     "description": "Read build, runtime and request logs.",
     "verb": "view logs"
+   },
+   {
+    "id": "status-pages.manage",
+    "label": "Status pages",
+    "description": "Create and change public status pages, and post incidents and maintenance on them.",
+    "verb": "manage status pages"
    },
    {
     "id": "members.manage",

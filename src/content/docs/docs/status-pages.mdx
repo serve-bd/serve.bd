@@ -39,6 +39,42 @@ In the **Incidents** tab:
 
 When a check finds a component down, the page shows the outage by itself. To keep these outages off the page, turn off **Show outages found by checks** in **Design → History**.
 
+## Subscribers
+
+Visitors subscribe with the **Subscribe** button at the top of the page. In the **Subscribers** tab, choose which ways the page offers:
+
+| Way | How it works |
+| --- | --- |
+| **Email** | The visitor confirms their address with a link first. Every email has a link to unsubscribe. Needs email set up in **Settings → Email**. |
+| **Slack** | The visitor pastes a Slack incoming webhook URL. Serve sends a test message before it saves it. |
+| **Discord** | The visitor pastes a Discord channel webhook URL. |
+| **Webhook** | Any `https://` URL gets a JSON message for each post. Addresses in private networks are refused. |
+| **RSS** | The feed link in the dialog and in the footer. |
+
+Only a public page offers email and webhooks. A page behind a password keeps only RSS.
+
+Turn on **Let subscribers pick components** to let visitors follow only the components they care about. Turn on **Send outages found by checks** to also send the outages your uptime checks find, and when they end. Outages during planned maintenance are not sent.
+
+Subscribers get a message when you report an incident, post an update, or plan maintenance. They also get one when a maintenance window starts and when it ends. Untick **Notify subscribers** in the dialog for a quiet change, like a typo fix. A webhook that fails 10 times in a row is removed. An email address nobody confirmed is removed after 7 days.
+
+The list of subscribers shows 25 at a time. Search it by email address, or filter it by type.
+
+### Post to your team
+
+Under **Post to your team**, tick notification channels of your organization, like your team's Slack. Every incident, update and maintenance posted on the page also goes there. Channels get it even when **Notify subscribers** is off. See [Monitoring](/docs/monitoring) for notification channels.
+
+## From CI and scripts
+
+The API posts and updates incidents and maintenance, with an API token that has the **Status pages** permission:
+
+```bash
+curl -X POST https://serve.example.com/api/v1/status-pages/PAGE_ID/incidents \
+  -H "Authorization: Bearer $SERVE_TOKEN" -H "Content-Type: application/json" \
+  -d '{"title": "Checkout errors", "body": "We are looking into it.", "impact": "major"}'
+```
+
+List page ids with `GET /status-pages` and component ids with `GET /status-pages/PAGE_ID/components`. Add `"notify": false` to keep subscribers out of it. See the [API reference](/docs/api) for every endpoint.
+
 ## Design
 
 The **Design** tab has a live preview, for desktop and phone. Click **Save** to publish your changes.
