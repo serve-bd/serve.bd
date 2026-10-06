@@ -316,6 +316,13 @@ serve db backups create --wait
 serve db backups restore latest --wait
 serve db backups restore <backup> --backup-first --yes
 serve db backups rm <backup>
+serve db backups restore latest --into staging-db --yes       # into another database
+serve db backups restore latest --database shop --as shop=shop_copy
+serve db backups restore latest --table public.orders        # only some tables
+serve db backups test latest --wait                           # test-restore it
+serve db backups download latest -o app.dump                  # checked against its checksum
+serve db backups settings --schedule '0 3 * * *' --keep-monthly 12 --verify
+serve db import ./dump.sql.gz --wait                          # upload a file
 serve db import https://example.com/dump.sql.gz --wait
 serve db import s3://backups/old/app.dump --wait # an S3 storage by name, id or bucket
 ```
@@ -556,8 +563,9 @@ serve log-drains test logs
 | `serve domains set <domain>` | Change a domain: `--primary`, `--redirect`, `--no-redirect`, `--port`, `--https`, `--force-https`, `--compose-service` |
 | `serve db url [database] [--public]` | A database's connection string, like `serve db url postgres` |
 | `serve db create <engine>` | Create a database and start it. `--name`, `--version`, `--project`, `--server` |
-| `serve db backups ls\|create\|restore\|rm` | List, make, restore and delete backups. `restore latest` takes the newest |
-| `serve db import <url or s3://storage/key>` | Replace the data with a dump |
+| `serve db backups ls\|create\|restore\|rm` | List, make, restore and delete backups. `restore latest` takes the newest; `--into`, `--database`, `--as`, `--table`, `--passphrase` choose what and where |
+| `serve db backups test\|download\|settings` | Test-restore a backup, download it, show or change backup settings |
+| `serve db import <file, url or s3://storage/key>` | Replace the data with a dump |
 | `serve db query [database] <query>` | Run a query. `-` reads it from standard input, `--write` allows changes |
 | `serve db tables [database]` | The databases on the server, and the tables of one, with sizes |
 | `serve db users ls\|create\|password\|url\|rm` | The logins inside the database |
