@@ -172,6 +172,7 @@ Each domain has its own options.
 | **www redirect** | Redirect between `www.` and the bare domain. |
 | **Redirect to** | Send all requests to another URL. |
 | **Only my team** | Visitors sign in to Serve first. See [Only my team](#only-my-team). |
+| **Guest logins** | People without a Serve account sign in with an email and password you set. See [Guest logins](#guest-logins). |
 | **Password protection** | Ask for a user name and password. |
 | **Access control** | Allow or Block IP addresses. |
 | **Security headers** | Add common security headers. |
@@ -196,6 +197,15 @@ Turn on **Only my team** in **Domains → Access control** to put a login wall i
 - Serve's own uptime checks still reach the app.
 
 It works with nginx, Caddy and Traefik.
+
+### Guest logins
+
+Under **Domains → Access control → Guest logins**, add the people who may open the app without a Serve account. Each guest has an email and a password that you set.
+
+- Visitors see a sign-in page with the app's name and your branding. They enter the email and password you gave them.
+- Remove a guest or change their password, and they lose access within 30 seconds.
+- Guest logins work on their own or together with **Only my team**. With both on, team members can sign in with their Serve account from the same page.
+- After 10 wrong tries in 15 minutes, the page asks the visitor to wait.
 
 :::note
 Give the dashboard its own domain first (**Settings → Dashboard domain**). Visitors sign in there, and proxies on other servers check sign-ins there.
