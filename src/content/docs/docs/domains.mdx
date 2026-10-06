@@ -173,7 +173,7 @@ Each domain has its own options.
 | **Redirect to** | Send all requests to another URL. |
 | **Only my team** | Visitors sign in to Serve first. See [Only my team](#only-my-team). |
 | **Guest logins** | People without a Serve account sign in with an email and password you set. See [Guest logins](#guest-logins). |
-| **Password protection** | Ask for a user name and password. |
+| **HTTP Basic Auth** | One shared user name and password; the browser asks for it. |
 | **Access control** | Allow or Block IP addresses. |
 | **Security headers** | Add common security headers. |
 | **Headers** | Add your own response headers. |
@@ -189,7 +189,7 @@ Each domain has its own options.
 
 ### Only my team
 
-Turn on **Only my team** in **Domains → Access control** to put a login wall in front of an app. Use it for admin panels, internal tools and staging sites.
+Turn on **Only my team** in **Domains → Access control** or **Settings → Access control** to put a login wall in front of an app. Use it for admin panels, internal tools and staging sites.
 
 - A visitor without a sign-in goes to the Serve sign-in page first.
 - Members of the organization who can open the app's project get in. Everyone else sees **No access**.
@@ -200,7 +200,7 @@ It works with nginx, Caddy and Traefik.
 
 ### Guest logins
 
-Under **Domains → Access control → Guest logins**, add the people who may open the app without a Serve account. Each guest has an email and a password that you set.
+Under **Domains → Access control → Guest logins** (also in **Settings → Access control**), add the people who may open the app without a Serve account. Each guest has an email and a password that you set.
 
 - Visitors see a sign-in page with the app's name and your branding. They enter the email and password you gave them.
 - Remove a guest or change their password, and they lose access within 30 seconds.
