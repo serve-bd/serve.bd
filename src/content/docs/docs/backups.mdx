@@ -63,6 +63,10 @@ openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in backup.sql.gz.enc -out back
 Keep the passphrase somewhere safe. Without it, nobody can restore encrypted backups. When you change it, older backups keep the passphrase they were made with, and a restore asks for it.
 :::
 
+### Include users and passwords
+
+For PostgreSQL, MySQL and MariaDB, **Include users and passwords** makes each backup also save the server's database users, their passwords and their rights. Without it, a backup holds only your data. A restore brings the users back only when you check **Also restore the dump's users and passwords**. Serve's own accounts never change. MongoDB backups always include their users.
+
 ### Test backups daily
 
 **Test backups daily** restores the newest backup each day into a throwaway database of the same image, on the same server and without network access. Serve counts what came back (tables, collections or keys), shows **Tested** on the backup, and removes the throwaway database. If a test fails, you get a **Backup test failed** notification. You can also test any backup from its **⋯** menu with **Test restore**.
