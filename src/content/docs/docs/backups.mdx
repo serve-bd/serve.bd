@@ -31,6 +31,13 @@ Times use the instance timezone. Change it in **Settings → General**.
 
 Older backups are deleted automatically. When you keep backups in one place, **Keep the latest** sets how many copies stay there. When you keep them in both, **Keep on this server** and **Keep in bucket** set each one. Keep more in the bucket for longer off-site history.
 
+**Keep longer** keeps more on top of the latest ones (for the bucket copies when you use a bucket):
+
+- **All from … days**: every backup younger than that.
+- **1 a day / week / month / year for …**: the newest backup of each of the last days, weeks, months or years.
+
+A backup is kept when any rule wants it. Backups taken [before a deploy](#back-up-before-each-deploy) are counted on their own, so they never push out the scheduled ones.
+
 ### Where backups are stored
 
 **Store backups in** picks where copies are kept: on this server, in a bucket, or both. Both is the default when you have a bucket.
@@ -39,6 +46,30 @@ Older backups are deleted automatically. When you keep backups in one place, **K
 - A bucket you added under **Integrations → S3 storage**. Any S3-compatible store works, like R2 or B2.
 
 With the bucket only, each copy leaves the server once it is uploaded. A restore downloads it first.
+
+Pick more than one bucket to keep a copy in each, for example in two clouds. The first bucket you pick is the main one. Downloads and restores use the next bucket when one is down, and cleanup removes old backups from every bucket.
+
+### Compression, checksums and encryption
+
+- Backups are compressed. MySQL, MariaDB and ClickHouse dumps are `.sql.gz`.
+- Each backup has a SHA-256 checksum recorded when it is made. Serve checks it before every restore, so a file damaged on disk or in a bucket stops the restore before anything changes. Downloads send it in the `X-Checksum-SHA256` header.
+- **Encrypt backups** encrypts each backup with a passphrase you choose, before it is stored or uploaded. Serve decrypts it when restoring. The file ends in `.enc` and also opens without Serve:
+
+```bash
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in backup.sql.gz.enc -out backup.sql.gz
+```
+
+:::caution
+Keep the passphrase somewhere safe. Without it, nobody can restore encrypted backups. When you change it, older backups keep the passphrase they were made with, and a restore asks for it.
+:::
+
+### Test backups daily
+
+**Test backups daily** restores the newest backup each day into a throwaway database of the same image, on the same server and without network access. Serve counts what came back (tables, collections or keys), shows **Tested** on the backup, and removes the throwaway database. If a test fails, you get a **Backup test failed** notification. You can also test any backup from its **⋯** menu with **Test restore**.
+
+### Back up before each deploy
+
+In an app's **Settings → Deploy**, **Back up before each deploy** picks databases of the environment to back up before each deploy, before the pre-deploy command (your migrations). If a backup fails, nothing is deployed. Rollbacks skip it.
 
 ## S3 storage
 
@@ -65,8 +96,23 @@ The **Backups** list shows every backup. From it you can:
 
 - **Back up now**: take a backup right away. The database must be running.
 - Download a backup file.
-- Restore a backup into the database.
+- Restore a backup.
+- Test a backup.
 - Delete a backup.
+
+### Restore
+
+**Restore** opens a window where you choose:
+
+- **Restore into**: this database, or another database service of the same kind, for example last night's production backup into staging.
+- **Databases**: which databases of the backup to restore, and **Restore as** to give one a new name.
+- **Tables**: **All tables**, or **Only some tables** of one database (PostgreSQL, MySQL, MariaDB). Those tables are replaced and the others stay as they are.
+- **Back up first**: takes a backup of the target first. If it fails, nothing is restored.
+- **Also restore the dump's users and passwords** (PostgreSQL, MySQL, MariaDB, MongoDB): only when you move a whole server. The old accounts come back with their passwords and rights. Serve's own accounts keep theirs.
+
+A backup keeps its database names when restored: a dump of `shop` goes back into `shop`, and empty databases in it are created too. On MySQL and MariaDB, the account apps connect with gets access to the databases a restore creates. On PostgreSQL, the dump's roles are created without login even when you leave users out, so row-level security policies that name them still work.
+
+You get a notification when a restore or import finishes or fails.
 
 ### Choose the databases
 
@@ -95,7 +141,7 @@ Use **Import backup** to restore a dump made elsewhere, for example when you mov
 - Give a **File URL**: a public or pre-signed http(s) link. The server downloads it.
 - Choose **From bucket**, pick a saved **Storage** and give the **Object path** of the file inside the bucket.
 
-The card lists which file types the engine accepts.
+The card lists which file types the engine accepts. An encrypted file (`.enc`) asks for its passphrase. Compose stacks have the same card on each backup: a dump for a database container, or a `.tar.gz` for a volume or folder.
 
 :::caution
 Restoring replaces the data in the database. Take a fresh backup first if you may need the current data.
@@ -103,6 +149,10 @@ Restoring replaces the data in the database. Take a fresh backup first if you ma
 
 ## Compose stacks and apps
 
-Compose stacks get backups per container. On the stack's **Backups** tab, Serve suggests the databases it finds in the stack. Click **Back up** with the database name to dump it on a schedule. You can also add storage backups, which copy volumes and folders.
+Compose stacks get backups per container: PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Valkey and ClickHouse. On the stack's **Backups** tab, Serve suggests the databases it finds in the stack. Click **Back up** with the database name to dump it on a schedule. You can also add storage backups, which copy volumes and folders.
 
 Apps can have storage backups too, which copy the app's volumes and folders on a schedule. Each backup has its own schedule, keep counts and destination, like a database backup. Only admins can add them.
+
+## API and CLI
+
+Everything here works from the [API](/docs/api) and the [CLI](/docs/cli) too: `serve db backups restore` (with `--into`, `--database`, `--as`, `--table`, `--passphrase`), `serve db backups test`, `serve db backups download`, `serve db backups settings`, and `serve db import ./dump.sql.gz` to upload a file.
