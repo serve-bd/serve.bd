@@ -57,6 +57,14 @@ const date = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "
     text-transform: uppercase;
     color: var(--color-fg);
   }
+  .release-notes :global(h2) {
+    margin: 2rem 0 0.75rem;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-fg);
+  }
+  .release-notes :global(h2:first-child),
   .release-notes :global(h3:first-child) {
     margin-top: 0;
   }

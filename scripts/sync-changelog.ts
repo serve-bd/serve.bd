@@ -41,7 +41,7 @@ function toHtml(md: string) {
   };
   for (const raw of md.replace(/\r/g, "").split("\n")) {
     const line = raw.trimEnd();
-    const heading = line.match(/^#{1,6}\s+(.*)$/);
+    const heading = line.match(/^(#{1,6})\s+(.*)$/);
     const item = line.match(/^\s*[-*]\s+(.*)$/);
     if (!line.trim()) {
       flush();
@@ -49,7 +49,9 @@ function toHtml(md: string) {
     } else if (heading) {
       flush();
       close();
-      out.push(`<h3>${inline(heading[1])}</h3>`);
+      // ## is a part of the notes (Highlights), ### a group in it (New, Fixed).
+      const tag = heading[1].length <= 2 ? "h2" : "h3";
+      out.push(`<${tag}>${inline(heading[2])}</${tag}>`);
     } else if (item) {
       flush();
       if (!list) out.push("<ul>");
