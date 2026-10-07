@@ -325,6 +325,9 @@ serve db backups settings --schedule '0 3 * * *' --retention 14 --verify --users
 serve db import ./dump.sql.gz --wait                          # upload a file
 serve db import https://example.com/dump.sql.gz --wait
 serve db import s3://backups/old/app.dump --wait # an S3 storage by name, id or bucket
+serve compose-backups -s stack                                # what a compose stack backs up
+serve compose-backups set db:postgres -s stack --schedule '0 4 * * *' --retention 7
+serve compose-backups rm dir:/srv/data -s stack
 ```
 
 A restore or an import replaces the data, so it asks for the database's name. In scripts, pass `--yes`. `--backup-first` backs up the current data before a restore. An import backs up first unless you pass `--no-backup`.
@@ -352,13 +355,30 @@ serve db password --yes --show                   # change the main password
 serve db branches create staging --wait          # a copy of the data
 serve db branches reset staging
 serve db replicas                                # state and lag of each read replica
+serve db replicas add eu-2                       # a read replica on another server
+serve db replicas rm 2
 serve db replicas promote <replica>
+serve db branches cleanup-sql - < scrub.sql      # runs on branches made with --hide-personal-data
 serve db dependents                              # services that use this database
 ```
 
 Lists never show passwords. Only `serve db users password`, `serve db users url` and `serve db password --show` print them. After `serve db password`, the services that use the database get the new password on their next deploy, and the command names them.
 
 `--wait` shows a spinner until the work ends. Ctrl+C only stops the waiting: the work goes on on the server.
+
+### Settings, public port and domain
+
+```bash
+serve db config --image postgis/postgis:17-3.5 --apply    # only the flags you pass change
+serve db config mysql --charset utf8mb4 --collation utf8mb4_unicode_ci
+serve db apply                                            # restart so saved settings take effect
+serve db public on --port 5433 --allow 203.0.113.7        # reachable from outside Serve
+serve db public off
+serve db domain db.example.com --allow 203.0.113.0/24     # its own domain, with TLS
+serve db domain --remove
+```
+
+`serve db domain` makes the DNS record when the domain is in a connected Cloudflare account. Otherwise point an A record at the server.
 
 ## Domains, variables and more
 
@@ -421,6 +441,8 @@ serve tags deploy prod                    # every service with the tag
 serve uptime set /health --interval 30s
 serve uptime check                        # exits with 1 when the service is down
 serve webhook rotate                      # a new deploy hook URL
+serve requests --status 5xx --since 1h    # requests through the proxy, while the request log is on
+serve incidents create "API errors" --page status   # a status page incident
 ```
 
 - For an app that runs an image, `serve previews deploy <number> --tag <image tag>` runs that tag as the preview.
@@ -442,6 +464,9 @@ serve servers validate eu-1 --install-docker --wait
 serve servers alerts eu-1 --cpu 85 --disk 80
 serve servers proxy eu-1 caddy --wait
 serve servers cleanup eu-1
+serve servers proxy-test eu-1              # check the proxy's configuration; exits with 1 when it fails
+serve servers proxy-reload eu-1
+serve servers trusted-proxies eu-1 --cloudflare
 serve servers rm eu-1 --stop-services
 ```
 
@@ -507,11 +532,12 @@ serve members set ada@example.com --role admin
 serve members set ada@example.com --projects shop,blog
 serve roles create deployer --permissions projects.view,services.deploy,logs.view
 serve roles set viewer --add logs.view
+serve tokens create CI --access services.deploy,projects.view --expires 90
 serve tokens rm "Old CI"
 serve activity --limit 500 --project shop
 ```
 
-An invitation goes by email when email is set up, and the CLI prints its link either way. Owner and Admin can't be changed. Developer and Viewer only take permissions. New tokens are made on **Keys & tokens**. When you revoke the token the CLI uses, it warns first, and you are logged out.
+An invitation goes by email when email is set up, and the CLI prints its link either way. Owner and Admin can't be changed. Developer and Viewer only take permissions. `serve tokens create` prints the new token once; it can never do more than your own login. When you revoke the token the CLI uses, it warns first, and you are logged out.
 
 ### Integrations
 
@@ -570,8 +596,10 @@ serve log-drains test logs
 | `serve db tables [database]` | The databases on the server, and the tables of one, with sizes |
 | `serve db users ls\|create\|password\|url\|rm` | The logins inside the database |
 | `serve db password [database]` | Change the main password. `--show` prints the new connection string |
-| `serve db branches ls\|create\|reset\|rm` | The database's branches |
-| `serve db replicas ls\|promote` | Read replicas, and make one the database |
+| `serve db branches ls\|create\|reset\|rm\|cleanup-sql` | The database's branches, and the SQL that scrubs their copies |
+| `serve db replicas ls\|add\|rm\|promote` | Read replicas: add, remove, or make one the database |
+| `serve db config\|apply` | Change the database container's settings, and restart to apply them |
+| `serve db public [on\|off]`, `serve db domain [hostname]` | A public port, or a domain with TLS |
 | `serve db dependents [database]` | The services whose variables use the database |
 | `serve projects`, `services`, `servers` | Browse what you have |
 | `serve projects create\|show\|rename\|rm` | Create, show, rename and delete projects |
@@ -580,17 +608,22 @@ serve log-drains test logs
 | `serve services rename\|clone\|move\|set\|rm` | Rename, copy, move, change or delete a service |
 | `serve maintenance [on\|off]` | Show or switch the maintenance page |
 | `serve compose [stack]` | The stack's compose file as Serve deployed it |
+| `serve compose-backups ls\|set\|rm` | What a compose stack backs up: `db:`, `volume:` or `dir:` |
 | `serve containers [restart <container>]` | The service's containers, or restart one |
 | `serve exec [-- command]` | Run a command in the service's container, or open a shell. `--replica`, `--container`, `-t` |
 | `serve templates [search]`, `show <id>`, `deploy <id>` | One-click templates |
 | `serve vars ls\|set\|unset` | Shared variables. `set` and `unset` need `--scope` |
 | `serve tasks ls\|create\|set\|run\|runs\|rm` | Scheduled tasks. `run --wait` prints the output |
 | `serve previews ls\|deploy\|rm` | Pull request previews |
+| `serve requests` | Requests through the proxy, while the request log is on. `--status`, `--path`, `--since` |
+| `serve incidents ls\|create\|update\|edit\|rm` | Status page incidents and maintenance. `--page` |
 | `serve tags ls\|set\|create\|deploy\|rm` | Tags, and deploy every service with one |
 | `serve uptime set\|check` | Set the uptime check, or run it now |
 | `serve webhook rotate` | A new deploy hook secret and URL |
 | `serve servers show\|add\|validate\|rm` | Show, add, set up again and remove servers |
 | `serve servers alerts\|proxy\|proxy-logs\|cleanup\|reset-host-key` | A server's alerts, proxy, cleanup and SSH host key |
+| `serve servers proxy-test\|proxy-reload\|proxy-restart\|proxy-rebuild\|proxy-stop\|proxy-start` | Check and control a server's proxy |
+| `serve servers trusted-proxies <server>` | Which proxies in front of the server are believed about the visitor's address |
 | `serve ssh <server> [-- command]` | A shell on a server, or run a command there |
 | `serve ssh-keys ls\|add\|rm` | The SSH keys Serve connects to servers with |
 | `serve tailscale ls\|status\|join\|leave` | Put servers in a tailnet, or take them out |
@@ -600,7 +633,7 @@ serve log-drains test logs
 | `serve org [rename]` | Show or rename the organization |
 | `serve members ls\|set\|rm`, `serve invite <email>`, `serve invitations ls\|rm` | Members and invitations |
 | `serve roles ls\|permissions\|create\|set\|rm` | Roles and their permissions |
-| `serve tokens ls\|rm` | API tokens |
+| `serve tokens ls\|create\|rm` | API tokens |
 | `serve activity` | The activity log. `--limit`, `--project` |
 | `serve registries`, `s3`, `secret-managers` with `ls\|add\|test\|rm` | Container registries, S3 storage and secret managers. Secret managers have no `test` |
 | `serve notifications ls\|add\|test\|on\|off\|rm` | Notification channels |
@@ -620,7 +653,7 @@ A mistyped command gets a hint, like `serve db bakups`:
 Error: unknown command "bakups" for serve db. Did you mean serve db backups?
 ```
 
-`serve env pull` writes the variables to a `.env` file, and `serve env push` sets the variables of a `.env` file. Other variables stay as they are. Use `-` for standard output or input.
+`serve env pull` writes the variables to a `.env` file, and `serve env push` sets the variables of a `.env` file. Other variables stay as they are. Use `-` for standard output or input. `serve env push --preview` sets the variables pull request previews use, and `--replica N` the ones only replica N gets. Both replace what was set before as a whole.
 
 ### For scripts
 

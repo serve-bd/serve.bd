@@ -109,8 +109,8 @@ In **Settings → Who can see it**:
 
 In **Settings → Own domain**, enter a domain like `status.example.com`. Then pick a **Route**:
 
-- **Public IP**: point an A record for the domain to the dashboard's server. Then pick the **Protocol**:
-  - **HTTPS** with **Automatic**: Serve gets a Let's Encrypt certificate once the record points to the server. Caddy and Traefik get their own.
+- **Public IP**: point an A record for the domain to the dashboard's server. When a connected Cloudflare account manages the domain, Serve makes the record itself when an admin saves (DNS only), and removes it with the page; **Create A record** fixes a missing one. Then pick the **Protocol**:
+  - **HTTPS** with **Automatic**: Serve uses the best certificate of your organization that already covers the domain, and says which. Without one, it gets a Let's Encrypt certificate once the record points to the server. Caddy and Traefik get their own.
   - **HTTPS** with one of your certificates: pick any certificate of your organization on the dashboard's server that covers the domain. See [Certificates](/docs/domains).
   - **HTTP only**: no certificate.
 - **Cloudflare Tunnel**: for a server without a public IP. Pick a tunnel of your organization on the dashboard's server. Serve points the domain at the tunnel in Cloudflare, and Cloudflare serves HTTPS. If the domain already has a record you made yourself, remove it in Cloudflare first.

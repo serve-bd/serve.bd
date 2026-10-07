@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.4.18",
+  "version": "0.4.19",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -1375,7 +1375,7 @@
      "Variables"
     ],
     "summary": "Replace the project's shared variables",
-    "description": "Needs: variables.edit (Edit variables), variables.view-secrets (See secret values).",
+    "description": "redeploy: true then redeploys the running services that use ${{project.…}} (needs services.deploy too).\n\nNeeds: variables.edit (Edit variables), variables.view-secrets (See secret values).",
     "operationId": "putProjectsByProjectIdVariables",
     "x-permissions": [
      "variables.edit",
@@ -1417,11 +1417,199 @@
             "value"
            ]
           }
+         },
+         "redeploy": {
+          "default": false,
+          "type": "boolean"
          }
         },
         "required": [
          "variables"
         ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/projects/{projectId}/deploy-rules": {
+   "get": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "A project's deploy rules",
+    "description": "approval: whether deploys of the environments listed (empty: every environment) wait for approval. freeze: frozen now (now), or in weekly windows in timezone.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getProjectsByProjectIdDeployRules",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "projectId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Change a project's deploy rules",
+    "description": "Fields left out keep their value. freeze.now {until?, reason?} freezes deploys now (until an ISO 8601 time, or until turned off), null ends the freeze. windows: [{days (0 Sunday to 6 Saturday), start, end (like 22:00)}] in timezone (an IANA zone). environmentIds: the environments a rule holds for, empty for every one.\n\nNeeds: projects.manage (Manage projects).",
+    "operationId": "patchProjectsByProjectIdDeployRules",
+    "x-permissions": [
+     "projects.manage"
+    ],
+    "parameters": [
+     {
+      "name": "projectId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "approval": {
+          "type": "object",
+          "properties": {
+           "enabled": {
+            "type": "boolean"
+           },
+           "environmentIds": {
+            "type": "array",
+            "items": {
+             "type": "string"
+            }
+           }
+          }
+         },
+         "freeze": {
+          "type": "object",
+          "properties": {
+           "now": {
+            "anyOf": [
+             {
+              "type": "object",
+              "properties": {
+               "until": {
+                "type": [
+                 "string",
+                 "null"
+                ]
+               },
+               "reason": {
+                "type": [
+                 "string",
+                 "null"
+                ]
+               }
+              }
+             },
+             {
+              "type": "null"
+             }
+            ]
+           },
+           "windows": {
+            "type": "array",
+            "items": {
+             "type": "object",
+             "properties": {
+              "days": {
+               "type": "array",
+               "items": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+               }
+              },
+              "start": {
+               "type": "string"
+              },
+              "end": {
+               "type": "string"
+              }
+             },
+             "required": [
+              "days",
+              "start",
+              "end"
+             ]
+            }
+           },
+           "timezone": {
+            "type": "string"
+           },
+           "environmentIds": {
+            "type": "array",
+            "items": {
+             "type": "string"
+            }
+           }
+          }
+         }
+        }
        }
       }
      }
@@ -2016,7 +2204,7 @@
      "Variables"
     ],
     "summary": "Replace the organization's shared variables",
-    "description": "Needs: admin (organization admin).",
+    "description": "redeploy: true then redeploys the running services that use ${{org.…}} (needs services.deploy too).\n\nNeeds: admin (organization admin).",
     "operationId": "putVariables",
     "x-permissions": [
      "admin"
@@ -2048,6 +2236,141 @@
             "value"
            ]
           }
+         },
+         "redeploy": {
+          "default": false,
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "variables"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/variables": {
+   "get": {
+    "tags": [
+     "Variables"
+    ],
+    "summary": "List the organization's variables of a server",
+    "description": "Values need variables.view-secrets. The organization's services on that server use them as ${{server.KEY}}.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getServersByServerIdVariables",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Variables"
+    ],
+    "summary": "Replace the organization's variables of a server",
+    "description": "redeploy: true then redeploys the organization's running services on the server that use ${{server.…}} (needs services.deploy too).\n\nNeeds: admin (organization admin).",
+    "operationId": "putServersByServerIdVariables",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "variables": {
+          "maxItems": 500,
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "key": {
+             "type": "string"
+            },
+            "value": {
+             "type": "string"
+            }
+           },
+           "required": [
+            "key",
+            "value"
+           ]
+          }
+         },
+         "redeploy": {
+          "default": false,
+          "type": "boolean"
          }
         },
         "required": [
@@ -3396,6 +3719,914 @@
     }
    }
   },
+  "/services/{serviceId}/proxy": {
+   "get": {
+    "tags": [
+     "Domains"
+    ],
+    "summary": "HTTP options of a service",
+    "description": "Body size, timeouts, balancing, basic auth and login wall, IP rules, headers, CORS and more, as saved. Never a password or its hash.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getServicesByServiceIdProxy",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Domains"
+    ],
+    "summary": "Change HTTP options of a service",
+    "description": "Fields left out keep their value; the proxy tests the new site and nothing changes when it refuses it. basicAuth {enabled, username, password}: the password may be left out to keep it for the same user. guests: the whole list; a guest with its id may leave out its password. customDirectives, caddyDirectives and traefikMiddlewares need a Root admin.\n\nNeeds: admin (organization admin), domains.manage (Manage domains).",
+    "operationId": "patchServicesByServiceIdProxy",
+    "x-permissions": [
+     "admin",
+     "domains.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "maxBodySize": {
+          "anyOf": [
+           {
+            "type": "string",
+            "pattern": "^\\d{1,6}[kmg]?$"
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "connectTimeout": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "readTimeout": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "websockets": {
+          "type": "boolean"
+         },
+         "buffering": {
+          "type": "boolean"
+         },
+         "balancing": {
+          "type": "string",
+          "enum": [
+           "round-robin",
+           "least-busy",
+           "sticky",
+           "main-first"
+          ]
+         },
+         "sticky": {
+          "type": "boolean"
+         },
+         "basicAuth": {
+          "type": "object",
+          "properties": {
+           "enabled": {
+            "type": "boolean"
+           },
+           "username": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._@-]{1,64}$"
+           },
+           "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 128
+           }
+          },
+          "required": [
+           "enabled"
+          ]
+         },
+         "login": {
+          "type": "boolean"
+         },
+         "guests": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "id": {
+             "type": "string"
+            },
+            "email": {
+             "type": "string",
+             "maxLength": 254,
+             "format": "email",
+             "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+            },
+            "password": {
+             "type": "string",
+             "minLength": 8,
+             "maxLength": 128
+            }
+           },
+           "required": [
+            "email"
+           ]
+          }
+         },
+         "allow": {
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "deny": {
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "headers": {
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "name": {
+             "type": "string",
+             "pattern": "^[A-Za-z0-9-]{1,64}$"
+            },
+            "value": {
+             "type": "string",
+             "maxLength": 512,
+             "pattern": "^[\\x20-\\x7e]*$"
+            }
+           },
+           "required": [
+            "name",
+            "value"
+           ]
+          }
+         },
+         "securityHeaders": {
+          "type": "boolean"
+         },
+         "corsOrigins": {
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "wwwRedirect": {
+          "type": "string",
+          "enum": [
+           "none",
+           "to-apex",
+           "to-www"
+          ]
+         },
+         "gzip": {
+          "type": "boolean"
+         },
+         "cacheStatic": {
+          "type": "boolean"
+         },
+         "customDirectives": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 10000
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "caddyDirectives": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 10000
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "traefikMiddlewares": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 20000
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/proxy/custom": {
+   "put": {
+    "tags": [
+     "Domains"
+    ],
+    "summary": "Replace the generated proxy site of a service",
+    "description": "content: the site for the proxy the server runs now (nginx, Caddy or Traefik), or null to go back to the generated one. The proxy checks it; a refused file changes nothing.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "putServicesByServiceIdProxyCustom",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "content": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 100000
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        },
+        "required": [
+         "content"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/preview-database": {
+   "put": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Give each pull request preview its own database",
+    "description": "sourceServiceId: a database of the same environment, copied for each preview; variable: the variable that gets the copy's URL (like DATABASE_URL). mode \"service\" (a copy as its own service) or \"branch\" (a branch of the database). scrubSql runs on the copy (PostgreSQL, MySQL, MariaDB, ClickHouse).\n\nNeeds: services.manage (Manage services).",
+    "operationId": "putServicesByServiceIdPreviewDatabase",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "sourceServiceId": {
+          "type": "string",
+          "minLength": 1
+         },
+         "variable": {
+          "type": "string",
+          "maxLength": 200
+         },
+         "scrubSql": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 100000
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "mode": {
+          "type": "string",
+          "enum": [
+           "service",
+           "branch"
+          ]
+         }
+        },
+        "required": [
+         "sourceServiceId",
+         "variable"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Stop giving previews their own database",
+    "description": "Needs: services.manage (Manage services).",
+    "operationId": "deleteServicesByServiceIdPreviewDatabase",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/repo-webhook": {
+   "post": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Register the push webhook on the repository",
+    "description": "Through the provider API with the service's Git connection, so pushes deploy at once. An earlier hook Serve made is replaced. Answers the hook (provider, its id there, url).\n\nNeeds: services.manage (Manage services).",
+    "operationId": "postServicesByServiceIdRepoWebhook",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Remove the push webhook from the repository",
+    "description": "Needs: services.manage (Manage services).",
+    "operationId": "deleteServicesByServiceIdRepoWebhook",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/main-server": {
+   "put": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Make one of an app's extra servers its main one",
+    "description": "Visitors enter through it from now on; nothing is redeployed and the old main server becomes an extra one. Serve moves the DNS records and tunnel routes it manages: manual lists the names to point at the new IP yourself.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "putServicesByServiceIdMainServer",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "serverId": {
+          "type": "string",
+          "minLength": 1
+         }
+        },
+        "required": [
+         "serverId"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/approval": {
+   "get": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Whether a service's deploys wait for approval",
+    "description": "mode always (they always wait), never (they never do) or null (the project's deploy rules decide).\n\nNeeds: projects.view (View projects).",
+    "operationId": "getServicesByServiceIdApproval",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Make a service's deploys wait for approval, or not",
+    "description": "mode always, never, or null to follow the project's deploy rules. Database deploys never wait.\n\nNeeds: deploys.approve (Approve deploys).",
+    "operationId": "putServicesByServiceIdApproval",
+    "x-permissions": [
+     "deploys.approve"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "mode": {
+          "anyOf": [
+           {
+            "type": "string",
+            "enum": [
+             "always",
+             "never"
+            ]
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        },
+        "required": [
+         "mode"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/redeploy": {
+   "post": {
+    "tags": [
+     "Deployments"
+    ],
+    "summary": "Redeploy several services",
+    "description": "Like after a database password change: each running service of serviceIds (up to 50) is deployed again; stopped ones are left alone. Answers how many were queued.\n\nNeeds: services.deploy (Deploy).",
+    "operationId": "postServicesRedeploy",
+    "x-permissions": [
+     "services.deploy"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "serviceIds": {
+          "minItems": 1,
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+           "type": "string",
+           "minLength": 1
+          }
+         }
+        },
+        "required": [
+         "serviceIds"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/volumes/{volume}": {
+   "delete": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Delete the data of a volume no longer mounted",
+    "description": "Permanently removes a Docker volume of the service from its server: one its settings (or its compose file) no longer mount. A database's own data volume goes only with the database.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "deleteServicesByServiceIdVolumesByVolume",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "volume",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
   "/services/{serviceId}/move": {
    "post": {
     "tags": [
@@ -3534,6 +4765,258 @@
       }
      }
     ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/compose/mounts": {
+   "get": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Storage of each service of a stack",
+    "description": "As the saved compose file has it: named volumes, paths on the server (bind), inline files, and other entries (kind other) that are kept as written when sent back.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getServicesByServiceIdComposeMounts",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/compose/mounts/{name}": {
+   "put": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Replace the storage of one service of a stack",
+    "description": "mounts becomes the storage of the compose service name, written into the compose file and saved like the compose editor does (paths on the server need a Root admin). Send back kind other entries from GET to keep them. Redeploy to apply. Not for stacks read from Git.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "putServicesByServiceIdComposeMountsByName",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "name",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "mounts": {
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+           "oneOf": [
+            {
+             "type": "object",
+             "properties": {
+              "kind": {
+               "type": "string",
+               "const": "volume"
+              },
+              "source": {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 255
+              },
+              "target": {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 4096
+              },
+              "readOnly": {
+               "type": "boolean"
+              }
+             },
+             "required": [
+              "kind",
+              "source",
+              "target"
+             ]
+            },
+            {
+             "type": "object",
+             "properties": {
+              "kind": {
+               "type": "string",
+               "const": "bind"
+              },
+              "source": {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 4096
+              },
+              "target": {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 4096
+              },
+              "readOnly": {
+               "type": "boolean"
+              },
+              "hostType": {
+               "type": "string",
+               "enum": [
+                "file",
+                "directory"
+               ]
+              }
+             },
+             "required": [
+              "kind",
+              "source",
+              "target"
+             ]
+            },
+            {
+             "type": "object",
+             "properties": {
+              "kind": {
+               "type": "string",
+               "const": "file"
+              },
+              "name": {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 255
+              },
+              "target": {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 4096
+              },
+              "content": {
+               "type": "string",
+               "maxLength": 512000
+              }
+             },
+             "required": [
+              "kind",
+              "name",
+              "target",
+              "content"
+             ]
+            },
+            {
+             "type": "object",
+             "properties": {
+              "kind": {
+               "type": "string",
+               "const": "other"
+              },
+              "from": {
+               "type": "string",
+               "enum": [
+                "volumes",
+                "configs"
+               ]
+              },
+              "index": {
+               "type": "integer",
+               "minimum": 0,
+               "maximum": 1000
+              },
+              "target": {
+               "type": "string",
+               "maxLength": 4096
+              },
+              "label": {
+               "type": "string",
+               "maxLength": 4096
+              }
+             },
+             "required": [
+              "kind",
+              "from",
+              "index",
+              "target",
+              "label"
+             ]
+            }
+           ]
+          }
+         }
+        },
+        "required": [
+         "mounts"
+        ]
+       }
+      }
+     }
+    },
     "responses": {
      "200": {
       "description": "Success",
@@ -5237,6 +6720,53 @@
     }
    }
   },
+  "/domains/{domainId}/point-at-main": {
+   "post": {
+    "tags": [
+     "Domains"
+    ],
+    "summary": "Point a domain's DNS at the app's main server",
+    "description": "When its A record points at another server the app runs on. Only through the connected Cloudflare account that holds its zone, and only records that point at one of the app's servers.\n\nNeeds: domains.manage (Manage domains).",
+    "operationId": "postDomainsByDomainIdPointAtMain",
+    "x-permissions": [
+     "domains.manage"
+    ],
+    "parameters": [
+     {
+      "name": "domainId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
   "/domains/{domainId}/reconnect-tunnel": {
    "post": {
     "tags": [
@@ -5997,7 +7527,7 @@
      "Backups"
     ],
     "summary": "Set up or change a backup of a compose stack",
-    "description": "key: db:<service>, volume:<name> or dir:<path> (URL-encoded). Adds it when missing. Body: schedule (cron or null), retention, retentionS3, s3DestinationId, copyDestinationIds, local, timeoutMinutes, lowPriority, passphrase (null stops encrypting; left out keeps it).\n\nNeeds: databases.backups (Database backups).",
+    "description": "key: db:<service>, volume:<name> or dir:<path>, URL-encoded once. Adds it when missing. Body: schedule (cron or null), retention, retentionS3, s3DestinationId, copyDestinationIds, local, timeoutMinutes, lowPriority, passphrase (null stops encrypting; left out keeps it).\n\nNeeds: databases.backups (Database backups).",
     "operationId": "putServicesByServiceIdComposeBackupsByKey",
     "x-permissions": [
      "databases.backups"
@@ -6238,6 +7768,190 @@
       }
      }
     ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Logs"
+    ],
+    "summary": "Delete the requests kept",
+    "description": "Every request kept for the service and its previews. The log keeps recording when it is on.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "deleteServicesByServiceIdRequestLog",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/request-log/settings": {
+   "get": {
+    "tags": [
+     "Logs"
+    ],
+    "summary": "Request log settings",
+    "description": "Whether the service keeps a request log, for how many days, which responses (2 to 5 for 2xx to 5xx) and whether visitor IPs are kept.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getServicesByServiceIdRequestLogSettings",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Logs"
+    ],
+    "summary": "Change the request log settings",
+    "description": "Fields left out keep their value. Turning ips off also clears the IPs already kept.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "patchServicesByServiceIdRequestLogSettings",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "enabled": {
+          "type": "boolean"
+         },
+         "days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+         },
+         "statuses": {
+          "type": "array",
+          "items": {
+           "anyOf": [
+            {
+             "type": "number",
+             "const": 2
+            },
+            {
+             "type": "number",
+             "const": 3
+            },
+            {
+             "type": "number",
+             "const": 4
+            },
+            {
+             "type": "number",
+             "const": 5
+            }
+           ]
+          }
+         },
+         "ips": {
+          "type": "boolean"
+         }
+        }
+       }
+      }
+     }
+    },
     "responses": {
      "200": {
       "description": "Success",
@@ -7657,6 +9371,495 @@
       }
      }
     ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/database/pooler": {
+   "put": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Turn the connection pooler on or off",
+    "description": "PostgreSQL only: a PgBouncer in front of the database, at POOLED_DATABASE_URL. mode (transaction or session), poolSize (1-500) and maxClients (10-10000) left out keep their value (transaction, 20 and 1000 at first). The database keeps running.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "putServicesByServiceIdDatabasePooler",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "enabled": {
+          "type": "boolean"
+         },
+         "mode": {
+          "type": "string",
+          "enum": [
+           "transaction",
+           "session"
+          ]
+         },
+         "poolSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+         },
+         "maxClients": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 10000
+         }
+        },
+        "required": [
+         "enabled"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/database/pooler/access": {
+   "put": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Public access to the connection pooler",
+    "description": "The pooler must be on. open: false makes it private again. open: true opens a public port (TLS only): port (1024-65535) is picked when left out and stays once set; bind 0.0.0.0 or 127.0.0.1; allow: addresses or ranges let through, empty for everyone; domain: a verified domain that leads to it. Answers the port and any warnings.\n\nNeeds: services.manage (Manage services), domains.manage (Manage domains).",
+    "operationId": "putServicesByServiceIdDatabasePoolerAccess",
+    "x-permissions": [
+     "services.manage",
+     "domains.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "open": {
+          "type": "boolean"
+         },
+         "port": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": 1024,
+            "maximum": 65535
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "bind": {
+          "type": "string",
+          "enum": [
+           "0.0.0.0",
+           "127.0.0.1"
+          ]
+         },
+         "allow": {
+          "anyOf": [
+           {
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+             "type": "string",
+             "maxLength": 100
+            }
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "domain": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 253
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        },
+        "required": [
+         "open"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/database/replicas/access": {
+   "put": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Public access to the read replicas",
+    "description": "The database needs a read replica. open: false makes it private again. open: true opens a public port (TLS only): port (1024-65535) is picked when left out and stays once set; bind 0.0.0.0 or 127.0.0.1; allow: addresses or ranges let through, empty for everyone; domain: a verified domain that leads to it. Answers the port and any warnings.\n\nNeeds: services.manage (Manage services), domains.manage (Manage domains).",
+    "operationId": "putServicesByServiceIdDatabaseReplicasAccess",
+    "x-permissions": [
+     "services.manage",
+     "domains.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "open": {
+          "type": "boolean"
+         },
+         "port": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": 1024,
+            "maximum": 65535
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "bind": {
+          "type": "string",
+          "enum": [
+           "0.0.0.0",
+           "127.0.0.1"
+          ]
+         },
+         "allow": {
+          "anyOf": [
+           {
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+             "type": "string",
+             "maxLength": 100
+            }
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "domain": {
+          "anyOf": [
+           {
+            "type": "string",
+            "maxLength": 253
+           },
+           {
+            "type": "null"
+           }
+          ]
+         }
+        },
+        "required": [
+         "open"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/database/retry-certificate": {
+   "post": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Ask again for the certificate of a database domain",
+    "description": "which: the domain of the database itself (default), of its pooler, or of its read replicas (on each of their servers).\n\nNeeds: domains.manage (Manage domains).",
+    "operationId": "postServicesByServiceIdDatabaseRetryCertificate",
+    "x-permissions": [
+     "domains.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "which": {
+          "default": "database",
+          "type": "string",
+          "enum": [
+           "database",
+           "pooler",
+           "replicas"
+          ]
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/database/main": {
+   "get": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "The main database and the ones that can become it",
+    "description": "PostgreSQL, MySQL and MariaDB: the databases on the running server that DATABASE_URL can point at. Empty for other engines or a stopped database.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "getServicesByServiceIdDatabaseMain",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Databases"
+    ],
+    "summary": "Make another database on the server the main one",
+    "description": "The connection URL and ${{name.DATABASE_URL}} point at it (on MySQL and MariaDB the app account gets access to it). The database must be running. Answers the services that use it: they get the new URL on their next deploy (POST /services/redeploy).\n\nNeeds: services.manage (Manage services).",
+    "operationId": "putServicesByServiceIdDatabaseMain",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+         }
+        },
+        "required": [
+         "name"
+        ]
+       }
+      }
+     }
+    },
     "responses": {
      "200": {
       "description": "Success",
@@ -10483,6 +12686,321 @@
     }
    }
   },
+  "/servers/{serverId}/os-updates": {
+   "get": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Operating system updates of a server",
+    "description": "The packages that can be updated as of the last check, and the last install with its log (run.state running while it installs). For admins who manage the server.\n\nNeeds: admin (organization admin).",
+    "operationId": "getServersByServerIdOsUpdates",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/os-updates/check": {
+   "post": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Check a server for operating system updates",
+    "description": "Runs in the background and installs nothing: GET /servers/{serverId}/os-updates shows the result.\n\nNeeds: admin (organization admin).",
+    "operationId": "postServersByServerIdOsUpdatesCheck",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "202": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/os-updates/install": {
+   "post": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Install operating system updates on a server",
+    "description": "packages: \"all\" (everything but Docker's packages) or the names of packages to update. Runs in the background: follow it with GET /servers/{serverId}/os-updates.\n\nNeeds: admin (organization admin).",
+    "operationId": "postServersByServerIdOsUpdatesInstall",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "packages": {
+          "anyOf": [
+           {
+            "type": "string",
+            "const": "all"
+           },
+           {
+            "minItems": 1,
+            "maxItems": 2000,
+            "type": "array",
+            "items": {
+             "type": "string",
+             "maxLength": 128
+            }
+           }
+          ]
+         }
+        },
+        "required": [
+         "packages"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/default": {
+   "post": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Make a server the organization's default",
+    "description": "New services go to it unless another server is chosen. It must be ready.\n\nNeeds: admin (organization admin).",
+    "operationId": "postServersByServerIdDefault",
+    "x-permissions": [
+     "admin"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/proxy/custom-config": {
+   "get": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Custom nginx configuration of the instance's proxies",
+    "description": "Needs: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "getProxyCustomConfig",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Servers"
+    ],
+    "summary": "Set the custom nginx configuration of the instance's proxies",
+    "description": "Directives added to the http block of every nginx proxy on the instance's own servers (not those an organization owns). nginx tests it first; a refused configuration changes nothing. Empty removes it.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "putProxyCustomConfig",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "config": {
+          "type": "string",
+          "maxLength": 20000
+         }
+        },
+        "required": [
+         "config"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
   "/servers/{serverId}/alerts": {
    "put": {
     "tags": [
@@ -12934,6 +15452,71 @@
       "$ref": "#/components/responses/Error"
      }
     }
+   },
+   "post": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Connect Cloudflare with an API token",
+    "description": "apiToken: a Cloudflare API token with Zone:Read and DNS:Edit (it is stored encrypted and never shown again). Each Cloudflare account the token reaches is connected; name names them. originCaKey: an Origin CA key, for Cloudflare origin certificates.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "postCloudflareAccounts",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "default": "",
+          "type": "string",
+          "maxLength": 100
+         },
+         "apiToken": {
+          "type": "string",
+          "maxLength": 500
+         },
+         "originCaKey": {
+          "type": "string",
+          "maxLength": 500
+         }
+        },
+        "required": [
+         "apiToken"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
    }
   },
   "/cloudflare/accounts/{accountId}/zones": {
@@ -13261,6 +15844,133 @@
     }
    }
   },
+  "/cloudflare/accounts/{accountId}/zones/{zoneId}/settings": {
+   "patch": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Change a zone's SSL mode or Always Use HTTPS",
+    "description": "ssl: off, flexible, full or strict. alwaysHttps: redirect http to https at Cloudflare. Fields left out are not changed.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "patchCloudflareAccountsByAccountIdZonesByZoneIdSettings",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "accountId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "zoneId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "ssl": {
+          "type": "string",
+          "enum": [
+           "off",
+           "flexible",
+           "full",
+           "strict"
+          ]
+         },
+         "alwaysHttps": {
+          "type": "boolean"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/cloudflare/accounts/{accountId}": {
+   "delete": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Disconnect a Cloudflare account",
+    "description": "Its tunnels are stopped and deleted first, with the DNS records Serve made for them: domains served through them stop working.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "deleteCloudflareAccountsByAccountId",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "accountId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
   "/git/credentials": {
    "get": {
     "tags": [
@@ -13273,6 +15983,186 @@
      "projects.view"
     ],
     "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/git/credentials/token": {
+   "post": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Add a Git access token",
+    "description": "provider github, gitlab, gitea or bitbucket; baseUrl for a self-hosted GitLab or Gitea. Serve checks the token with the provider and stores it encrypted; it is never shown again. warning: scopes the token lacks.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "postGitCredentialsToken",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "provider": {
+          "type": "string",
+          "enum": [
+           "github",
+           "gitlab",
+           "gitea",
+           "bitbucket"
+          ]
+         },
+         "name": {
+          "default": "",
+          "type": "string",
+          "maxLength": 100
+         },
+         "token": {
+          "type": "string",
+          "maxLength": 2000
+         },
+         "baseUrl": {
+          "type": "string",
+          "maxLength": 500
+         }
+        },
+        "required": [
+         "provider",
+         "token"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/git/credentials/deploy-key": {
+   "post": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Make an SSH deploy key",
+    "description": "Serve makes the key pair and keeps the private key. Add publicKey to the repository as a deploy key (read-only is enough).\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "postGitCredentialsDeployKey",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "default": "",
+          "type": "string",
+          "maxLength": 100
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/git/credentials/{credentialId}": {
+   "delete": {
+    "tags": [
+     "Integrations"
+    ],
+    "summary": "Remove a Git connection",
+    "description": "It is removed from Serve only: revoke the token or key at the provider yourself.\n\nNeeds: integrations.manage (Manage integrations).",
+    "operationId": "deleteGitCredentialsByCredentialId",
+    "x-permissions": [
+     "integrations.manage"
+    ],
+    "parameters": [
+     {
+      "name": "credentialId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
     "responses": {
      "200": {
       "description": "Success",
@@ -13884,6 +16774,209 @@
      "instance"
     ],
     "parameters": [],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "Connect a tailnet",
+    "description": "authType \"oauth\" (clientId and secret: an OAuth client with the Devices and Auth Keys scopes) or \"apikey\" (secret: a tskey-api- key). tailnet: its name, or - for the credentials' default tailnet. tag: the tag servers join with (tag:serve). Serve checks the credentials by making and removing an auth key. Root admins only.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "postTailscaleTailnets",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "tailnet": {
+          "default": "-",
+          "type": "string"
+         },
+         "authType": {
+          "type": "string",
+          "enum": [
+           "oauth",
+           "apikey"
+          ]
+         },
+         "clientId": {
+          "type": "string"
+         },
+         "secret": {
+          "type": "string"
+         },
+         "tag": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "authType",
+         "secret"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/tailscale/tailnets/{tailnetId}": {
+   "patch": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "Change a tailnet's credentials, name or tag",
+    "description": "Fields left out keep their value; secret left out keeps the stored one (unless the client or auth type changes). The credentials are checked again.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "patchTailscaleTailnetsByTailnetId",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "tailnetId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "tailnet": {
+          "type": "string"
+         },
+         "authType": {
+          "type": "string",
+          "enum": [
+           "oauth",
+           "apikey"
+          ]
+         },
+         "clientId": {
+          "type": "string"
+         },
+         "secret": {
+          "type": "string"
+         },
+         "tag": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Tailscale"
+    ],
+    "summary": "Disconnect a tailnet",
+    "description": "Servers keep running: one with another way in goes back to it; one added through Tailscale shows as unreachable.\n\nNeeds: admin, with an owner who is an admin of the Root organization.",
+    "operationId": "deleteTailscaleTailnetsByTailnetId",
+    "x-permissions": [
+     "instance"
+    ],
+    "parameters": [
+     {
+      "name": "tailnetId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
     "responses": {
      "200": {
       "description": "Success",
@@ -15014,6 +18107,64 @@
       "$ref": "#/components/responses/Error"
      }
     }
+   },
+   "post": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Create a status page",
+    "description": "It starts as a draft (unpublished) at /status/<slug> on the dashboard's domain, with a component for each uptime check of the organization. Without slug, a free one is made from the name.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "postStatusPages",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "slug": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "name"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
    }
   },
   "/status-pages/{pageId}/components": {
@@ -15039,6 +18190,92 @@
     ],
     "responses": {
      "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Add a component",
+    "description": "serviceId shows the service's uptime check; without one, only incidents and maintenance change the component. It goes last.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "postStatusPagesByPageIdComponents",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "serviceId": {
+          "default": null,
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "description": {
+          "default": null,
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "group": {
+          "default": null,
+          "description": "Section heading it shows under; null for none",
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "name"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
       "description": "Success",
       "content": {
        "application/json": {
@@ -15496,6 +18733,781 @@
      },
      {
       "name": "incidentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}": {
+   "get": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Get a status page and its settings",
+    "description": "The look (design), the ways to subscribe, the team channels and the domain. Never the password: hasPassword says whether one is set.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "getStatusPagesByPageId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Change a status page's name, address or look",
+    "description": "Fields left out keep their value, and so do the fields of design left out. design takes: theme, accent, description, website, showName, days, showBars, showUptime, showLatency, historyDays, autoIncidents, announcement, links, footer, hideBadge, font, corners, density, css, noindex, labels, locale. Logos are uploaded in the dashboard.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "patchStatusPagesByPageId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "slug": {
+          "type": "string"
+         },
+         "design": {
+          "type": "object",
+          "propertyNames": {
+           "type": "string"
+          },
+          "additionalProperties": {}
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Delete a status page",
+    "description": "With its components, incidents and subscribers. Its domain stops serving it.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "deleteStatusPagesByPageId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/domain": {
+   "put": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Set a status page's own domain",
+    "description": "domain null (or empty) takes the page off its domain. The domain must be verified for the organization. https: true gets a Let's Encrypt certificate unless certificateId names one of the organization's on the dashboard's server. tunnelId serves it through a Cloudflare Tunnel on the dashboard's server instead. Without a tunnel, Serve creates the A record when a connected Cloudflare account manages the name; warning says why it could not.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "putStatusPagesByPageIdDomain",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "domain": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "https": {
+          "default": true,
+          "type": "boolean"
+         },
+         "tunnelId": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "certificateId": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "domain"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/visibility": {
+   "put": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Publish, unpublish or password-protect a status page",
+    "description": "visibility password needs a password (6 characters or more), unless one is set already. A new password replaces the old one.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "putStatusPagesByPageIdVisibility",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "visibility": {
+          "type": "string",
+          "enum": [
+           "public",
+           "password",
+           "draft"
+          ]
+         },
+         "password": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "visibility"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/subscriptions": {
+   "put": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Choose how visitors subscribe, and the team channels",
+    "description": "subscribe: which ways the page offers (email, slack, discord, webhook, rss), whether subscribers pick components, and whether outages found by uptime checks are sent. teamChannelIds: the organization's notification channels that get every post.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "putStatusPagesByPageIdSubscriptions",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "subscribe": {
+          "type": "object",
+          "properties": {
+           "email": {
+            "type": "boolean"
+           },
+           "slack": {
+            "type": "boolean"
+           },
+           "discord": {
+            "type": "boolean"
+           },
+           "webhook": {
+            "type": "boolean"
+           },
+           "rss": {
+            "type": "boolean"
+           },
+           "components": {
+            "type": "boolean"
+           },
+           "outages": {
+            "type": "boolean"
+           }
+          },
+          "required": [
+           "email",
+           "slack",
+           "discord",
+           "webhook",
+           "rss",
+           "components",
+           "outages"
+          ]
+         },
+         "teamChannelIds": {
+          "default": [],
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         }
+        },
+        "required": [
+         "subscribe"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/components/order": {
+   "put": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Reorder a page's components",
+    "description": "ids: every component id of the page, top first.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "putStatusPagesByPageIdComponentsOrder",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "ids": {
+          "maxItems": 1000,
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         }
+        },
+        "required": [
+         "ids"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/components/{componentId}": {
+   "patch": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Change a component",
+    "description": "Fields left out keep their value.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "patchStatusPagesByPageIdComponentsByComponentId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "componentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string"
+         },
+         "serviceId": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "description": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "group": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Remove a component",
+    "description": "Needs: status-pages.manage (Status pages).",
+    "operationId": "deleteStatusPagesByPageIdComponentsByComponentId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "componentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/subscribers": {
+   "get": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "List subscribers",
+    "description": "Newest first, 25 at a time: pass offset for more while hasMore is true. q searches email addresses; kind keeps one type. Webhook URLs show only where they point, without their secret part.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "getStatusPagesByPageIdSubscribers",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 200
+      }
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "email",
+        "slack",
+        "discord",
+        "webhook"
+       ]
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 1000000
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/status-pages/{pageId}/subscribers/{subscriberId}": {
+   "delete": {
+    "tags": [
+     "Status pages"
+    ],
+    "summary": "Remove a subscriber",
+    "description": "They hear nothing more from the page.\n\nNeeds: status-pages.manage (Status pages).",
+    "operationId": "deleteStatusPagesByPageIdSubscribersBySubscriberId",
+    "x-permissions": [
+     "status-pages.manage"
+    ],
+    "parameters": [
+     {
+      "name": "pageId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "subscriberId",
       "in": "path",
       "required": true,
       "schema": {

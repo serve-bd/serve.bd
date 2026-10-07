@@ -163,6 +163,14 @@ This applies to the dashboard domain check and to the DNS badges on service doma
 Let's Encrypt with HTTP validation only works once DNS points to the server and port 80 is reachable. If the certificate fails, check the DNS record and your firewall first.
 :::
 
+## Edit a domain
+
+**Edit** in a domain's menu changes everything you chose when adding it: its name, whether it routes to the service or redirects, the port, the Cloudflare Tunnel or the server's IP, HTTPS and the certificate, and the DNS record in Cloudflare with its proxy. Changes apply at once, without a redeploy.
+
+- A new name is added the same way as a new domain (with its proof of ownership), then the old one is removed with the DNS record Serve made for it. A primary domain stays primary.
+- The primary domain can't become a redirect. Make another domain primary first.
+- Only organization admins change the route and DNS records.
+
 ## Domain options
 
 Each domain has its own options.
