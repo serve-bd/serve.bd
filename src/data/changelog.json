@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.5.1",
+  "date": "2026-10-07T13:49:24Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.1",
+  "html": "<h3>New</h3>\n<ul>\n<li><strong>Volumes on the canvas.</strong> Every card shows its volumes under it, with a short name and its size, like Railway. Sizes update every minute; hover shows the full volume name and where it is mounted.</li>\n<li><strong>Data kept from deleted services.</strong> Delete a database, app or compose stack and keep its data, and a dashed card stays in its project: &quot;From deleted &lt;name&gt;&quot;, with its size. <strong>Start a database on it</strong> brings a database back on that data, and <strong>Delete data</strong> removes it for good (type its name and your password). Folders on the server and volumes made outside Serve are only forgotten, never deleted. Kept data also shows in the grid and list views.</li>\n<li><strong>Read replicas can be started again.</strong> A stopped replica has a <strong>Start</strong> button. Starting or restarting the database starts its replicas on every server, and a redeploy starts each replica on its own, so one server that does not answer no longer keeps the others down.</li>\n<li>The API lists and deletes kept data: <code>GET /environments/{id}/kept-data</code>, <code>DELETE /kept-data/{kind}/{id}</code>.</li>\n</ul>\n<h3>Fixed</h3>\n<ul>\n<li>A stopped read replica marked its whole database as down. Only the database itself, or its pooler, does now.</li>\n</ul>"
+ },
+ {
   "version": "0.5.0",
   "date": "2026-10-07T09:55:01Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.0",
@@ -112,11 +118,5 @@
   "date": "2026-10-05T09:59:32Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.2",
   "html": "<h3>Polished</h3>\n<ul>\n<li>The Domains tab now says when its domains are not served: when the server has no proxy, or its proxy is stopped or not running. A banner explains why and links to the server's proxy settings, and each domain gets a &quot;Not served&quot; badge.</li>\n<li>Adding a domain warns about the same thing; the domain is still saved and works once a proxy runs.</li>\n<li>With no proxy on the server, the add-domain dialog no longer offers a Cloudflare Tunnel, since it would have nothing to reach.</li>\n</ul>"
- },
- {
-  "version": "0.4.1",
-  "date": "2026-10-05T09:49:51Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.1",
-  "html": "<h3>New</h3>\n<ul>\n<li>An app on several servers can take its visitors through any of them. Pick the server under &quot;Visitors enter through&quot; when adding a domain, click Change on the Domains tab, or click &quot;Make main&quot; next to an extra server in <code>Settings → Servers &amp; registry</code>.</li>\n<li>The switch needs no redeploy. The new main server gets the domains, the HTTPS certificates (copied for nginx) and the load balancing, while the old one keeps running the app as an extra server.</li>\n<li>Serve moves the Cloudflare DNS records and tunnel domains it made; for DNS you manage yourself, it tells you which IP to set.</li>\n<li>Each server says when it can't take visitors: no proxy, a stopped proxy, no public IP and no tunnel, or the current version not deployed there. Serve refuses a switch that would break a domain.</li>\n<li>If the main server goes down, making another one the main server brings the app back.</li>\n<li>New sign-in providers: Microsoft, GitLab (gitlab.com or self-hosted) and Bitbucket.</li>\n<li>Company logins have presets for Keycloak, Authentik, Okta, Auth0, Zitadel, Pocket ID, Authelia, Kanidm, Casdoor, Logto, Dex, Gitea or Forgejo, and Infomaniak, each linking to a setup guide. Email and password is now the first row of the sign-in methods.</li>\n<li>Deleting a server, a service, or a project or environment with services now asks for your password; accounts without a password need a sign-in from the last 15 minutes, or a fresh sign-in with their provider. Empty projects and environments ask for nothing more, and API tokens are not affected.</li>\n</ul>\n<h3>Fixed</h3>\n<ul>\n<li>An extra server that is not ready (for example a deleted VPS) can be unticked from an app.</li>\n<li>A deploy no longer waits behind the cleanup of a removed extra server that can't be reached.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>Server cards give a long name its whole line; the badges sit under it and the status moves to the footer.</li>\n<li>A deployment shows how long it took, as &quot;Took 59s&quot;, under its title.</li>\n</ul>"
  }
 ]

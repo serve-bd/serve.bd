@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -2067,6 +2067,108 @@
       }
      }
     },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/environments/{environmentId}/kept-data": {
+   "get": {
+    "tags": [
+     "Environments"
+    ],
+    "summary": "List data kept from deleted services",
+    "description": "Volumes of services deleted with their data kept: databases (kind database; start a new database on one with keptId in POST /services) and apps' and stacks' volumes (kind volume). bytes is the last measured size, or null.\n\nNeeds: projects.view (View projects).",
+    "operationId": "getEnvironmentsByEnvironmentIdKeptData",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [
+     {
+      "name": "environmentId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/kept-data/{kind}/{keptId}": {
+   "delete": {
+    "tags": [
+     "Environments"
+    ],
+    "summary": "Delete kept data",
+    "description": "kind is database or volume. Removes the Docker volume when Serve made it; a host folder or a volume made outside Serve is only forgotten (note says so). Refused while a container uses the volume.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "deleteKeptDataByKindByKeptId",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "kind",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "keptId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
     "responses": {
      "200": {
       "description": "Success",
