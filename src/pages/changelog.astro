@@ -1,0 +1,101 @@
+---
+import { ArrowUpRight } from "lucide-react";
+import { buttonVariants } from "@/components/react/ui/button";
+import changelog from "@/data/changelog.json";
+import Site from "@/layouts/Site.astro";
+import { site } from "@/lib/site";
+
+const date = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+---
+
+<Site title="Changelog" description="What changed in each release of Serve.">
+  <div class="mx-auto max-w-3xl px-4 pt-16 pb-24 sm:px-6 sm:pt-20">
+    <div class="mb-12">
+      <p class="mb-3 font-mono text-[12px] tracking-wide text-accent uppercase">Changelog</p>
+      <h1 class="text-4xl font-semibold tracking-tight text-fg sm:text-5xl">What's new in Serve</h1>
+      <p class="mt-4 text-[16px] leading-relaxed text-muted">
+        The latest {changelog.length} releases. Settings → Updates in your dashboard installs the newest one.
+      </p>
+    </div>
+
+    <ol class="flex flex-col">
+      {
+        changelog.map((r, i) => (
+          <li id={`v${r.version}`} class="grid scroll-mt-24 gap-x-8 border-t border-line py-10 sm:grid-cols-[9rem_minmax(0,1fr)]">
+            <div class="mb-4 self-start sm:sticky sm:top-24 sm:mb-0">
+              <a href={`#v${r.version}`} class="font-mono text-[15px] font-semibold text-fg hover:text-accent">
+                v{r.version}
+              </a>
+              {i === 0 && <span class="ml-2 rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">Latest</span>}
+              <p class="mt-1 text-[13px] text-muted">{date(r.date)}</p>
+            </div>
+            <div class="min-w-0">
+              <div class="release-notes" set:html={r.html} />
+              <a href={r.url} target="_blank" rel="noreferrer" class="mt-4 inline-flex items-center gap-1 text-[13px] text-muted hover:text-accent">
+                Commits and downloads <ArrowUpRight className="size-3.5" />
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="mt-4 flex justify-center border-t border-line pt-10">
+      <a href={site.releases} target="_blank" rel="noreferrer" class={buttonVariants({ variant: "secondary", size: "lg" })}>
+        View all releases on GitHub <ArrowUpRight />
+      </a>
+    </div>
+  </div>
+</Site>
+
+<style>
+  .release-notes :global(h3) {
+    margin: 1.5rem 0 0.5rem;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-fg);
+  }
+  .release-notes :global(h3:first-child) {
+    margin-top: 0;
+  }
+  .release-notes :global(ul) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-left: 1.1rem;
+    list-style: disc;
+  }
+  .release-notes :global(li),
+  .release-notes :global(p) {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--color-fg-2, var(--color-muted));
+  }
+  .release-notes :global(li::marker) {
+    color: var(--color-muted);
+  }
+  .release-notes :global(p + p),
+  .release-notes :global(p + ul),
+  .release-notes :global(ul + p) {
+    margin-top: 0.6rem;
+  }
+  .release-notes :global(code) {
+    border-radius: 0.3rem;
+    background: var(--color-surface-2, rgba(127, 127, 127, 0.12));
+    padding: 0.1rem 0.3rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.86em;
+  }
+  .release-notes :global(strong) {
+    font-weight: 600;
+    color: var(--color-fg);
+  }
+  .release-notes :global(a) {
+    color: var(--color-accent);
+  }
+  .release-notes :global(a:hover) {
+    text-decoration: underline;
+  }
+</style>

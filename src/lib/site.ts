@@ -37,5 +37,5 @@ export const nav = [
   { href: "/features/", label: "Features" },
   { href: "/templates/", label: "Templates" },
   { href: "/docs/", label: "Docs" },
-  { href: site.releases, label: "Changelog", external: true },
+  { href: "/changelog/", label: "Changelog" },
 ];
