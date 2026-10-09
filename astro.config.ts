@@ -1,9 +1,10 @@
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import tailwindcss from "@tailwindcss/vite";
-import { readdir, rename, rm } from "node:fs/promises";
+import { readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { defineConfig } from "astro/config";
 import { apiSidebar, docId, sidebar } from "./src/lib/docs";
+import { lastmodFor } from "./src/lib/lastmod";
 import { site } from "./src/lib/site";
 
 export default defineConfig({
@@ -86,9 +87,28 @@ function singleSitemap() {
       "astro:build:done": async ({ dir }: { dir: URL }) => {
         const parts = (await readdir(dir)).filter((f) => /^sitemap-\d+\.xml$/.test(f));
         if (parts.length !== 1) throw new Error(`Expected one sitemap file, found ${parts.length}.`);
-        await rename(new URL(parts[0], dir), new URL("sitemap.xml", dir));
+        const sitemap = new URL("sitemap.xml", dir);
+        await rename(new URL(parts[0], dir), sitemap);
         await rm(new URL("sitemap-index.xml", dir));
+        await addLastmod(sitemap);
       },
     },
   };
+}
+
+/**
+ * Stamp each URL with the date its source last changed in git, so a crawler can put the pages the
+ * docs commits touched ahead of the rest (see src/lib/lastmod.ts).
+ */
+async function addLastmod(sitemap: URL) {
+  const xml = await readFile(sitemap, "utf8");
+  const pathnames = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => new URL(loc).pathname);
+  const dates = await lastmodFor(pathnames);
+
+  let stamped = xml;
+  for (const [pathname, date] of dates) {
+    const loc = `<loc>${new URL(pathname, site.url)}</loc>`;
+    stamped = stamped.replace(loc, () => `${loc}<lastmod>${date}</lastmod>`);
+  }
+  if (stamped !== xml) await writeFile(sitemap, stamped);
 }
