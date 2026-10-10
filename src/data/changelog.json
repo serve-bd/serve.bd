@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.5.3",
+  "date": "2026-10-10T18:22:19Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.3",
+  "html": "<h3>New</h3>\n<ul>\n<li>Lavalink template: an audio server for Discord music bots. It starts with no plugins and no domain. Its <code>application.yml</code> is kept in a volume, so you can add plugins and change settings on the Files page, then restart. A Java options field sets the memory it may use.</li>\n<li>Templates can start without a domain. You can still add one on Domains &amp; ports, where the template's port is already filled in.</li>\n</ul>\n<h3>Fixed</h3>\n<ul>\n<li>A running service is no longer shown as Crashed when a status report from its server comes back empty. Serve now checks the containers directly before it marks a service as crashed.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>The IP address field of a server is hidden until you press the eye button, so it stays private on a shared screen or in a recording. Password managers do not offer to save it.</li>\n</ul>"
+ },
+ {
   "version": "0.5.2",
   "date": "2026-10-10T15:54:37Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.2",
@@ -112,11 +118,5 @@
   "date": "2026-10-05T14:58:15Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.4",
   "html": "<h3>New</h3>\n<ul>\n<li>Apps with more than one replica, or running on several servers, can pick how visitors are spread. Find it in <code>Domains &amp; ports → HTTP options → Load balancing</code>.</li>\n<li>Round robin gives each replica visitors in turn, and is the default.</li>\n<li>Least busy sends each visitor to the replica with the fewest open requests, good for slow requests like uploads, streams or AI calls.</li>\n<li>Sticky sessions keeps a visitor on the same replica; this replaces the old Sticky sessions switch, and apps that had it on keep it.</li>\n<li>Main server first sends visitors only to the main server's replicas; when none of them answers its health check, the other servers take the visitors until the main server is back, within about 10 seconds, showing &quot;Standby&quot; in <code>Settings → Servers</code> while they wait.</li>\n<li>These strategies work with nginx, Caddy and Traefik.</li>\n<li>Once you set your own product name or logo in <code>Settings → Branding</code>, the sign-in pages show only your logo and name above the form; the panel about Serve, the greeting and the version number are gone. The product name can be left blank, which shows Serve's name instead.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>A domain whose DNS points at another server of the same app now says &quot;Points to&quot; and names that server, instead of a red &quot;Points elsewhere&quot;, with a tooltip explaining what to change.</li>\n<li>After you change an app's main server, the DNS checks run again against the new server.</li>\n<li>The sidebar header is one row: logo, name with the version under it, and the organization switcher.</li>\n<li><code>Settings</code> is in the account menu for instance admins.</li>\n<li>On the sign-in page, password sign-in comes first and the GitHub, Google and other sign-in buttons are below it.</li>\n</ul>"
- },
- {
-  "version": "0.4.3",
-  "date": "2026-10-05T11:03:21Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.3",
-  "html": "<h3>Fixed</h3>\n<ul>\n<li>Apps running on both an Intel or AMD server and an ARM server (like Hetzner's CAX) no longer fail with &quot;exec format error&quot;: a server with a different CPU type now builds the image itself, from the same commit, so each server runs a native image, instead of copying the first server's image.</li>\n<li>If the branch moves to a new commit between the two builds, the server building on the new commit now fails with a message asking for a redeploy, so servers never end up running different code.</li>\n<li>A service that sets a platform on purpose (<code>Settings → Runtime</code>) still keeps the copied image.</li>\n<li>Copying an image to another server no longer hangs forever: if nothing moves for 2 minutes, or the other server takes more than 15 minutes to load it, that server's deploy now fails with a clear message.</li>\n</ul>"
  }
 ]

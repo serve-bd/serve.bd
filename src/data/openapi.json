@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -9197,7 +9197,7 @@
      "Files"
     ],
     "summary": "Upload a file on a server",
-    "description": "The request body becomes the file at ?path= (absolute, in an existing folder), streamed to it. An existing file is kept unless ?replace=1; then it is replaced, keeping its owner and mode. A new file gets the folder's owner.\n\nNeeds: admin (organization admin), console.access (Console).",
+    "description": "The request body becomes the file at ?path= (absolute, in an existing folder), streamed to it. An existing file is kept unless ?replace=1; then it is replaced, keeping its owner and mode. A new file gets the folder's owner. With ?extract=1 the body is a .tar.gz unpacked into the existing folder at ?path= (one request for a whole folder): an entry that exists already stops it before anything is written, unless ?replace=1 merges it in (files overwritten, the others kept).\n\nNeeds: admin (organization admin), console.access (Console).",
     "operationId": "putServersByServerIdFilesContent",
     "x-permissions": [
      "admin",
@@ -9224,6 +9224,20 @@
      },
      {
       "name": "replace",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "extract",
       "in": "query",
       "required": false,
       "schema": {
@@ -9552,7 +9566,7 @@
      "Files"
     ],
     "summary": "Upload a file in a service",
-    "description": "The request body becomes the file at ?path= (absolute, in an existing folder), streamed to it. An existing file is kept unless ?replace=1; then it is replaced, keeping its owner and mode. A new file gets the folder's owner. ?container= picks the container (a compose service, container name or id) and ?replica= the replica; the first running one otherwise.\n\nNeeds: console.access (Console).",
+    "description": "The request body becomes the file at ?path= (absolute, in an existing folder), streamed to it. An existing file is kept unless ?replace=1; then it is replaced, keeping its owner and mode. A new file gets the folder's owner. With ?extract=1 the body is a .tar.gz unpacked into the existing folder at ?path= (one request for a whole folder): an entry that exists already stops it before anything is written, unless ?replace=1 merges it in (files overwritten, the others kept). ?container= picks the container (a compose service, container name or id) and ?replica= the replica; the first running one otherwise.\n\nNeeds: console.access (Console).",
     "operationId": "putServicesByServiceIdFilesContent",
     "x-permissions": [
      "console.access"
@@ -9578,6 +9592,20 @@
      },
      {
       "name": "replace",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "extract",
       "in": "query",
       "required": false,
       "schema": {
