@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -71,6 +71,10 @@
   {
    "name": "Console",
    "description": "Commands and shells in containers and on servers."
+  },
+  {
+   "name": "Files",
+   "description": "Files on servers and in service containers: list, upload, download, move, delete."
   },
   {
    "name": "Monitoring",
@@ -3529,7 +3533,7 @@
      "Deployments"
     ],
     "summary": "Deploy uploaded files",
-    "description": "The body is the project folder as a .tar.gz (Content-Type: application/gzip), streamed to disk. This is what `serve deploy` sends. Serve unpacks it where a repository would be cloned and builds it like a checkout: the Dockerfile, the detected builder and the build settings all apply. For apps with source {type:\"upload\"}, and as a one-off deploy of local files for apps built from Git or a Dockerfile. Not for image apps, compose stacks or databases. Query: message, commit, branch (shown with the deployment), dirty=1 (the folder had changes that were not committed), noCache=1. Redeploying the deployment builds the same files again; the files of the last 5 uploads are kept.\n\nNeeds: services.deploy (Deploy).",
+    "description": "The body is the project folder as a .tar.gz (Content-Type: application/gzip), streamed to disk. This is what `serve deploy` sends. Serve unpacks it where a repository would be cloned and builds it like a checkout: the Dockerfile, the detected builder and the build settings all apply. For apps with source {type:\"upload\"}, and as a one-off deploy of local files for apps built from Git or a Dockerfile (that also needs services.manage). Not for image apps, compose stacks or databases. Query: message, commit, branch (shown with the deployment), dirty=1 (the folder had changes that were not committed), noCache=1. Redeploying the deployment builds the same files again; the files of the last 5 uploads are kept.\n\nNeeds: services.deploy (Deploy).",
     "operationId": "postServicesByServiceIdDeployUpload",
     "x-permissions": [
      "services.deploy"
@@ -8934,6 +8938,680 @@
     ],
     "responses": {
      "204": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/files": {
+   "get": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "List a folder on a server",
+    "description": "The entries of the folder at ?path= (absolute; default /): name, type (dir, file, link, other), size, mtime (ms), mode, owner, group, and where a link points.\n\nNeeds: admin (organization admin), console.access (Console).",
+    "operationId": "getServersByServerIdFiles",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "path",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "default": "/",
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 4096
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "Create a folder, move or delete on a server",
+    "description": "{op:\"mkdir\", path}, {op:\"move\", from, to} (rename: the same folder, a new name) or {op:\"delete\", path} (a folder with everything in it).\n\nNeeds: admin (organization admin), console.access (Console).",
+    "operationId": "postServersByServerIdFiles",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "oneOf": [
+         {
+          "type": "object",
+          "properties": {
+           "op": {
+            "type": "string",
+            "const": "mkdir"
+           },
+           "path": {
+            "type": "string",
+            "maxLength": 4096
+           }
+          },
+          "required": [
+           "op",
+           "path"
+          ]
+         },
+         {
+          "type": "object",
+          "properties": {
+           "op": {
+            "type": "string",
+            "const": "move"
+           },
+           "from": {
+            "type": "string",
+            "maxLength": 4096
+           },
+           "to": {
+            "type": "string",
+            "maxLength": 4096
+           }
+          },
+          "required": [
+           "op",
+           "from",
+           "to"
+          ]
+         },
+         {
+          "type": "object",
+          "properties": {
+           "op": {
+            "type": "string",
+            "const": "delete"
+           },
+           "path": {
+            "type": "string",
+            "maxLength": 4096
+           }
+          },
+          "required": [
+           "op",
+           "path"
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/servers/{serverId}/files/content": {
+   "get": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "Download a file or folder on a server",
+    "description": "The file at ?path=, or a folder as a .tar.gz, streamed. Content-Disposition carries its name.\n\nNeeds: admin (organization admin), console.access (Console).",
+    "operationId": "getServersByServerIdFilesContent",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "path",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 4096
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/octet-stream": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "Upload a file on a server",
+    "description": "The request body becomes the file at ?path= (absolute, in an existing folder), streamed to it. An existing file is kept unless ?replace=1; then it is replaced, keeping its owner and mode. A new file gets the folder's owner.\n\nNeeds: admin (organization admin), console.access (Console).",
+    "operationId": "putServersByServerIdFilesContent",
+    "x-permissions": [
+     "admin",
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serverId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "path",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 4096
+      }
+     },
+     {
+      "name": "replace",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/files": {
+   "get": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "List a folder in a service",
+    "description": "The entries of the folder at ?path= (absolute; default /): name, type (dir, file, link, other), size, mtime (ms), mode, owner, group, and where a link points. ?container= picks the container (a compose service, container name or id) and ?replica= the replica; the first running one otherwise.\n\nNeeds: console.access (Console).",
+    "operationId": "getServicesByServiceIdFiles",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "path",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "default": "/",
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 4096
+      }
+     },
+     {
+      "name": "container",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 200
+      }
+     },
+     {
+      "name": "replica",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 9007199254740991
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "Create a folder, move or delete in a service",
+    "description": "{op:\"mkdir\", path}, {op:\"move\", from, to} (rename: the same folder, a new name) or {op:\"delete\", path} (a folder with everything in it). ?container= picks the container (a compose service, container name or id) and ?replica= the replica; the first running one otherwise.\n\nNeeds: console.access (Console).",
+    "operationId": "postServicesByServiceIdFiles",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "container",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 200
+      }
+     },
+     {
+      "name": "replica",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 9007199254740991
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "oneOf": [
+         {
+          "type": "object",
+          "properties": {
+           "op": {
+            "type": "string",
+            "const": "mkdir"
+           },
+           "path": {
+            "type": "string",
+            "maxLength": 4096
+           }
+          },
+          "required": [
+           "op",
+           "path"
+          ]
+         },
+         {
+          "type": "object",
+          "properties": {
+           "op": {
+            "type": "string",
+            "const": "move"
+           },
+           "from": {
+            "type": "string",
+            "maxLength": 4096
+           },
+           "to": {
+            "type": "string",
+            "maxLength": 4096
+           }
+          },
+          "required": [
+           "op",
+           "from",
+           "to"
+          ]
+         },
+         {
+          "type": "object",
+          "properties": {
+           "op": {
+            "type": "string",
+            "const": "delete"
+           },
+           "path": {
+            "type": "string",
+            "maxLength": 4096
+           }
+          },
+          "required": [
+           "op",
+           "path"
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/services/{serviceId}/files/content": {
+   "get": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "Download a file or folder in a service",
+    "description": "The file at ?path=, or a folder as a .tar.gz, streamed. Content-Disposition carries its name. ?container= picks the container (a compose service, container name or id) and ?replica= the replica; the first running one otherwise.\n\nNeeds: console.access (Console).",
+    "operationId": "getServicesByServiceIdFilesContent",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "path",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 4096
+      }
+     },
+     {
+      "name": "container",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 200
+      }
+     },
+     {
+      "name": "replica",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 9007199254740991
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/octet-stream": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "Files"
+    ],
+    "summary": "Upload a file in a service",
+    "description": "The request body becomes the file at ?path= (absolute, in an existing folder), streamed to it. An existing file is kept unless ?replace=1; then it is replaced, keeping its owner and mode. A new file gets the folder's owner. ?container= picks the container (a compose service, container name or id) and ?replica= the replica; the first running one otherwise.\n\nNeeds: console.access (Console).",
+    "operationId": "putServicesByServiceIdFilesContent",
+    "x-permissions": [
+     "console.access"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "name": "path",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 4096
+      }
+     },
+     {
+      "name": "replace",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "enum": [
+        "0",
+        "1",
+        "true",
+        "false"
+       ]
+      }
+     },
+     {
+      "name": "container",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "maxLength": 200
+      }
+     },
+     {
+      "name": "replica",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 9007199254740991
+      }
+     }
+    ],
+    "responses": {
+     "200": {
       "description": "Success",
       "content": {
        "application/json": {
