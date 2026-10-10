@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/react/ui/button";
 import InstallCommand from "@/components/site/InstallCommand.astro";
 // The released version: the API reference is synced from Serve on every release.
 import { apiVersion } from "@/lib/openapi";
+import DemoVideo from "@/components/site/DemoVideo.astro";
 import Screenshot from "@/components/site/Screenshot.astro";
 import Section from "@/components/site/Section.astro";
 import SectionTitle from "@/components/site/SectionTitle.astro";
@@ -183,6 +184,14 @@ const faq = [
       {sources.map((s) => <span class="rounded-full border border-line bg-surface px-3 py-1 font-mono text-[12px] text-fg-2">{s}</span>)}
     </div>
   </div>
+
+  {/* Demo */}
+  <Section id="demo">
+    <SectionTitle eyebrow="See it work" title="Two minutes, from an empty server to a live app." center>
+      Add a server, create a database, deploy from GitHub, back up, watch logs and roll back.
+    </SectionTitle>
+    <DemoVideo class="mx-auto max-w-4xl" />
+  </Section>
 
   {/* Features */}
   <Section id="features">

@@ -10,6 +10,8 @@ export const site = {
   // serve.bd/install.sh redirects here (see "Hosting" in README.md), so the short command always gets the latest script.
   installScript: "https://serve.bd/install.sh",
   install: "curl -fsSL https://serve.bd/install.sh | bash",
+  /** The 2 minute demo on YouTube. */
+  demoVideo: "nQyr2dHZD6g",
 };
 
 /** Where people ask, report and contribute, on the Serve repository. */
