@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Serve API",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Everything the dashboard does, over HTTP. Send a token made in Keys & tokens as `Authorization: Bearer srv_...`.\n\nA token carries permissions, and never does more than its owner's role allows right now. Each operation lists the permissions it needs; a missing one answers 403 with `missing`.\n\nErrors are JSON: `{\"error\": \"...\"}` with a 4xx or 5xx status."
  },
  "servers": [
@@ -3825,6 +3825,118 @@
     }
    }
   },
+  "/services/{serviceId}/serve-json": {
+   "get": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "The service's settings as a serve.json",
+    "description": "Build, deploy, health check, resources, storage, scheduled tasks, HTTP options and the uptime check of an app (stacks: tasks, HTTP options and the uptime check), as a serve.json to commit. Variables are left out: their values stay in Serve.\n\nNeeds: services.manage (Manage services).",
+    "operationId": "getServicesByServiceIdServeJson",
+    "x-permissions": [
+     "services.manage"
+    ],
+    "parameters": [
+     {
+      "name": "serviceId",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
+  "/serve-json/validate": {
+   "post": {
+    "tags": [
+     "Services"
+    ],
+    "summary": "Check a serve.json",
+    "description": "Checks a serve.json the way a deploy does: every problem with the place it is in. With environment (and preview), the settings that environment's deploys would use are checked too, blocks merged in.\n\nNeeds: projects.view (View projects).",
+    "operationId": "postServeJsonValidate",
+    "x-permissions": [
+     "projects.view"
+    ],
+    "parameters": [],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+         "text": {
+          "type": "string",
+          "maxLength": 1000000
+         },
+         "environment": {
+          "type": "string",
+          "maxLength": 64
+         },
+         "preview": {
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "text"
+        ]
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Success",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object"
+        }
+       }
+      }
+     },
+     "400": {
+      "$ref": "#/components/responses/Error"
+     },
+     "401": {
+      "$ref": "#/components/responses/Error"
+     },
+     "403": {
+      "$ref": "#/components/responses/Error"
+     },
+     "404": {
+      "$ref": "#/components/responses/Error"
+     }
+    }
+   }
+  },
   "/services/{serviceId}/proxy": {
    "get": {
     "tags": [
@@ -4060,6 +4172,32 @@
          },
          "cacheStatic": {
           "type": "boolean"
+         },
+         "redirects": {
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "from": {
+             "type": "string",
+             "maxLength": 300,
+             "pattern": "^\\/[A-Za-z0-9._~%/-]*$"
+            },
+            "to": {
+             "type": "string",
+             "maxLength": 500,
+             "pattern": "^(\\/[A-Za-z0-9._~%/-]*|https?:\\/\\/[A-Za-z0-9.-]+(:\\d{1,5})?(\\/[A-Za-z0-9._~%/-]*)?)$"
+            },
+            "permanent": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "from",
+            "to"
+           ]
+          }
          },
          "customDirectives": {
           "anyOf": [
