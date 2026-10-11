@@ -50,7 +50,7 @@ Open **Projects** and click **New project**. Give it a **Name**, and optionally 
 2. Pick **Git provider**.
 3. Choose your GitHub account under **Account**, then pick the **Repository** and **Branch**.
 4. Set a **Service name**.
-5. Leave **Builder** on **Automatic**. Serve uses your Dockerfile if the repository has one. Otherwise it detects the language and builds the app for you. See [Builds](/docs/builds).
+5. Leave **Builder** on **Automatic**. Serve uses your Dockerfile if the repository has one. Otherwise Railpack detects the framework, like Vite, Next.js, Nuxt, Astro, Django or Go, and builds the app for you. See [Builds](/docs/builds).
 6. Leave **Port** empty to detect it, or enter the port your app listens on.
 7. Fill in **Root directory**, **Build command** or **Start command** only if your app needs them.
 8. Click **Create service**.

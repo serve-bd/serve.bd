@@ -1,0 +1,176 @@
+---
+title: "serve.json"
+description: "Keep an app's settings, variables and scheduled tasks next to its code."
+---
+
+A `serve.json` file keeps an app's settings in the repository, next to the code. Every new deploy reads it and applies it before the build: build, deploy, health check, resources, storage, scheduled tasks, variables, HTTP options and the uptime check.
+
+```json
+{
+  "$schema": "https://serve.bd/schema/serve.json",
+  "build": { "builder": "dockerfile" },
+  "deploy": {
+    "port": 3000,
+    "replicas": 2,
+    "preDeployCommand": "npm run migrate"
+  },
+  "healthcheck": { "path": "/health" },
+  "tasks": [
+    { "name": "Clean sessions", "schedule": "0 3 * * *", "command": "node scripts/clean.js" }
+  ],
+  "variables": {
+    "required": ["DATABASE_URL"],
+    "values": { "NODE_ENV": "production" },
+    "generate": { "SESSION_SECRET": "secret" }
+  }
+}
+```
+
+The `$schema` line gives your editor autocomplete, hover help and error marks.
+
+## Where it goes
+
+Put `serve.json` in the root of the repository. For an app in a monorepo, put it in the app's **Root directory** (Settings → Build); Serve looks there first, then in the repository's root. A stack from Git reads the one next to its compose file.
+
+It works for apps from Git, apps deployed with `serve deploy`, and stacks from Git. Apps from an image or a saved Dockerfile have no repository to read it from.
+
+## The file and the dashboard
+
+The file wins on deploy. You can still change a setting in the dashboard to try something: the change lasts until the next deploy, which puts the file's value back.
+
+| You | What happens |
+| --- | --- |
+| Push, deploy, or `serve deploy` | serve.json is applied again |
+| Redeploy | Changes made in the dashboard stay |
+| Change a setting the file sets | It shows **Changed here** until the next deploy |
+| Remove serve.json | Its settings, variables and tasks stay; the dashboard owns them again |
+
+Fields the file sets carry a `serve.json` mark in the dashboard. **Settings → General** shows the file, what it controls, and a button to put its values back. A push that changes `serve.json` always deploys, whatever the watch paths say.
+
+If the file has a mistake, the deploy stops before the build and lists every problem with its place, like `deploy: unknown setting "replica"`. Nothing changes.
+
+## Sections
+
+### build
+
+| Key | What it sets |
+| --- | --- |
+| `builder` | `auto`, `dockerfile`, `nixpacks`, `railpack`, `buildpacks` or `static` |
+| `dockerfile` | Dockerfile path inside the root directory |
+| `target` | Stage of a multi-stage Dockerfile |
+| `buildpacksBuilder` | Builder image for buildpacks |
+| `installCommand`, `buildCommand`, `startCommand` | Commands for Nixpacks, Railpack and static builds |
+| `publishDir` | Folder with the built site, for static builds |
+| `args` | Docker build arguments, like `{ "NODE_ENV": "production" }` |
+| `noCache` | Always build without the layer cache |
+| `timeoutMinutes` | Stop a build that runs longer |
+| `submodules` | Clone Git submodules |
+| `watchPaths` | Only pushes that change these paths deploy |
+
+### deploy
+
+| Key | What it sets |
+| --- | --- |
+| `startCommand`, `entrypoint` | The command the container runs |
+| `workingDir`, `user` | Where and as whom it runs |
+| `port` | The port the app listens on |
+| `replicas` | Containers to run |
+| `strategy`, `drainSeconds` | `rolling` (no downtime) or `recreate`, and how long old containers finish requests |
+| `preDeployCommand` | Runs once before traffic switches, like migrations |
+| `postDeployCommand` | Runs once after the new version is live |
+| `backupBefore` | Database services of the same environment, by name, backed up before each deploy |
+| `restartPolicy`, `crashLimit` | When containers restart, and when a crashing one stops |
+| `stopSignal`, `stopTimeout`, `init` | How containers stop |
+| `restartSchedule` | Restart on a cron schedule |
+
+### healthcheck
+
+`path`, `port`, `timeout`, `interval`, `startPeriod`, `status` (like `200-399`) and `successes`. A new version gets traffic only after it passes.
+
+### resources
+
+`cpu` (cores, like `0.5`), `memory` and `memoryReservation` (MB), `shm` (MB), `logMaxSizeMb` and `logMaxFiles`. The organization's limits apply as in the dashboard.
+
+### volumes and files
+
+```json
+{
+  "volumes": [{ "name": "uploads", "path": "/app/uploads" }],
+  "files": [{ "path": "/app/config.yml", "content": "level: info\n" }]
+}
+```
+
+Volumes keep data across deploys. Files are written into the container, read-only. Mounts added in the dashboard stay; a mount the file stops listing is removed.
+
+### tasks
+
+```json
+{
+  "tasks": [
+    { "name": "Sweep", "schedule": "*/15 * * * *", "command": "bun sweep.mjs", "timeout": 1800 }
+  ]
+}
+```
+
+Scheduled tasks run a command in the app's container on a cron schedule, in the server's time zone. `timeout` is in seconds (default 3600); `enabled: false` pauses one. For a stack, `service` names the compose service that runs it.
+
+Tasks are known by name. A dashboard task with the same name is taken over; a task the file stops listing is removed. They change only once the new version is live, so a failed deploy never runs a new task against the old version. Pull request previews never get tasks.
+
+### variables
+
+| Key | What it does |
+| --- | --- |
+| `required` | Names that must have a value. The deploy stops before the build when one is missing |
+| `values` | Plain values set on every deploy, like `"LOG_LEVEL": "info"`. `{ "value": "…", "build": true }` also passes one to the build |
+| `generate` | Secrets Serve makes once, when the variable has no value: `password`, `strongPassword`, `secret`, `hex32`, `hex16` or `base64key` |
+
+Secrets do not belong in a repository: set them in **Variables**, or let Serve generate them. Generated values stay in Serve, also when the file stops listing them. References like `${{postgres.DATABASE_URL}}` are set in the dashboard.
+
+### http
+
+| Key | What it sets |
+| --- | --- |
+| `headers` | Extra response headers, like `{ "X-Frame-Options": "DENY" }` |
+| `securityHeaders` | Standard security headers |
+| `cors` | Allowed origins, or `["*"]` |
+| `redirects` | `[{ "from": "/old", "to": "/new" }]`; `"permanent": false` for a temporary one |
+| `maxBodySize`, `connectTimeout`, `readTimeout` | Request limits |
+| `websockets`, `buffering`, `gzip`, `cacheStatic`, `wwwRedirect` | Proxy behavior |
+
+Login walls, passwords, IP rules and custom proxy directives stay in the dashboard, for admins.
+
+### monitor
+
+`enabled`, `kind` (`http` or `container`), `path`, `expectedStatus`, `keyword`, `interval` (30, 60, 120, 300 or 600 seconds), `timeout` (ms) and `failures`. The check requests the app's primary domain.
+
+## Environments and previews
+
+Settings for one environment go in `environments`, by name. They are merged over the rest of the file for services in that environment: objects key by key, lists replaced. `previews` is merged last for pull request previews.
+
+```json
+{
+  "deploy": { "replicas": 1 },
+  "environments": {
+    "production": {
+      "deploy": { "replicas": 3 },
+      "resources": { "memory": 1024 },
+      "variables": { "values": { "LOG_LEVEL": "warn" } }
+    }
+  },
+  "previews": { "resources": { "memory": 256 } }
+}
+```
+
+## What it cannot do
+
+Some settings stay in the dashboard on purpose, because anyone who can push to the repository would get them: secrets, host paths and host ports, privileges, GPUs and devices, servers, domains, login walls and custom proxy directives. A service with host-level access refuses serve.json.
+
+## From the CLI
+
+```bash
+serve config pull          # write the service's current settings as serve.json
+serve config validate      # check serve.json the way a deploy does
+serve config validate --env production
+```
+
+**Download serve.json** in Settings → General does the same as `serve config pull`.

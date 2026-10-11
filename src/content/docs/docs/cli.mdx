@@ -429,6 +429,16 @@ serve tasks rm cleanup
 
 The schedule is five cron fields in the server's time. Quote it. `--timeout` is 1 hour when not set. `serve tasks run --wait` prints the run's output and exits with `1` when the run fails.
 
+### serve.json
+
+```bash
+serve config pull                     # write the service's settings as serve.json
+serve config validate                 # check serve.json the way a deploy does
+serve config validate --env staging   # also check what staging's deploys would use
+```
+
+`serve config pull` writes only what differs from the defaults and leaves out variable values; `--force` replaces an existing file, `-o` writes it elsewhere. `serve config validate` lists every problem with its place and exits with `1` when there is one. See [serve.json](/docs/serve-json).
+
 ### Previews, tags, uptime and the deploy hook
 
 ```bash

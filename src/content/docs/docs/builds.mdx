@@ -1,6 +1,6 @@
 ---
 title: "Builds"
-description: "Dockerfile, Nixpacks, Railpack, Buildpacks and built-in detection."
+description: "Dockerfile, Railpack, Nixpacks, Buildpacks and static sites."
 ---
 
 When an app comes from a Git repository, Serve builds a Docker image from it on each deploy. You control how in **Settings → Build**.
@@ -11,7 +11,7 @@ The **Builder** field picks how Serve builds the image.
 
 | Builder | What it does |
 | --- | --- |
-| Automatic | Uses a Dockerfile if present, otherwise detects the language |
+| Automatic | Uses a Dockerfile if present, otherwise Railpack detects the framework |
 | Dockerfile | Always builds from a Dockerfile |
 | Nixpacks | Builds with Nixpacks. Nixpacks must be installed on the server |
 | Railpack | Builds with Railpack. Serve downloads it on first use |
@@ -28,21 +28,27 @@ Serve fills in a default **Builder image**. Paketo builders also work. A builder
 
 The builder decides how to install and build, so the install and build commands are not used. The start command is optional.
 
-## Built-in detection
+## Automatic builds
 
-With **Automatic** and no Dockerfile, Serve looks at your repository and picks a build.
+With **Automatic** and no Dockerfile, Serve builds with [Railpack](https://railpack.com), which reads the repository and picks the framework and its commands.
 
-| Language | Detected by | Notes |
+| Kind | Examples | How it runs |
 | --- | --- | --- |
-| Node.js, Bun, Next.js | `package.json` | npm, pnpm, yarn or bun from the lockfile or `packageManager`. Node version from `engines.node` |
-| Static front-ends | Vite, Create React App, Astro, Angular, Parcel | Only when there is no start script |
-| Python | `requirements.txt`, `pyproject.toml`, `Pipfile` | Start command from the `web:` line in a `Procfile`. Django gets `migrate` and gunicorn |
-| Go | `go.mod` | |
-| Rust | `Cargo.toml` | |
-| PHP | `composer.json` or `index.php` | Runs on `php:8.4-apache` |
-| Plain HTML | `index.html` | Served as a static site. Without an `index.html` the build fails |
+| Single-page and static sites | Vite (React, Vue, Svelte), Astro, Create React App, Angular, React Router | Built, then served by Caddy. Links to client-side routes like `/about` work |
+| Node.js servers | Next.js, Nuxt, Express, NestJS, Fastify, Hono | The `start` script, else the `main` field of `package.json`, else `index.js` |
+| Other languages | Python (Django, FastAPI, Flask), Go, PHP (Laravel), Ruby (Rails), Java, Rust, Deno, Bun | Railpack's defaults for each |
 
-If detection picks the wrong thing, set the commands yourself or add a Dockerfile.
+Serve adds what Railpack does not find on its own: a SvelteKit app with the Node adapter starts with `node build`, and a `start:prod` script (NestJS) is used over `start`.
+
+The app gets `PORT` and should listen on it. An Astro site needs its `astro.config.mjs` to be detected as a static site.
+
+Apps that were already deploying with **Automatic** before Railpack became the default keep building with Nixpacks, so they build the same way as before. The Builder field says so; pick **Railpack** to switch.
+
+If detection picks the wrong thing, set the install, build or start command yourself, or add a Dockerfile.
+
+## Static site builder
+
+**Static site** builds the front-end with its own build script and serves the output folder with nginx, with links to client-side routes going to `index.html`. Without a `package.json`, the folder (or the **Output directory**) is served as it is.
 
 ## Build fields
 

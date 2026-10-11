@@ -114,6 +114,10 @@ Use the **Tasks** tab to run commands on a schedule, like a cleanup job or a rep
 
 Click **Run now** to run a task right away. **Recent runs** shows the result of each run. Serve can notify you when a scheduled task fails. See [Monitoring](/docs/monitoring).
 
+Tasks run like cron: Serve checks the schedules at the start of every minute, so a task set for 03:00 starts within a second of 03:00, in the server's time zone. A task whose last run is still going skips its next start. A run that was due while Serve was down or updating is skipped, not run late.
+
+Tasks can also live in the repository, in [serve.json](/docs/serve-json). Those show a `serve.json` label, and the next deploy sets them back to what the file says.
+
 ## Maintenance mode
 
 Under **Settings → Maintenance** you can put an app behind a 503 page. You set the **Title** and **Message** of the page. **Allow only** lets listed IPs or CIDRs through, so you can still test the app. **Retry after** tells clients when to try again.
