@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.5.6",
+  "date": "2026-10-12T21:40:48Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.6",
+  "html": "<h3>Fixed</h3>\n<ul>\n<li>Log lines no longer turn red because a path or name contains a word like &quot;error&quot;, as in <code>/admin/error-logs</code>.</li>\n</ul>"
+ },
+ {
   "version": "0.5.5",
   "date": "2026-10-12T14:43:28Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.5",
@@ -112,11 +118,5 @@
   "date": "2026-10-05T17:54:38Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.8",
   "html": "<h3>Fixed</h3>\n<ul>\n<li>&quot;Point to&quot; and changing the main server now work for domains whose Cloudflare account was disconnected and then connected again. Such a domain kept its zone but lost the link to the account, so Serve said it could only change the record in a connected Cloudflare account. Serve now finds the connected account that holds the domain's zone, links it again, and changes the record.</li>\n</ul>"
- },
- {
-  "version": "0.4.7",
-  "date": "2026-10-05T17:40:35Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.7",
-  "html": "<h3>New</h3>\n<ul>\n<li>A domain whose DNS points at another server of the app instead of the main one shows &quot;Points to&quot; and that server's name; when the domain's zone is in a connected Cloudflare account, a &quot;Point to&quot; button next to it changes the record to the main server in one click. Only that domain's record changes (never a wildcard record), and its Cloudflare proxy setting stays as it is.</li>\n<li>In <code>Settings → Servers &amp; registry</code>, a server that shares no private network with the main server now says so on its row. Ticking one with load balancing on shows the problem inside the card, with a link to Private networks, and Save stays off until it is fixed.</li>\n</ul>\n<h3>Fixed</h3>\n<ul>\n<li>A dashboard tab left open across an update could no longer run actions: a click did nothing, with no error. Each release now has its own deployment ID, so an old tab reloads instead; if an action still hits an old page, it now says that Serve was updated and asks for a reload.</li>\n</ul>"
  }
 ]
