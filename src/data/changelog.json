@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.5.8",
+  "date": "2026-10-13T13:50:58Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.8",
+  "html": "<h3>Fixed</h3>\n<ul>\n<li>Log lines get their color from the level they state: JSON fields like <code>&quot;level&quot;:&quot;error&quot;</code> or pino's numbers, logfmt <code>level=warn</code>, a level word in front such as <code>ERROR</code>, <code>[warn]</code> or <code>info:</code>, and the Postgres and MongoDB formats. An info line that mentions an error stays plain.</li>\n<li>Errors printed by runtimes and tools are red even without the word &quot;error&quot; in a level: <code>TypeError: …</code>, Python tracebacks, Go panics, <code>npm ERR!</code> and pnpm's <code>ERR_PNPM_…</code>.</li>\n<li>Serve's own <code>Warning:</code> lines are yellow, not red, also when they mention a failure.</li>\n<li>A commit message and a build step's command no longer color a line red.</li>\n</ul>"
+ },
+ {
   "version": "0.5.7",
   "date": "2026-10-13T09:18:58Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.7",
@@ -112,11 +118,5 @@
   "date": "2026-10-05T18:32:20Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.10",
   "html": "<h3>Fixed</h3>\n<ul>\n<li>The Main server dialog now stays open until the page shows the new main server. Before, it closed as soon as the switch was done, while the page still showed the old main server for a few more seconds, which looked like the switch had not worked.</li>\n</ul>"
- },
- {
-  "version": "0.4.9",
-  "date": "2026-10-05T18:11:52Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.9",
-  "html": "<h3>Fixed</h3>\n<ul>\n<li>Making another server the main one is no longer refused when the app's servers share no private network, since the main server is how visitors leave a failing server and should never be blocked. The dialog now shows a warning instead: the servers outside the private network get no visitors, so every visitor goes to the new main server until they share one again.</li>\n<li>A server that left the private network after it was added no longer blocks saving the Servers settings. It shows a warning instead, so other changes (like the build server or registry) still save. Adding a new server outside the private network with load balancing on is still refused.</li>\n</ul>"
  }
 ]
