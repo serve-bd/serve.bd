@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.5.7",
+  "date": "2026-10-13T09:18:58Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.7",
+  "html": "<h3>Fixed</h3>\n<ul>\n<li>A service that is building or deploying while its previous version still runs now counts as running on the home page, in project rows and in server counts.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>Serve checks for updates every hour by default, instead of every 6 hours. A schedule you picked yourself stays.</li>\n</ul>"
+ },
+ {
   "version": "0.5.6",
   "date": "2026-10-12T21:40:48Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.5.6",
@@ -112,11 +118,5 @@
   "date": "2026-10-05T18:11:52Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.9",
   "html": "<h3>Fixed</h3>\n<ul>\n<li>Making another server the main one is no longer refused when the app's servers share no private network, since the main server is how visitors leave a failing server and should never be blocked. The dialog now shows a warning instead: the servers outside the private network get no visitors, so every visitor goes to the new main server until they share one again.</li>\n<li>A server that left the private network after it was added no longer blocks saving the Servers settings. It shows a warning instead, so other changes (like the build server or registry) still save. Adding a new server outside the private network with load balancing on is still refused.</li>\n</ul>"
- },
- {
-  "version": "0.4.8",
-  "date": "2026-10-05T17:54:38Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.8",
-  "html": "<h3>Fixed</h3>\n<ul>\n<li>&quot;Point to&quot; and changing the main server now work for domains whose Cloudflare account was disconnected and then connected again. Such a domain kept its zone but lost the link to the account, so Serve said it could only change the record in a connected Cloudflare account. Serve now finds the connected account that holds the domain's zone, links it again, and changes the record.</li>\n</ul>"
  }
 ]
