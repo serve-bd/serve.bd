@@ -58,7 +58,7 @@ S3_ACCESS_KEY=${{garage.ACCESS_KEY_ID}}
 S3_SECRET_KEY=${{garage.SECRET_KEY}}
 ```
 
-A variable whose own value is made of references is filled in only where its service deploys. Reference what it refers to instead. Adding a reference to another service's own variable needs the right to view secrets, and it works only in the service's own variables: placed in a shared or server variable, it stays empty.
+A variable whose own value is made of references is filled in only where its service deploys. Reference what it refers to instead. A reference to another service's own variable is saved by someone allowed to view secrets, and it reads exactly the variable it reached then. If that variable or its service is renamed or moved later, the reference fills in nothing until it is saved again; a changed value keeps working. Placed in a shared, server or per-replica variable, or in a pull request preview, it stays empty.
 
 An app then pulls it in with:
 
