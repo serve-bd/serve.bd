@@ -51,6 +51,15 @@ Shared variables reach an app only by reference. A shared variable can also hold
 DATABASE_URL=${{postgres.DATABASE_URL}}
 ```
 
+Or the keys of an object storage service named `garage`:
+
+```text
+S3_ACCESS_KEY=${{garage.ACCESS_KEY_ID}}
+S3_SECRET_KEY=${{garage.SECRET_KEY}}
+```
+
+A variable whose own value is made of references is filled in only where its service deploys. Reference what it refers to instead.
+
 An app then pulls it in with:
 
 ```text
@@ -78,7 +87,7 @@ A variable's value can reference other values. Serve resolves them when the serv
 | Syntax | Resolves to |
 | --- | --- |
 | `${{KEY}}` | Another variable on the same service |
-| `${{service-name.KEY}}` | A variable on another service in the project |
+| `${{service-name.KEY}}` | A variable on another service in the same environment, or a value Serve gives it (like `DATABASE_URL`) |
 | `${{environment.KEY}}` | An environment variable. `${{shared.KEY}}` also works |
 | `${{project.KEY}}` | A project variable |
 | `${{org.KEY}}` | An organization variable. `${{team.KEY}}` also works |
@@ -126,6 +135,7 @@ Serve sets these in every app container.
 | `SERVE_PUBLIC_URL_<SERVICE>` | The public URL of another service |
 | `SERVE_PUBLIC_DOMAIN_<SERVICE>` | The public domain of another service |
 | `SERVE_PRIVATE_DOMAIN` | The app's private hostname |
+| `SERVE_PRIVATE_DOMAIN_<SERVICE>` | The private hostname of one service of a stack |
 | `SERVE_SERVICE_NAME` | The service name |
 | `SERVE_REPLICA_INDEX` | This replica's index |
 | `SERVE_REPLICA_COUNT` | How many replicas run |
