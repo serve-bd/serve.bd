@@ -85,3 +85,12 @@ Serve always runs an exact version, like `ghcr.io/serve-bd/serve:0.2.0`, and nev
 :::tip
 Before a big update, check that you have a recent instance backup and a copy of `SERVE_ENCRYPTION_KEY`. See [Instance backups](/docs/instance-backups).
 :::
+
+## Updates of your services' images
+
+Once a day, Serve checks the images your services run from a registry: databases, apps deployed from an image, and the images of stacks. Images Serve builds from your code are not checked: each deploy builds them fresh.
+
+- **A newer build of the same version** (like a new `redis:8-alpine`, often with security fixes): the service shows a warning, and its Overview has **Update image**. That deploys again and pulls the new build. The version stays the same.
+- **A newer version** (like `9-alpine` after `8-alpine`): the Overview shows it, but nothing changes on its own. A new version can need changes, so read its release notes first. For a database, change the version in its Settings.
+
+**Check now** on the same card looks again at once. To be told when an update appears, turn on **Newer image build or version available** in a notification channel.
