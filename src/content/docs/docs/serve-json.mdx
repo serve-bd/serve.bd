@@ -36,16 +36,17 @@ It works for apps from Git, apps deployed with `serve deploy`, and stacks from G
 
 ## The file and the dashboard
 
-The file wins on deploy. You can still change a setting in the dashboard to try something: the change lasts until the next deploy, which puts the file's value back.
+Each deploy applies the file, except what you changed in the dashboard since the file last set it. Your change stays.
 
-| You | What happens |
+| You | What happens on the next deploy |
 | --- | --- |
-| Push, deploy, or `serve deploy` | serve.json is applied again |
-| Redeploy | Changes made in the dashboard stay |
-| Change a setting the file sets | It shows **Changed here** until the next deploy |
-| Remove serve.json | Its settings, variables and tasks stay; the dashboard owns them again |
+| Change a setting, variable or task the file sets | Your value stays. It shows **Changed here** |
+| Disable or delete a task, or delete a variable, the file sets | It stays disabled or deleted |
+| Change the file only | The file's new value is applied |
+| Change both | Your value stays |
+| Remove serve.json | Its settings, variables and tasks stay; the dashboard owns them |
 
-Fields the file sets carry a `serve.json` mark in the dashboard. **Settings → General** shows the file, what it controls, and a button to put its values back. A push that changes `serve.json` always deploys, whatever the watch paths say.
+Fields the file sets carry a `serve.json` mark in the dashboard. **Settings → General** shows the file and what it controls. There, each changed setting has a button that puts the file's value back, and **Put serve.json values back** undoes every change at once, also deleted tasks and variables. A push that changes `serve.json` always deploys, whatever the watch paths say.
 
 If the file has a mistake, the deploy stops before the build and lists every problem with its place, like `deploy: unknown setting "replica"`. Nothing changes.
 
@@ -114,7 +115,7 @@ Volumes keep data across deploys. Files are written into the container, read-onl
 
 Scheduled tasks run a command in the app's container on a cron schedule, in the server's time zone. `timeout` is in seconds (default 3600); `enabled: false` pauses one. For a stack, `service` names the compose service that runs it.
 
-Tasks are known by name. A dashboard task with the same name is taken over; a task the file stops listing is removed. They change only once the new version is live, so a failed deploy never runs a new task against the old version. Pull request previews never get tasks.
+Tasks are known by name. A dashboard task with the same name is taken over; a task the file stops listing is removed, unless you changed it in the dashboard. They change only once the new version is live, so a failed deploy never runs a new task against the old version. Pull request previews never get tasks.
 
 ### variables
 
