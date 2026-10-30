@@ -30,7 +30,7 @@ The `$schema` line gives your editor autocomplete, hover help and error marks.
 
 ## Where it goes
 
-Put `serve.json` in the root of the repository. For an app in a monorepo, put it in the app's **Root directory** (Settings → Build); Serve looks there first, then in the repository's root. A stack from Git reads the one next to its compose file.
+Put `serve.json` in the root of the repository. For an app in a monorepo, put it in the app's **Root directory** (Settings → Build). An app built from a Dockerfile can also keep it next to its Dockerfile, so two apps building from the same folder (a web app and its worker) each have their own. Serve looks next to the Dockerfile first, then in the root directory, then in the repository's root. A stack from Git reads the one next to its compose file.
 
 It works for apps from Git, apps deployed with `serve deploy`, and stacks from Git. Apps from an image or a saved Dockerfile have no repository to read it from.
 
