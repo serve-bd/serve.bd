@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.6.5",
+  "date": "2026-10-30T21:58:01Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.6.5",
+  "html": "<h3>New</h3>\n<ul>\n<li>serve.json next to the Dockerfile. An app built from a Dockerfile reads the serve.json beside its Dockerfile first, then the one in its root directory, then the repository's. Two apps that build from the same folder, like a web app and its worker, can each keep their own.</li>\n</ul>"
+ },
+ {
   "version": "0.6.4",
   "date": "2026-10-30T18:51:06Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.6.4",
@@ -112,11 +118,5 @@
   "date": "2026-10-06T22:24:57Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.17",
   "html": "<h3>Breaking</h3>\n<ul>\n<li>A restore now leaves the database exactly as the backup is. Restoring a whole backup removes every database on the server first (not branches, not the engine's own), then brings back the backup's databases and tables under their own names. Restore only some databases by unticking the others.</li>\n</ul>\n<h3>New</h3>\n<ul>\n<li>A backup of everything is taken before every restore, and put back at once when the restore fails, for the databases it had changed. Tick Keep a backup of the current database to keep it afterwards.</li>\n<li>Backups have their own pages: Backups, Import backup and Auto backup.</li>\n<li>Import backup brings a file in first and opens the restore window with the upload's progress. Cancel deletes the file. A dump made for another engine is refused before anything changes.</li>\n<li>Backups can be encrypted with your own passphrase, in a format openssl opens without Serve.</li>\n<li>Backups can include the server's users and passwords (PostgreSQL, MySQL, MariaDB).</li>\n<li>Backup tests restore a backup into a throwaway database, by hand or every day, and tell you when one fails.</li>\n<li>Backups can go to several buckets; when one is down the next one is used.</li>\n<li>Apps can back up their databases before each deploy.</li>\n<li>Back up now can store a backup elsewhere, with users or without encryption, for that backup only.</li>\n<li>MySQL, MariaDB and ClickHouse backups are compressed, and every backup has a checksum that is checked before it is restored.</li>\n<li>ClickHouse in compose stacks, and compose stacks can import backups into their databases, volumes and folders.</li>\n<li>The connection URL can name any database of the server, from the Connect card or Settings → Credentials. A restore whose backup lacks the main database makes its first database the main one.</li>\n<li>The Connect card shows the pooled and read replica connection URLs while they are on.</li>\n<li>The API and CLI cover all of it: restore choices, backup tests, downloads, uploads and backup settings.</li>\n</ul>\n<h3>Fixed</h3>\n<ul>\n<li>MySQL row counts in the data explorer were 0 after a restore.</li>\n<li>A PostgreSQL dump made without --clean failed on tables that already existed.</li>\n<li>A dump with one database went into the main database whatever its name; it keeps its name now.</li>\n<li>Compose database passwords were visible on the server's process list during backups.</li>\n<li>Instance backup downloads failed after an S3 change.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>Auto backup is one card with its settings side by side, and only shows them while it is on.</li>\n<li>Imported files keep their own name, and their safety backup is listed under them.</li>\n<li>From bucket says where to add S3 storage when there is none.</li>\n<li>Restore errors show the database's own reason.</li>\n</ul>"
- },
- {
-  "version": "0.4.16",
-  "date": "2026-10-06T12:32:38Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.16",
-  "html": "<h3>Fixed</h3>\n<ul>\n<li>The password field in confirmation dialogs fills in from the password manager again. The type-to-confirm field above it stays empty.</li>\n</ul>"
  }
 ]
