@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.6.4",
+  "date": "2026-10-30T18:51:06Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.6.4",
+  "html": "<h3>Fixed</h3>\n<ul>\n<li>Lists keep names readable. The services list of a project, the projects list and a server's services show their domain, server and time columns only when the list itself has room, so a narrow list no longer cuts names down to a few letters.</li>\n<li>Rows of 3 or 4 tiles, the backup schedule, server metrics, the private network panel and the files table follow the space beside the menu instead of the window, on service pages, server pages and settings. The files table shows its size, date, owner and mode columns as its width allows.</li>\n</ul>"
+ },
+ {
   "version": "0.6.3",
   "date": "2026-10-30T18:26:37Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.6.3",
@@ -112,11 +118,5 @@
   "date": "2026-10-06T12:32:38Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.16",
   "html": "<h3>Fixed</h3>\n<ul>\n<li>The password field in confirmation dialogs fills in from the password manager again. The type-to-confirm field above it stays empty.</li>\n</ul>"
- },
- {
-  "version": "0.4.15",
-  "date": "2026-10-06T12:00:10Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.15",
-  "html": "<h3>New</h3>\n<ul>\n<li>Guest logins on the login wall: people without a Serve account sign in with an email and password set per app.</li>\n<li>Access control is now in a service's Settings as well as in Domains.</li>\n</ul>\n<h3>Fixed</h3>\n<ul>\n<li>Confirmation dialogs no longer get saved credentials filled in by the browser.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>Access control is split into three cards: HTTP Basic Auth, Login wall and IP rules. Basic Auth has its switch in the card header.</li>\n<li>Guests are added from a small form; saved guests show without a password field.</li>\n<li>A removed guest, or one with a new password, is signed out within 30 seconds. Sign-in attempts are limited to 10 per 15 minutes.</li>\n<li>The login wall page is a single card with a short note, without the sign-in side panel.</li>\n<li>The README overview banner is 16:9.</li>\n</ul>"
  }
 ]
