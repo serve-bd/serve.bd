@@ -1,5 +1,11 @@
 [
  {
+  "version": "0.6.3",
+  "date": "2026-10-30T18:26:37Z",
+  "url": "https://github.com/serve-bd/serve/releases/tag/v0.6.3",
+  "html": "<h3>Fixed</h3>\n<ul>\n<li>A service whose git login was removed keeps deploying. Before cloning, Serve switches it to another login of the organization for the same Git host (a GitHub App first, else the newest), saves it under Settings → Source → Access, and says so in the deploy log. Deleting a git provider moves the services that used it right away, and names those no other login fits.</li>\n<li>Pages no longer squeeze their content next to the menu. Their columns follow the space beside it instead of the window, on service pages, server pages, settings, project settings and API keys. Before, cards like Connect on a database cut off their fields at medium widths.</li>\n<li>The sections of a service's Domains &amp; ports page open under it in the service's menu, so the page no longer shows a second menu beside the first.</li>\n</ul>"
+ },
+ {
   "version": "0.6.2",
   "date": "2026-10-27T21:07:21Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.6.2",
@@ -112,11 +118,5 @@
   "date": "2026-10-06T12:00:10Z",
   "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.15",
   "html": "<h3>New</h3>\n<ul>\n<li>Guest logins on the login wall: people without a Serve account sign in with an email and password set per app.</li>\n<li>Access control is now in a service's Settings as well as in Domains.</li>\n</ul>\n<h3>Fixed</h3>\n<ul>\n<li>Confirmation dialogs no longer get saved credentials filled in by the browser.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>Access control is split into three cards: HTTP Basic Auth, Login wall and IP rules. Basic Auth has its switch in the card header.</li>\n<li>Guests are added from a small form; saved guests show without a password field.</li>\n<li>A removed guest, or one with a new password, is signed out within 30 seconds. Sign-in attempts are limited to 10 per 15 minutes.</li>\n<li>The login wall page is a single card with a short note, without the sign-in side panel.</li>\n<li>The README overview banner is 16:9.</li>\n</ul>"
- },
- {
-  "version": "0.4.14",
-  "date": "2026-10-06T09:06:27Z",
-  "url": "https://github.com/serve-bd/serve/releases/tag/v0.4.14",
-  "html": "<h3>New</h3>\n<ul>\n<li>A login wall for any app: turn on &quot;Only my team&quot; in an app's <code>Domains → Access control</code> to put a sign-in in front of it, good for admin panels, internal tools and staging sites.</li>\n<li>Visitors sign in to Serve first. Members who can open the app's project get in; everyone else sees &quot;No access&quot;.</li>\n<li>The app's domain keeps the sign-in for 7 days. Signing out of Serve, or removing a member, closes the wall within 30 seconds.</li>\n<li>Serve's own uptime checks still reach the app.</li>\n<li>Works with nginx, Caddy and Traefik, on the dashboard's server and on other servers.</li>\n<li>The app's Overview and Domains pages show &quot;Team only&quot; when it is on.</li>\n<li>Give the dashboard its own domain first, since visitors sign in there.</li>\n</ul>\n<h3>Polished</h3>\n<ul>\n<li>The service Details card shows only what differs from the defaults.</li>\n<li>The sidebar logo is as tall as the name and version next to it.</li>\n</ul>"
  }
 ]
